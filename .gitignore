@@ -1,0 +1,5 @@
+*.vvp
+*.vcd
+*.sublime-project
+*.sublime-workspace
+Python/__pycache__/*
