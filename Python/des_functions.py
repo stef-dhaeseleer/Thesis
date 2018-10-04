@@ -1,3 +1,8 @@
+# REFERENCE
+# This file is used to generate test vectors and verify the working of our DES Verilog engine
+# https://medium.com/@urwithajit9/how-to-teach-des-using-python-the-easy-way-part-1-des-subkey-generation-bb5a853ef9b0
+# https://medium.com/@urwithajit9/how-to-teach-des-using-python-the-easy-way-part-2-round-function-f-285dd3aef34d
+# https://medium.com/@urwithajit9/how-to-teach-des-using-python-the-easy-way-part-3-des-encryption-4394a935effc
 
 import textwrap
 from des_keygen import *
