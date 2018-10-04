@@ -7,7 +7,7 @@
 from des_functions import *
 from des_keygen import *
 
-def DES_encrypt(message,key):
+def DES_encrypt(message, key, file):
 
 	cipher = ""
 
@@ -24,64 +24,42 @@ def DES_encrypt(message,key):
 	# split
 	L,R = spliHalf(p_plaintext)
 
-	print ("Round keys: ")
-	for i in range(16):
-		print (roundkeys[i])
-
-	print()
-	print()
-
-	print ("Initial L and R: ")
-	print (L + " and " + R)
-
-	print ()
-
-	print ("Round values for L and R: ")
-
 	# Roundfunctions
 	for round in range(16):
 
 		newR = XOR(L,functionF(R, roundkeys[round]))
 		newL = R
 
+		file.write(roundkeys[round] + " " + L + " " + R + " " + newL + " " + newR + "\n")
+
 		R = newR	# Switch the parts to initialize the next round
 		L = newL
-
-		print ("Round " + str(round) + " output: ")
-		print (L + " and " + R)
-		print ()
 
 	cipher = apply_initial_p(INVERSE_PERMUTATION_TABLE, R+L)
 
 	return cipher
 
 def main():
-    
-	master_key = "0101010101010101"
-	message = "95F8A5E5DD31D900"
 
-	expected = "0x8000000000000000"
+	print ("Started making test file...")
 
-	print ()
-	print ("################################################################################")
-	print ()
+	file = open("roundfunction_tests.txt", "w")
 
-	ciphertext = DES_encrypt(message, master_key)
+	file_input = open("des_test_vectors.txt", "r")
 
-	print ()
-	print ()
-	print ()
-	print ("Key: " + master_key)
-	print ("Message: " + message)
-	print ()
-	print ("Ciphertext: " + hex(int(ciphertext, 2)))
-	print ("Expected  : " + expected)
-	if (expected == hex(int(ciphertext, 2))):
-		print("CORRECT")
-	else:
-		print("NOT CORRECT")
+	for line in file_input:
 
-	print ()
+		args = line.split()
+
+		master_key = args[0]
+		message = args[1]
+		#expected = args[2]
+
+		ciphertext = DES_encrypt(message, master_key, file)
+
+	file.close
+
+	print ("Finished making test file!")
 
 if __name__ == '__main__':
     main()
