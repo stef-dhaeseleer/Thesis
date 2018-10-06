@@ -7,9 +7,9 @@
 
 `include "des.v"
 
-// iverilog -o des_roundfunction.vvp tb_des_roundfunction.v
-// vvp des_roundfunction.vvp
-// open -a gtkwave tb_des_roundfunction.vcd
+// iverilog -o des.vvp tb_des_automatic.v
+// vvp des.vvp
+// open -a gtkwave tb_des.vcd
 
 module tb_des();
     
@@ -77,7 +77,7 @@ module tb_des();
                 
                 wait (done==1);
 
-                #`CLK_PERIOD;
+                #`CLK_PERIOD;   // need this to check the result at the end of the done cycle and not at the start!
 
                 nb_tests <= nb_tests + 1;
                 nb_correct <= nb_correct + (expected - result == 64'h0);
