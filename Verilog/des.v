@@ -29,7 +29,9 @@ module des_encryption(
 
     wire roundfunction_done;
 
-    reg [1:48] current_round_key;
+    wire [1:48] current_round_key;
+
+    reg [1:768] temp_key;
 
     wire [1:64] result_wire;
 
@@ -129,11 +131,11 @@ module des_encryption(
         	M <= {L_out, R_out};
         end
         if (roundfunction_done == 1'b1) begin
-        	current_round_key <= round_keys[1:48] << (counter+1)*48;	// Shift through all the different round keys
+        	temp_key <= temp_key << 48;	// Shift through all the different round keys
         end
         if (start == 1'b1) begin
         	M <= permuted_message;
-        	current_round_key <= round_keys[1:48];
+        	temp_key <= round_keys;
         end
     end
 
@@ -148,5 +150,6 @@ module des_encryption(
     end
 
     assign result = result_wire;
+    assign current_round_key = temp_key[1:48];
 
 endmodule
