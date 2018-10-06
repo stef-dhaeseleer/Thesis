@@ -7,7 +7,7 @@
 from des_functions import *
 from des_keygen import *
 
-def DES_encrypt(message, key, file):
+def DES_encrypt(message, key, file, file_2):
 
 	cipher = ""
 
@@ -31,6 +31,7 @@ def DES_encrypt(message, key, file):
 		newL = R
 
 		file.write(roundkeys[round] + " " + L + " " + R + " " + newL + " " + newR + "\n")
+		file_2.write(roundkeys[round] + " ")
 
 		R = newR	# Switch the parts to initialize the next round
 		L = newL
@@ -41,9 +42,11 @@ def DES_encrypt(message, key, file):
 
 def main():
 
-	print ("Started making test file...")
+	print ("Started making test files...")
 
 	file = open("roundfunction_tests.txt", "w")
+
+	file_2 = open("des_tests.txt", "w")
 
 	file_input = open("des_test_vectors.txt", "r")
 
@@ -53,13 +56,18 @@ def main():
 
 		master_key = args[0]
 		message = args[1]
-		#expected = args[2]
+		expected = args[2]
 
-		ciphertext = DES_encrypt(message, master_key, file)
+		ciphertext = DES_encrypt(message, master_key, file, file_2)
+
+		if (hexTobinary(expected) != ciphertext):
+			print ("RESULT WRONG !!!")
+		else:
+			file_2.write(hexTobinary(message) + " " + ciphertext + "\n")
 
 	file.close
 
-	print ("Finished making test file!")
+	print ("Finished making test files!")
 
 if __name__ == '__main__':
     main()
