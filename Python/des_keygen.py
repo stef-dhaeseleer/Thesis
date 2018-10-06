@@ -74,7 +74,7 @@ def main():
 	print ()
 	"""
 
-	file = open("subkey_generator.txt", "w")
+	file = open("testfiles/subkey_generator.txt", "w")
  
 	file.write(master_key + " " + round_keys[0] + " " + round_keys[1] + " " + round_keys[2] + " " + round_keys[3] + " " + round_keys[4] + " " + round_keys[5] + " " + round_keys[6] + " " + round_keys[7] + " " + round_keys[8] + " " + round_keys[9] + " " + round_keys[10] + " " + round_keys[11] + " " + round_keys[12] + " " + round_keys[13] + " " + round_keys[14] + " " + round_keys[15]) 
 	 

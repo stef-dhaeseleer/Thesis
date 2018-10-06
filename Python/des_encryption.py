@@ -59,11 +59,11 @@ def main():
 
 	print ("Started making test files...")
 
-	file = open("roundfunction_tests.txt", "w")
+	file = open("testfiles/roundfunction_tests.txt", "w")
 
-	file_2 = open("des_tests.txt", "w")
+	file_2 = open("testfiles/des_tests.txt", "w")
 
-	file_input = open("des_test_vectors.txt", "r")
+	file_input = open("testfiles/des_test_vectors.txt", "r")
 
 	for line in file_input:
 

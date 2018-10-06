@@ -60,7 +60,7 @@ module tb_des_roundfunction();
         $dumpfile("tb_des_roundfunction.vcd");
         $dumpvars(0, tb_des_roundfunction);
 
-        file = $fopenr("../Python/roundfunction_tests.txt"); 
+        file = $fopenr("../python/testfiles/roundfunction_tests.txt"); 
 
         #`RESET_TIME
 

@@ -55,7 +55,7 @@ module tb_des();
         $dumpfile("tb_des.vcd");
         $dumpvars(0, tb_des);
 
-        file = $fopenr("../Python/des_tests.txt"); 
+        file = $fopenr("../python/testfiles/des_tests.txt"); 
 
         #`RESET_TIME
 
