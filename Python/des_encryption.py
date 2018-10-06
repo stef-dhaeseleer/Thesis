@@ -31,7 +31,7 @@ def DES_encrypt(message, key, file, file_2):
 		newL = R
 
 		file.write(roundkeys[round] + " " + L + " " + R + " " + newL + " " + newR + "\n")
-		file_2.write(roundkeys[round] + " ")
+		file_2.write(roundkeys[round])
 
 		R = newR	# Switch the parts to initialize the next round
 		L = newL
@@ -63,7 +63,7 @@ def main():
 		if (hexTobinary(expected) != ciphertext):
 			print ("RESULT WRONG !!!")
 		else:
-			file_2.write(hexTobinary(message) + " " + ciphertext + "\n")
+			file_2.write(" " + hexTobinary(message) + " " + ciphertext + "\n")
 
 	file.close
 
