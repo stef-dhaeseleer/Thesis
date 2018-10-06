@@ -13,33 +13,29 @@ module des_encryption(
 	);
 
 	// Nets and regs
-	reg [2:0] state, next_state;        // State variables
+	reg [1:0] state, next_state;        // State variables
 
 	reg [1:64] M;
+    reg [1:768] temp_key;
 
 	reg [3:0] counter;	// Registers needed for the counter
     reg sync_rst, cnt_enable;
 
     reg start_roundfunction;
-
-    wire [1:64] permuted_message;
-
-    wire [1:32] L_out;
-    wire [1:32] R_out;
+    reg load_regs;
 
     wire roundfunction_done;
-
+    wire [1:32] L_out;
+    wire [1:32] R_out;
     wire [1:48] current_round_key;
-
-    reg [1:768] temp_key;
-
+    wire [1:64] permuted_message;
     wire [1:64] result_wire;
 
 	// Parameters
 		// Possible states
-	localparam [1:0]    init = 3'd0;   // Init will also already do the IP 
-    localparam [1:0]    roundfunction = 3'd1;
-    localparam [1:0]    finished = 3'd2;	// Finished will output the inverse permuted version of the M reg
+	localparam [1:0]    init = 2'd0;   // Init will also already do the IP 
+    localparam [1:0]    roundfunction = 2'd1;
+    localparam [1:0]    finished = 2'd2;	// Finished will output the inverse permuted version of the M reg
 
 	//---------------------------FSM---------------------------------------------------------------
 
@@ -63,7 +59,7 @@ module des_encryption(
         roundfunction: begin
             next_state <= roundfunction;
 
-            if (counter == 4'd15) begin // Continue roundfunction untill all 16 round have passed
+            if (counter == 4'd14) begin // Continue roundfunction untill all 16 round have passed
             	next_state <= finished;
             end
         end
@@ -101,23 +97,27 @@ module des_encryption(
 			.data_i    ({R_out, L_out}),
             .data_o    (result_wire));
 
-	always @(*) begin // Output logic. Signals to set: done, sync_rst, cnt_enable, start_roundfunction
+	always @(*) begin // Output logic. Signals to set: done, sync_rst, cnt_enable, start_roundfunction, load_regs
 	    done <= 1'b0;
 	    sync_rst <= 1'b0;
 	    cnt_enable <= 1'b0;
 	    start_roundfunction <= 1'b0;
+	    load_regs <= 1'b0;
 
 	    case (state)
 		    init: begin
 		    	sync_rst <= 1'b1;
+		    	start_roundfunction <= 1'b1;
 		    end
 		    roundfunction: begin
+		    	start_roundfunction <= 1'b1;
 		    	if (roundfunction_done == 1'b1) begin
 		    	  	cnt_enable <= 1'b1;
+		    	  	load_regs <= 1'b1;
 		    	end
-		    	start_roundfunction <= 1'b1;
 		    	if (counter == 4'd15) begin
 		    	  	cnt_enable <= 1'b0;
+		    	  	load_regs <= 1'b0;
 		    	end
 		    end
 		    finished: begin
@@ -127,12 +127,12 @@ module des_encryption(
 	end
 
 	always @(posedge clk) begin // Logic for buffering the inputs into a register
-	    if (roundfunction_done == 1'b1) begin
+
+	    if (load_regs == 1'b1) begin
         	M <= {L_out, R_out};
+        	temp_key <= temp_key << 48;
         end
-        if (roundfunction_done == 1'b1) begin
-        	temp_key <= temp_key << 48;	// Shift through all the different round keys
-        end
+
         if (start == 1'b1) begin
         	M <= permuted_message;
         	temp_key <= round_keys;
