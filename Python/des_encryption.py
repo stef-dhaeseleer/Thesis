@@ -21,8 +21,13 @@ def DES_encrypt(message, key, file, file_2):
 	# IP
 	p_plaintext = apply_initial_p(INITIAL_PERMUTATION_TABLE,plaintext_bits)
 
+	print (hex(int(p_plaintext, 2)))
+
 	# split
 	L,R = spliHalf(p_plaintext)
+
+	print (hex(int(L, 2)))
+	print (hex(int(R, 2)))
 
 	# Roundfunctions
 	for round in range(16):
@@ -36,7 +41,17 @@ def DES_encrypt(message, key, file, file_2):
 		R = newR	# Switch the parts to initialize the next round
 		L = newL
 
-	cipher = apply_initial_p(INVERSE_PERMUTATION_TABLE, R+L)
+		print (hex(int(L, 2)))
+		print (hex(int(R, 2)))
+	
+	print ()
+	print (hex(int(L, 2)))
+	print (hex(int(R, 2)))
+
+	print ()
+	print ()
+
+	cipher = apply_initial_p(INVERSE_PERMUTATION_TABLE, R+L) # Input the parts in reverse order for this last operation
 
 	return cipher
 

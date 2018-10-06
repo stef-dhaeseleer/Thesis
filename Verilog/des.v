@@ -31,6 +31,8 @@ module des_encryption(
 
     reg [1:48] current_round_key;
 
+    wire [1:64] result_wire;
+
 	// Parameters
 		// Possible states
 	localparam [1:0]    init = 3'd0;   // Init will also already do the IP 
@@ -94,8 +96,8 @@ module des_encryption(
 
 	// The inverse IP permutation module
 	ip_inverse_permutation ip_inv(
-			.data_i    (M),
-            .data_o    (result));
+			.data_i    ({R_out, L_out}),
+            .data_o    (result_wire));
 
 	always @(*) begin // Output logic. Signals to set: done, sync_rst, cnt_enable, start_roundfunction
 	    done <= 1'b0;
@@ -108,8 +110,13 @@ module des_encryption(
 		    	sync_rst <= 1'b1;
 		    end
 		    roundfunction: begin
-		    	cnt_enable <= 1'b1;
+		    	if (roundfunction_done == 1'b1) begin
+		    	  	cnt_enable <= 1'b1;
+		    	end
 		    	start_roundfunction <= 1'b1;
+		    	if (counter == 4'd15) begin
+		    	  	cnt_enable <= 1'b0;
+		    	end
 		    end
 		    finished: begin
 		        done <= 1'b1;
@@ -118,12 +125,15 @@ module des_encryption(
 	end
 
 	always @(posedge clk) begin // Logic for buffering the inputs into a register
-        if (start == 1'b1) begin
-        	M <= permuted_message;
-        	current_round_key <= round_keys << counter*48;	// Shift through all the different round keys
+	    if (roundfunction_done == 1'b1) begin
+        	M <= {L_out, R_out};
         end
         if (roundfunction_done == 1'b1) begin
-        	M <= {L_out, R_out};
+        	current_round_key <= round_keys[1:48] << (counter+1)*48;	// Shift through all the different round keys
+        end
+        if (start == 1'b1) begin
+        	M <= permuted_message;
+        	current_round_key <= round_keys[1:48];
         end
     end
 
@@ -136,5 +146,7 @@ module des_encryption(
             counter <= counter + 1;
         end
     end
+
+    assign result = result_wire;
 
 endmodule
