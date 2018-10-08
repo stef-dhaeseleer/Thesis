@@ -9,7 +9,7 @@ module des_roundfunction(
 	input [1:32] L_in, 		// the left part for the roundfunction
 	input [1:32] R_in, 		// the right part for the roundfunction
 	input [1:48] Kn,		// the incomming key for iteration n
-	output reg done,// signals that the output is valid for the current iteration
+	output wire done,// signals that the output is valid for the current iteration
 	output [1:32] L_out,	// the outgoing left part of the roundfunction
 	output [1:32] R_out		// the outgoing right part of the roundfunction
 	);
@@ -43,18 +43,13 @@ module des_roundfunction(
 			.data_i    (s_out),
             .data_o    (p_out));
 
-    always @(posedge clk) begin // Output logic. Signals to set: done
-        done <= 1'b0;
-    	if (start == 1'b1) begin
-	        done <= 1'b1;
-    	end
-	end
-
 	//assign L_out = L_new[1:32];	// Assign the outputs to the registers with the values
 	//assign R_out = R_new[1:32];	
 
 	assign L_out = R_in[1:32];	// Assign the outputs to the registers with the values
 	assign R_out = L_in[1:32] ^ p_out;	
+
+	assign done = 1'b1;
 
 
 endmodule
