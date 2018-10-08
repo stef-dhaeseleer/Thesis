@@ -5,11 +5,11 @@
 `define EOF 32'hFFFF_FFFF 
 `define NULL 0 
 
-`include "des_unroll4.v"
+`include "des/des_unroll4.v"
 
-// iverilog -o des_unroll4.vvp tb_des_unroll4_automatic.v
-// vvp des_unroll4.vvp
-// open -a gtkwave tb_des_unroll4.vcd
+// iverilog tb_des_unroll4_automatic.v
+// vvp a.out
+// open -a gtkwave vcd/tb_des_unroll4.vcd
 
 module tb_des_unroll4();
     
@@ -52,7 +52,7 @@ module tb_des_unroll4();
     //Test data
     initial begin
 
-        $dumpfile("tb_des_unroll4.vcd");
+        $dumpfile("vcd/tb_des_unroll4.vcd");
         $dumpvars(0, tb_des_unroll4);
 
         file = $fopenr("../python/testfiles/des_tests.txt"); 

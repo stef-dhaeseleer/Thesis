@@ -3,11 +3,11 @@
 `define CLK_PERIOD 10
 `define CLK_HALF 5
 
-`include "des_roundfunction.v"
+`include "des/des_roundfunction.v"
 
-// iverilog -o des_roundfunction.vvp tb_des_roundfunction.v
-// vvp des_roundfunction.vvp
-// open -a gtkwave tb_des_roundfunction.vcd
+// iverilog tb_des_roundfunction_manual.v
+// vvp a.out
+// open -a gtkwave vcd/tb_des_roundfunction.vcd
 
 module tb_des_roundfunction();
     
@@ -55,7 +55,7 @@ module tb_des_roundfunction();
     //Test data
     initial begin
 
-        $dumpfile("tb_des_roundfunction.vcd");
+        $dumpfile("vcd/tb_des_roundfunction.vcd");
         $dumpvars(0, tb_des_roundfunction);
 
         #`RESET_TIME

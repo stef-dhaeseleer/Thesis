@@ -5,37 +5,42 @@
 `define EOF 32'hFFFF_FFFF 
 `define NULL 0 
 
-`include "des.v"
+`include "des/des_roundfunction.v"
 
-// iverilog -o des.vvp tb_des_automatic.v
-// vvp des.vvp
-// open -a gtkwave tb_des.vcd
+// iverilog tb_des_roundfunction_automatic.v
+// vvp a.out
+// open -a gtkwave vcd/tb_des_roundfunction.vcd
 
-module tb_des();
+module tb_des_roundfunction();
     
     reg     clk;
     reg     rst_n;
     reg     start;
-    reg [1:64] message;
-    reg [1:768] round_keys;
-    wire done;
-    wire [1:64] result;
+    reg     [1:32] L_in;
+    reg     [1:32] R_in;
+    reg     [1:48] Kn;
+    wire    done;
+    wire    [1:32] L_out;
+    wire    [1:32] R_out;
 
-    reg [1:64] expected;
+    reg    [1:32] L_expected;
+    reg    [1:32] R_expected;
 
     reg [14:0] nb_tests, nb_correct;
 
     integer file, r; 
         
     //Instantiating montgomery module
-    des_encryption des_encryption_instance( 
-            .clk        (clk       ),
-            .rst_n      (rst_n     ),
-            .start      (start     ),
-            .message    (message   ),
-            .round_keys (round_keys),
-            .done       (done      ),
-            .result     (result    ));
+    des_roundfunction des_roundfunction_instance( 
+            .clk    (clk  ),
+            .rst_n  (rst_n),
+            .start  (start),
+            .L_in   (L_in ),
+            .R_in   (R_in ),
+            .Kn     (Kn   ),
+            .done   (done ),
+            .L_out  (L_out),
+            .R_out  (R_out));
 
     //Generate a clock
     initial begin
@@ -52,10 +57,10 @@ module tb_des();
     //Test data
     initial begin
 
-        $dumpfile("tb_des.vcd");
-        $dumpvars(0, tb_des);
+        $dumpfile("vcd/tb_des_roundfunction.vcd");
+        $dumpvars(0, tb_des_roundfunction);
 
-        file = $fopenr("../python/testfiles/des_tests.txt"); 
+        file = $fopenr("../python/testfiles/roundfunction_tests.txt"); 
 
         #`RESET_TIME
 
@@ -69,7 +74,7 @@ module tb_des();
             begin 
             // Wait until rising clock, read stimulus 
             @(posedge clk) 
-                r = $fscanf(file, "%b %b %b\n", round_keys, message, expected); 
+                r = $fscanf(file, "%b %b %b %b %b\n", Kn, L_in, R_in, L_expected, R_expected); 
 
                 start<=1;
                 #`CLK_PERIOD;
@@ -77,10 +82,8 @@ module tb_des();
                 
                 wait (done==1);
 
-                #`CLK_PERIOD;   // need this to check the result at the end of the done cycle and not at the start!
-
-                nb_tests <= nb_tests + 1;
-                nb_correct <= nb_correct + (expected - result == 64'h0);
+                nb_tests <= nb_tests + 2;
+                nb_correct <= nb_correct + (L_expected - L_out == 32'b00000000000000000000000000000000) + (R_expected - R_out == 32'b00000000000000000000000000000000);
                      
             end // while not EOF 
 

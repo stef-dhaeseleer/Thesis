@@ -5,13 +5,13 @@
 `define EOF 32'hFFFF_FFFF 
 `define NULL 0 
 
-`include "des_unrollfull.v"
+`include "des/des.v"
 
-// iverilog -o des_unrollfull.vvp tb_des_unrollfull_automatic.v
-// vvp des_unrollfull.vvp
-// open -a gtkwave tb_des_unrollfull.vcd
+// iverilog tb_des_automatic.v
+// vvp a.out
+// open -a gtkwave vcd/tb_des.vcd
 
-module tb_des_unrollfull();
+module tb_des();
     
     reg     clk;
     reg     rst_n;
@@ -28,7 +28,7 @@ module tb_des_unrollfull();
     integer file, r; 
         
     //Instantiating montgomery module
-    des_encryption_unrollfull des_encryption_instance( 
+    des_encryption des_encryption_instance( 
             .clk        (clk       ),
             .rst_n      (rst_n     ),
             .start      (start     ),
@@ -52,8 +52,8 @@ module tb_des_unrollfull();
     //Test data
     initial begin
 
-        $dumpfile("tb_des_unrollfull.vcd");
-        $dumpvars(0, tb_des_unrollfull);
+        $dumpfile("vcd/tb_des.vcd");
+        $dumpvars(0, tb_des);
 
         file = $fopenr("../python/testfiles/des_tests.txt"); 
 
