@@ -4,3 +4,4 @@
 *.sublime-workspace
 Python/__pycache__/*
 *.command
+*.out
