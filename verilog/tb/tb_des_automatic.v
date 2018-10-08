@@ -7,9 +7,9 @@
 
 `include "des/des.v"
 
-// iverilog tb_des_automatic.v
+// iverilog tb/tb_des_automatic.v
 // vvp a.out
-// open -a gtkwave vcd/tb_des.vcd
+// open -a gtkwave tb/vcd/tb_des.vcd
 
 module tb_des();
     
@@ -52,7 +52,7 @@ module tb_des();
     //Test data
     initial begin
 
-        $dumpfile("vcd/tb_des.vcd");
+        $dumpfile("tb/vcd/tb_des.vcd");
         $dumpvars(0, tb_des);
 
         file = $fopenr("../python/testfiles/des_tests.txt"); 

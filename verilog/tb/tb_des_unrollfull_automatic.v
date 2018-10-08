@@ -7,9 +7,9 @@
 
 `include "des/des_unrollfull.v"
 
-// iverilog tb_des_unrollfull_automatic.v
+// iverilog tb/tb_des_unrollfull_automatic.v
 // vvp a.out
-// open -a gtkwave vcd/tb_des_unrollfull.vcd
+// open -a gtkwave tb/vcd/tb_des_unrollfull.vcd
 
 module tb_des_unrollfull();
     
@@ -52,7 +52,7 @@ module tb_des_unrollfull();
     //Test data
     initial begin
 
-        $dumpfile("vcd/tb_des_unrollfull.vcd");
+        $dumpfile("tb/svcd/tb_des_unrollfull.vcd");
         $dumpvars(0, tb_des_unrollfull);
 
         file = $fopenr("../python/testfiles/des_tests.txt"); 

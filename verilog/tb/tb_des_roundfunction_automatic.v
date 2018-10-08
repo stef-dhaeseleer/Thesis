@@ -7,9 +7,9 @@
 
 `include "des/des_roundfunction.v"
 
-// iverilog tb_des_roundfunction_automatic.v
+// iverilog tb/tb_des_roundfunction_automatic.v
 // vvp a.out
-// open -a gtkwave vcd/tb_des_roundfunction.vcd
+// open -a gtkwave tb/vcd/tb_des_roundfunction.vcd
 
 module tb_des_roundfunction();
     
@@ -57,7 +57,7 @@ module tb_des_roundfunction();
     //Test data
     initial begin
 
-        $dumpfile("vcd/tb_des_roundfunction.vcd");
+        $dumpfile("tb/vcd/tb_des_roundfunction.vcd");
         $dumpvars(0, tb_des_roundfunction);
 
         file = $fopenr("../python/testfiles/roundfunction_tests.txt"); 

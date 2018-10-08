@@ -5,9 +5,9 @@
 
 `include "des/des_roundfunction.v"
 
-// iverilog tb_des_roundfunction_manual.v
+// iverilog tb/tb_des_roundfunction_manual.v
 // vvp a.out
-// open -a gtkwave vcd/tb_des_roundfunction.vcd
+// open -a gtkwave tb/vcd/tb_des_roundfunction.vcd
 
 module tb_des_roundfunction();
     
@@ -55,7 +55,7 @@ module tb_des_roundfunction();
     //Test data
     initial begin
 
-        $dumpfile("vcd/tb_des_roundfunction.vcd");
+        $dumpfile("tb/vcd/tb_des_roundfunction.vcd");
         $dumpvars(0, tb_des_roundfunction);
 
         #`RESET_TIME
