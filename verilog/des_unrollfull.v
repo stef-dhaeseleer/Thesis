@@ -212,9 +212,97 @@ module des_encryption_unrollfull(
 			.L_in   (L_temp7),
 			.R_in   (R_temp7),
 			.Kn     (current_round_key8),
-			.done   (roundfunction_done),
-			.L_out  (L_out),
-            .R_out  (R_out));		
+			.done   (roundfunction_done_temp8),
+			.L_out  (L_temp8),
+            .R_out  (R_temp8));		
+
+    des_roundfunction round_func9(
+            .clk    (clk ),
+            .rst_n  (rst_n),
+            .start  (roundfunction_done_temp8),
+            .L_in   (L_temp8),
+            .R_in   (R_temp8),
+            .Kn     (current_round_key9),
+            .done   (roundfunction_done_temp9),
+            .L_out  (L_temp9),
+            .R_out  (R_temp9));
+
+    des_roundfunction round_func10(
+            .clk    (clk ),
+            .rst_n  (rst_n),
+            .start  (roundfunction_done_temp9),
+            .L_in   (L_temp9),
+            .R_in   (R_temp9),
+            .Kn     (current_round_key10),
+            .done   (roundfunction_done_temp10),
+            .L_out  (L_temp10),
+            .R_out  (R_temp10));
+
+    des_roundfunction round_func11(
+            .clk    (clk ),
+            .rst_n  (rst_n),
+            .start  (roundfunction_done_temp10),
+            .L_in   (L_temp10),
+            .R_in   (R_temp10),
+            .Kn     (current_round_key11),
+            .done   (roundfunction_done_temp11),
+            .L_out  (L_temp11),
+            .R_out  (R_temp11));
+
+    des_roundfunction round_func12(
+            .clk    (clk ),
+            .rst_n  (rst_n),
+            .start  (roundfunction_done_temp11),
+            .L_in   (L_temp11),
+            .R_in   (R_temp11),
+            .Kn     (current_round_key12),
+            .done   (roundfunction_done_temp12),
+            .L_out  (L_temp12),
+            .R_out  (R_temp12)); 
+
+    des_roundfunction round_func13(
+            .clk    (clk ),
+            .rst_n  (rst_n),
+            .start  (roundfunction_done_temp12),
+            .L_in   (L_temp12),
+            .R_in   (R_temp12),
+            .Kn     (current_round_key13),
+            .done   (roundfunction_done_temp13),
+            .L_out  (L_temp13),
+            .R_out  (R_temp13));
+
+    des_roundfunction round_func14(
+            .clk    (clk ),
+            .rst_n  (rst_n),
+            .start  (roundfunction_done_temp13),
+            .L_in   (L_temp13),
+            .R_in   (R_temp13),
+            .Kn     (current_round_key14),
+            .done   (roundfunction_done_temp14),
+            .L_out  (L_temp14),
+            .R_out  (R_temp14));
+
+    des_roundfunction round_func15(
+            .clk    (clk ),
+            .rst_n  (rst_n),
+            .start  (roundfunction_done_temp14),
+            .L_in   (L_temp14),
+            .R_in   (R_temp14),
+            .Kn     (current_round_key15),
+            .done   (roundfunction_done_temp15),
+            .L_out  (L_temp15),
+            .R_out  (R_temp15));
+
+    des_roundfunction round_func16(
+            .clk    (clk ),
+            .rst_n  (rst_n),
+            .start  (roundfunction_done_temp15),
+            .L_in   (L_temp15),
+            .R_in   (R_temp15),
+            .Kn     (current_round_key16),
+            .done   (roundfunction_done),
+            .L_out  (L_out),
+            .R_out  (R_out));       
 
 	// The IP permutation module
 	ip_permutation ip(
@@ -255,8 +343,8 @@ module des_encryption_unrollfull(
     assign current_round_key9 = round_keys[385:432];
     assign current_round_key10 = round_keys[433:480];
     assign current_round_key11 = round_keys[481:528];
-    assign current_round_key12 = round_keys[529:567];
-    assign current_round_key13 = round_keys[568:624];
+    assign current_round_key12 = round_keys[529:576];
+    assign current_round_key13 = round_keys[577:624];
     assign current_round_key14 = round_keys[625:672];
     assign current_round_key15 = round_keys[673:720];
     assign current_round_key16 = round_keys[721:768];
