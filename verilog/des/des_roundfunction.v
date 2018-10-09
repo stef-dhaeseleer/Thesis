@@ -5,11 +5,11 @@
 module des_roundfunction(
     input clk,              // clock
     input rst_n,            // reset, active low signal
-    input start,            // signales the block to start working, valid data is on the input lines
+    input start,            // signals the block to start working, valid data is on the input lines
     input [1:32] L_in,      // the left part for the roundfunction
     input [1:32] R_in,      // the right part for the roundfunction
     input [1:48] Kn,        // the incomming key for iteration n
-    output wire done,// signals that the output is valid for the current iteration
+    output wire done,       // signals that the output is valid for the current iteration
     output [1:32] L_out,    // the outgoing left part of the roundfunction
     output [1:32] R_out     // the outgoing right part of the roundfunction
     );

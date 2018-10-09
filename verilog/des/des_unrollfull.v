@@ -5,7 +5,7 @@
 module des_encryption_unrollfull(
     input clk,                  // clock
     input rst_n,                // reset, active low signal
-    input start,                // signales the block to start working, valid data is on the input lines
+    input start,                // signals the block to start working, valid data is on the input lines
     input [1:64] message,       // the message to be encrypted
     input [1:768] round_keys,   // all roundkeys used in a series (16*48 bits)
     output reg done,            // signals that the operations are done, valid result is on the output lines
