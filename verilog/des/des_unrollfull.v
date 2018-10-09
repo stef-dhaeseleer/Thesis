@@ -91,13 +91,13 @@ module des_encryption_unrollfull(
 
     // Parameters
         // Possible states
-    localparam [1:0]    init = 2'd0;   // Init will also already do the IP 
-    localparam [1:0]    finished = 2'd2;    // Finished will output the inverse permuted version of the M reg
+    localparam [1:0]    init = 0;   // Init will also already do the IP 
+    localparam [1:0]    finished = 1;    // Finished will output the inverse permuted version of the M reg
 
     //---------------------------FSM---------------------------------------------------------------
 
-    always @(posedge clk or negedge rst_n) begin // State register
-        if (rst_n == 1'b0) begin   // Asynchronous reset
+    always @(posedge clk) begin // State register
+        if (rst_n == 1'b0) begin   // Synchronous reset
             state <= init;
         end
         else begin

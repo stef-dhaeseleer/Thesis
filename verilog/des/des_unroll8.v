@@ -64,14 +64,14 @@ module des_encryption_unroll8(
 
     // Parameters
         // Possible states
-    localparam [1:0]    init = 2'd0;   // Init will also already do the IP 
-    localparam [1:0]    roundfunction = 2'd1;
-    localparam [1:0]    finished = 2'd2;    // Finished will output the inverse permuted version of the M reg
+    localparam [1:0]    init = 0;   // Init will also already do the IP 
+    localparam [1:0]    roundfunction = 1;
+    localparam [1:0]    finished = 2;    // Finished will output the inverse permuted version of the M reg
 
     //---------------------------FSM---------------------------------------------------------------
 
-    always @(posedge clk or negedge rst_n) begin // State register
-        if (rst_n == 1'b0) begin   // Asynchronous reset
+    always @(posedge clk) begin // State register
+        if (rst_n == 1'b0) begin   // Synchronous reset
             state <= init;
         end
         else begin
@@ -90,7 +90,7 @@ module des_encryption_unroll8(
         roundfunction: begin
             next_state <= roundfunction;
 
-            if (counter == 1'd1) begin // Continue roundfunction untill all 16 round have passed
+            if (counter == 1) begin // Continue roundfunction untill all 16 round have passed
                 next_state <= finished;
             end
         end
@@ -223,7 +223,7 @@ module des_encryption_unroll8(
                     cnt_enable <= 1'b1;
                     load_regs <= 1'b1;
                 end
-                if (counter == 1'd1) begin
+                if (counter == 1) begin
                     cnt_enable <= 1'b0;
                     load_regs <= 1'b0;
                 end
@@ -248,9 +248,9 @@ module des_encryption_unroll8(
     end
 
     // Counter
-    always @(posedge clk or negedge rst_n) begin
+    always @(posedge clk) begin
         if (sync_rst == 1'b1 || rst_n == 1'b0) begin
-            counter <= 1'd0;
+            counter <= 0;
         end
         else if (cnt_enable == 1'b1) begin
             counter <= counter + 1;

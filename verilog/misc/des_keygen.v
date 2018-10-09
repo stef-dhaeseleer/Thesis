@@ -172,8 +172,8 @@ module des_keygen(
 
     //---------------------------FSM---------------------------------------------------------------
 
-    always @(posedge clk or negedge rst_n) begin // State register
-        if (rst_n == 1'b0) begin   // Asynchronous reset
+    always @(posedge clk) begin // State register
+        if (rst_n == 1'b0) begin   // Synchronous reset
             state <= init;
         end
         else begin

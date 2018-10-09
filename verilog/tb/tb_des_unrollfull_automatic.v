@@ -52,7 +52,7 @@ module tb_des_unrollfull();
     //Test data
     initial begin
 
-        $dumpfile("tb/svcd/tb_des_unrollfull.vcd");
+        $dumpfile("tb/vcd/tb_des_unrollfull.vcd");
         $dumpvars(0, tb_des_unrollfull);
 
         file = $fopenr("../python/testfiles/des_tests.txt"); 
