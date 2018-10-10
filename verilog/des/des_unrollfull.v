@@ -15,8 +15,6 @@ module des_encryption_unrollfull(
     // Nets and regs
     reg [1:0] state, next_state;        // State variables
 
-    reg [1:768] temp_key;
-
     reg start_roundfunction;
 
     wire roundfunction_done;
@@ -314,7 +312,7 @@ module des_encryption_unrollfull(
             .data_i    ({R_out, L_out}),
             .data_o    (result_wire));
 
-    always @(*) begin // Output logic. Signals to set: done, sync_rst, cnt_enable, start_roundfunction, load_regs
+    always @(*) begin // Output logic. Signals to set: done, start_roundfunction
         done <= 1'b0;
         start_roundfunction <= 1'b0;
 

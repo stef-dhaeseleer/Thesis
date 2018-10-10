@@ -15,8 +15,6 @@ module des_roundfunction(
     );
 
     // Nets and regs
-    reg [1:0] state, next_state;        // State variables
-
     wire [1:48] e_out;  // Wire for the output of the expansion module
     wire [1:32] s_out;  // Wire for the output of the S box module
     wire [1:32] p_out;  // Wire for the output of the permutation module
