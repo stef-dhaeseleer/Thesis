@@ -20,6 +20,8 @@ module des_roundfunction_pipelined(
     wire [1:32] p_out;  // Wire for the output of the permutation module
 
     reg [1:32] S_out_reg;
+    reg [1:32] R_in_reg;
+    reg [1:32] L_in_reg;
 
     // Parameters
 
@@ -49,12 +51,14 @@ module des_roundfunction_pipelined(
 
         if (i_valid == 1'b1) begin
             S_out_reg <= s_out;
+            R_in_reg <= R_in;
+            L_in_reg <= L_in;
             o_valid <= 1'b1;
         end
     end
 
-    assign L_out = R_in[1:32];  // Assign the outputs to the registers with the values
-    assign R_out = L_in[1:32] ^ p_out;
+    assign L_out = R_in_reg[1:32];  // Assign the outputs to the registers with the values
+    assign R_out = L_in_reg[1:32] ^ p_out;
      
 
 endmodule
