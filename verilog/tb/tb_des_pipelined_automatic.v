@@ -24,8 +24,6 @@ module tb_des_pipelined();
     reg [1:64] expected;
 
     reg [14:0] nb_tests, nb_correct;
-
-    integer file, r; 
         
     //Instantiating montgomery module
     des_encryption_pipelined des_encryption_instance( 
@@ -55,7 +53,7 @@ module tb_des_pipelined();
         $dumpfile("tb/vcd/tb_des_pipelined.vcd");
         $dumpvars(0, tb_des_pipelined);
 
-        file = $fopenr("../python/testfiles/des_tests.txt"); 
+        
 
         #`RESET_TIME
 
@@ -65,25 +63,20 @@ module tb_des_pipelined();
                                
         #`CLK_PERIOD;
 
-        while (!$feof(file)) 
-            begin 
-            // Wait until rising clock, read stimulus 
-            @(posedge clk) 
-                r = $fscanf(file, "%b %b %b\n", round_keys, message, expected); 
+        // Wait until rising clock, read stimulus 
+        @(posedge clk) 
 
-                start<=1;
-                #`CLK_PERIOD;
-                start<=0;
-                
-                wait (output_valid==1);
+            start<=1;
+            #`CLK_PERIOD;
+            start<=0;
+            
+            wait (output_valid==1);
 
-                #`CLK_PERIOD;   // need this to check the result at the end of the done cycle and not at the start!
+            #`CLK_PERIOD;   // need this to check the result at the end of the done cycle and not at the start!
 
-                nb_tests <= nb_tests + 1;
-                nb_correct <= nb_correct + (expected - result == 64'h0);
-                     
-            end // while not EOF 
-
+            nb_tests <= nb_tests + 1;
+            nb_correct <= nb_correct + (expected - result == 64'h0);
+                 
         $display("");
         $display("Correct tests: %d/%d", nb_correct, nb_tests);
 

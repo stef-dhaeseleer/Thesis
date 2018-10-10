@@ -21,13 +21,8 @@ def DES_encrypt(message, key, file, file_2):
 	# IP
 	p_plaintext = apply_initial_p(INITIAL_PERMUTATION_TABLE,plaintext_bits)
 
-	print (hex(int(p_plaintext, 2)))
-
 	# split
 	L,R = spliHalf(p_plaintext)
-
-	print (hex(int(L, 2)))
-	print (hex(int(R, 2)))
 
 	# Roundfunctions
 	for round in range(16):
@@ -41,21 +36,41 @@ def DES_encrypt(message, key, file, file_2):
 		R = newR	# Switch the parts to initialize the next round
 		L = newL
 
-		print (hex(int(L, 2)))
-		print (hex(int(R, 2)))
-	
-	print ()
-	print (hex(int(L, 2)))
-	print (hex(int(R, 2)))
-
-	print ()
-	print ()
-
 	cipher = apply_initial_p(INVERSE_PERMUTATION_TABLE, R+L) # Input the parts in reverse order for this last operation
 
 	return cipher
 
-def main():
+def DES_encrypt(message, key):
+
+	cipher = ""
+
+	# Convert hex digits to binary
+	plaintext_bits = hexTobinary(message)
+	key_bits = hexTobinary(key)
+
+	# KS
+	roundkeys = generate_keys(key_bits)
+	
+	# IP
+	p_plaintext = apply_initial_p(INITIAL_PERMUTATION_TABLE,plaintext_bits)
+
+	# split
+	L,R = spliHalf(p_plaintext)
+
+	# Roundfunctions
+	for round in range(16):
+
+		newR = XOR(L,functionF(R, roundkeys[round]))
+		newL = R
+
+		R = newR	# Switch the parts to initialize the next round
+		L = newL
+
+	cipher = apply_initial_p(INVERSE_PERMUTATION_TABLE, R+L) # Input the parts in reverse order for this last operation
+
+	return cipher	
+
+def generate_test_files_NIST():
 
 	print ("Started making test files...")
 
@@ -81,8 +96,47 @@ def main():
 			file_2.write(" " + hexTobinary(message) + " " + ciphertext + "\n")
 
 	file.close
+	file_2.close
+	file_input.close
 
 	print ("Finished making test files!")
+
+def generate_test_data_pipeline():
+
+	print ("Started printing test data...")
+	print ()
+
+	file_input = open("testfiles/des_test_vectors_pipeline.txt", "r")
+
+	counter = 0
+
+	print ("round_keys <= 768'b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
+
+	for line in file_input:
+
+		counter += 1
+
+		args = line.split()
+
+		master_key = args[0]
+		message = args[1]
+
+		ciphertext = DES_encrypt(message, master_key)
+
+		print ("message" + str(counter) + " <= 64'b" + hexTobinary(message))
+		print ("expected" + str(counter) + " <= 64'b" + ciphertext)
+
+	file_input.close
+
+	print ()
+	print ("Finished making test files!")
+
+
+def main():
+
+	#generate_test_files_NIST()
+	generate_test_data_pipeline()
+	
 
 if __name__ == '__main__':
     main()
