@@ -1,6 +1,6 @@
-`include "des/des_roundfunction.v"
-`include "des/primitives/ip_inverse_permutation.v"
-`include "des/primitives/ip_permutation.v"
+//`include "des/des_roundfunction.v"
+//`include "des/primitives/ip_inverse_permutation.v"
+//`include "des/primitives/ip_permutation.v"
 
 module des_encryption_unrollfull(
     input clk,                  // clock
@@ -112,6 +112,7 @@ module des_encryption_unrollfull(
             end
         end
         finished: begin
+            next_state <= finished;
             if (roundfunction_done == 1'b1) begin
                 next_state <= init;
             end

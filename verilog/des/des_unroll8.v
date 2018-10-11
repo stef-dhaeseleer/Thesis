@@ -1,6 +1,6 @@
-`include "des/des_roundfunction.v"
-`include "des/primitives/ip_inverse_permutation.v"
-`include "des/primitives/ip_permutation.v"
+//`include "des/des_roundfunction.v"
+//`include "des/primitives/ip_inverse_permutation.v"
+//`include "des/primitives/ip_permutation.v"
 
 module des_encryption_unroll8(
     input clk,                  // clock
