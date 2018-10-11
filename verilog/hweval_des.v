@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-`include "des/des_pipelined.v"
+//`include "des/des_pipelined.v"
 
 module hweval_des(
     input   clk,
@@ -10,11 +10,11 @@ module hweval_des(
 
     reg           start;
     reg  [63:0]   message;
-    reg  [767:1]  round_keys;
-    reg           output_valid;
-    reg  [63:0]   result;
+    reg  [767:0]  round_keys;
+    wire           output_valid;
+    wire  [63:0]   result;
        
-    // Instantiate the adder    
+    // Instantiate the different DES units to compare them  
     des_encryption_pipelined dut (
         .clk            (clk         ),
         .rst_n          (rst_n       ),
@@ -30,15 +30,16 @@ module hweval_des(
         if (rst_n==0) begin
             start           <= 0;
             message         <= 0;
-            round_keys      <= 0;
+            round_keys      <= {768{1'b0}};
         end
 
         else begin
-            message  <= message  ^ {64{1'b1}};
-            start    <= start    ^ 1;
+            message     <= message      ^ {64{1'b1}};
+            start       <= start        ^ 1;
+            round_keys  <= round_keys   ^ {768{1'b1}};
         end
     end
     
-    assign data_ok = done & (result=={515{1'b0}});
+    assign data_ok = output_valid & (result=={515{1'b0}});
     
 endmodule

@@ -5,7 +5,7 @@ all:
 open:
 	#vivado rsa_project/rsa_project.xpr -tempDir /tmp &
 	# source /users/students/data/eagle_repository/eagle.rc
-	vivado -nolog -nojournal -tempDir /tmp &
+	vivado thesis_des/thesis_des.xpr -nolog -nojournal -tempDir /tmp &
 
 uart:
 	screen /dev/ttyUSB1 115200
