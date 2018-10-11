@@ -1,6 +1,6 @@
-`include "des/primitives/e_expansion.v"
-`include "des/primitives/s_boxes.v"
-`include "des/primitives/p_permutation.v"
+`include "verilog/des/primitives/e_expansion.v"
+`include "verilog/des/primitives/s_boxes.v"
+`include "verilog/des/primitives/p_permutation.v"
 
 module des_roundfunction(
     input clk,              // clock

@@ -1,6 +1,6 @@
-`include "des/des_roundfunction_pipelined.v"
-`include "des/primitives/ip_inverse_permutation.v"
-`include "des/primitives/ip_permutation.v"
+//`include "verilog/des/des_roundfunction_pipelined.v"
+//`include "verilog/des/primitives/ip_inverse_permutation.v"
+//`include "verilog/des/primitives/ip_permutation.v"
 
 module des_encryption_pipelined(
     input clk,                      // clock
@@ -8,7 +8,7 @@ module des_encryption_pipelined(
     input start,                    // signals the block to start working, valid data is on the input lines
     input [1:64] message,           // the message to be encrypted
     input [1:768] round_keys,       // all roundkeys used in a series (16*48 bits)
-    output output_valid,   // signals that the operations are done, valid result is on the output lines
+    output reg output_valid,   // signals that the operations are done, valid result is on the output lines
     output [1:64] result            // the resulting encrypted version of the input message
     );
 
@@ -30,7 +30,6 @@ module des_encryption_pipelined(
     wire output_valid_stage_14;
     wire output_valid_stage_15;    
     wire output_valid_stage_16;
-    reg output_valid;  // This one has to be a reg at this level in the hierarchy
 
     wire [1:32] L_out;
     wire [1:32] R_out;
