@@ -5,7 +5,7 @@
 `define EOF 32'hFFFF_FFFF 
 `define NULL 0 
 
-`include "des/des_pipelined.v"
+//`include "des/des_pipelined.v"
 
 // iverilog tb/tb_des_pipelined_automatic.v
 // vvp a.out
@@ -52,12 +52,14 @@ module tb_des_pipelined();
     //Test data
     initial begin
 
-        $dumpfile("tb/vcd/tb_des_pipelined.vcd");
-        $dumpvars(0, tb_des_pipelined);
+        //$dumpfile("tb/vcd/tb_des_pipelined.vcd");
+        //$dumpvars(0, tb_des_pipelined);
 
-        file = $fopenr("../python/testfiles/des_tests_pipeline_input.txt"); 
-        file2 = $fopenr("../python/testfiles/des_tests_pipeline_expected.txt"); 
-
+        //file = $fopenr("../python/testfiles/des_tests_pipeline_input.txt"); 
+        //file2 = $fopenr("../python/testfiles/des_tests_pipeline_expected.txt"); 
+        
+        file = $fopen("des_tests_pipeline_input.txt", "r"); 
+        file2 = $fopen("des_tests_pipeline_expected.txt", "r");
 
         #`RESET_TIME
 
@@ -66,6 +68,9 @@ module tb_des_pipelined();
         // Init side parameters
         nb_tests <= 0;
         nb_correct <= 0;
+        
+        $display("Starting test...");         
+        $display("");
                                
         #`CLK_PERIOD;
 
@@ -95,8 +100,8 @@ module tb_des_pipelined();
         nb_tests <= nb_tests - 19;  // To counter the offset of false measurments when filling the pipeline
         #`CLK_PERIOD;
 
-        $display("");
         $display("Correct tests: %d/%d", nb_correct, nb_tests);
+        $display("");
 
         #`CLK_PERIOD;
         #`CLK_PERIOD;

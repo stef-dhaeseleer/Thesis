@@ -285,30 +285,33 @@ module des_encryption_pipelined(
 
     end
 
-    always @(posedge clk) begin     // Loading the data from the first pipeline stage into the register when input is valid
+    always @(posedge clk) begin     // For setting output_valid_stage_0 when start is enabled
         output_valid_stage_0 <= 1'b0;
 
         if (rst_n == 1'b0) begin
             output_valid_stage_0 <= 1'b0;
         end
 
-        else if (start == 1'b1) begin // NOTE: Maybe we can always buffer the register for the values and just make ouptu_valid_stage_0 dependent on start. This saves one input per LUT (1)
-            permuted_message_reg <= permuted_message;
+        else if (start == 1'b1) begin
             output_valid_stage_0 <= 1'b1;
         end
     end
 
-    always @(posedge clk) begin     // Loading the data from the last pipeline stage into the register when input is valid    
+    always @(posedge clk) begin     // For setting output_validwhen output_valid_stage_16 is enabled  
         output_valid <= 1'b0; 
 
         if (rst_n == 1'b0) begin
             output_valid <= 1'b0;
         end
 
-        else if (output_valid_stage_16 == 1'b1) begin // NOTE: Maybe we can always buffer the register for the values and just make output_valid dependent on ouptu_valid_stage_16. This saves one input per LUT (1)
-            result_reg <= result_wire;
+        else if (output_valid_stage_16 == 1'b1) begin
             output_valid <= 1'b1;
         end
+    end
+    
+    always @(posedge clk) begin     // Loading the data from the pipeline stages into the register
+        permuted_message_reg <= permuted_message;
+        result_reg <= result_wire;
     end    
 
     assign result = result_reg;
