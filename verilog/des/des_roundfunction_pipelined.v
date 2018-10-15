@@ -49,7 +49,11 @@ module des_roundfunction_pipelined(
     always @(posedge clk) begin // Signals to set: o_valid
         o_valid <= 1'b0;
 
-        if (i_valid == 1'b1) begin
+        if (rst_n == 1'b0) begin
+            o_valid <= 1'b0;
+        end
+
+        else if (i_valid == 1'b1) begin // NOTE: Maybe we can always buffer the register for the values and just make o_valid dependent on i_valid. This saves one input per LUT (1)
             S_out_reg <= s_out;
             R_in_reg <= R_in;
             L_in_reg <= L_in;
