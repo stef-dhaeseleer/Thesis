@@ -48,8 +48,8 @@ module des_block(
     des_encryption_pipelined des(
         .clk            (clk),                      
         .rst_n          (rst_n),
-        .start          (start),    // We directly route the start through so that the unit can imediatly start
-        .message        (),
+        .start          (),     // We can start the encryption module when the messages are being generated
+        .message        (),     // Will be generated at random through an LFSR
         .round_keys     (round_keys),
         .output_valid   (),
         .result         ());

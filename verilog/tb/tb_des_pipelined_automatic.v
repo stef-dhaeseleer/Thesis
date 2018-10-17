@@ -74,11 +74,6 @@ module tb_des_pipelined();
                                
         #`CLK_PERIOD;
 
-        // TODO: Finish this automatic test (1)
-        // The idea is to read the input messages (key stays fixed), fill the pipeline
-        // Then start writing the output to a new file and compare this to the expected file!
-        // Files are buffered at start and end, so just subtract these false tests from the total amount of tests!
-
         while (!$feof(file)) 
             begin 
             // Wait until rising clock, read stimulus 
