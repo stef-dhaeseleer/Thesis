@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 //`include "des/primitives/e_expansion.v"
 //`include "des/primitives/s_boxes.v"
 //`include "des/primitives/p_permutation.v"

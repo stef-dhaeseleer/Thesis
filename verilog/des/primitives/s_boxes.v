@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 
 module s_boxes(
     input wire [1:48] data_i,           // input data for the S boxes

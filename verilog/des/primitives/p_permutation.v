@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 
 module p_permutation(
     input wire [1:32] data_i,           // input data for the permutation

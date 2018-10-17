@@ -6,3 +6,6 @@ Python/__pycache__/*
 *.command
 *.out
 thesis_des/*
+*.jou
+*.log
+*.str

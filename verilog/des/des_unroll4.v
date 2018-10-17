@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 //`include "des/des_roundfunction.v"
 //`include "des/primitives/ip_inverse_permutation.v"
 //`include "des/primitives/ip_permutation.v"

@@ -1,6 +1,8 @@
-`include "des/primitives/e_expansion.v"
-`include "des/primitives/s_boxes.v"
-`include "des/primitives/p_permutation.v"
+`timescale 1ns / 1ps
+
+//`include "des/primitives/e_expansion.v"
+//`include "des/primitives/s_boxes.v"
+//`include "des/primitives/p_permutation.v"
 
 module des_roundfunction_pipelined(
     input clk,              // clock

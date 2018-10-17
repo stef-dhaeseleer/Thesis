@@ -1,6 +1,8 @@
-`include "des/des_roundfunction_pipelined.v"
-`include "des/primitives/ip_inverse_permutation.v"
-`include "des/primitives/ip_permutation.v"
+`timescale 1ns / 1ps
+
+//`include "des/des_roundfunction_pipelined.v"
+//`include "des/primitives/ip_inverse_permutation.v"
+//`include "des/primitives/ip_permutation.v"
 
 module des_encryption_pipelined(
     input clk,                      // clock

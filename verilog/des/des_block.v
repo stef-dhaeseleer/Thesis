@@ -1,13 +1,16 @@
-`include "des/des_pipelined.v"
-`include "des/primitives/lfsr.v"
-`include "des/primitives/mask_xor.v"
+`timescale 1ns / 1ps
+
+//`include "des/des_pipelined.v"
+//`include "des/primitives/lfsr.v"
+//`include "des/primitives/mask_xor.v"
 
 module des_block(
     input clk,                  // clock
     input rst_n,                // reset, active low signal
     input start,                // signals the block to start working, valid data is on the input lines
     input [63:0] message_seed,  // input value of the initial message seed for LFSR message generation
-    output reg valid                // signals that the output are valid results
+    output reg [9:0] counter,       // output counter to keep track of the amounts of 1's
+    output reg valid            // signals that the output are valid results
     );
 
     // Nets and regs
@@ -15,7 +18,6 @@ module des_block(
 
     reg [767:0] round_keys = 768'h1;        // NOTE: Should this be a reg here or an input?
     reg [17:0] mask_i_bit_buffer;           // Used to buffer the mask bits, needed due to the pipeline delay
-    reg [9:0] counter;                      // Counter to keep track of the amounts of 1's
 
     reg mask_result;
 
