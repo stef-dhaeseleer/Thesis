@@ -5,12 +5,14 @@ module lfsr(
     input rst_n,                // reset, active low signal
     input start,                // signals the block to start working, valid data is on the input lines
     input [63:0] message_seed,  // input message seed to start the LFSR with
-    output reg [63:0] lfsr,     // output register containing the current LFSR values
+    output [63:0] lfsr,     // output register containing the current LFSR values
     output reg valid                // signals that a valid result is on the output lines
     );
 
     // Nets and regs
     reg [1:0] state, next_state;        // State variables
+    
+    reg [63:0] lfsr_reg;
 
     reg load_seed;
     reg load_lfsr;
@@ -78,16 +80,15 @@ module lfsr(
 
     assign lfsr_feedback = ~(lfsr[63] ^ lfsr[62] ^ lfsr[60] ^ lfsr[59]);
 
-    always @(posedge clk) begin     // Buffer the input message seed into the LFSR
+    always @(posedge clk) begin     // Buffer the input message seed into the LFSR or load the LFSR feedback
         if (load_seed == 1'b1) begin    
-            lfsr <= message_seed;
+            lfsr_reg <= message_seed;
+        end
+        else if (load_lfsr == 1'b1) begin    
+            lfsr_reg <= {lfsr_reg[62:0], lfsr_feedback};
         end
     end
-
-    always @(posedge clk) begin     // Apply the LFSR function and set the new values
-        if (load_lfsr == 1'b1) begin    
-            lfsr <= {lfsr[62:0], lfsr_feedback};
-        end
-    end
+    
+    assign lfsr = lfsr_reg[63:0];
 
 endmodule

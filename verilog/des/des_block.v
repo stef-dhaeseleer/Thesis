@@ -35,8 +35,8 @@ module des_block(
     localparam [1:0]    working = 2'h1;    
     localparam [1:0]    finished = 2'h2;
 
-    parameter [63:0] mask_i = 2'h1;
-    parameter [63:0] mask_o = 2'h1;
+    parameter [63:0] mask_i = 64'h1584458925484615;
+    parameter [63:0] mask_o = 64'h49845174789897;
 
     // Functions
 
