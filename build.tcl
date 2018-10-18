@@ -17,80 +17,24 @@ add_files -norecurse -scan_for_includes /users/start2015/r0583050/Thesis/verilog
 
 update_compile_order -fileset sources_1
 
-##########################################################
-
 # Disabling source management mode.  This is to allow the top design properties to be set without GUI intervention.
 set_property source_mgmt_mode None [current_project]
-set_property top hweval_des_pipelined [current_fileset]
+set_property top hweval_des_block [current_fileset]
+
 # Re-enabling previously disabled source management mode.
 set_property source_mgmt_mode All [current_project]
 update_compile_order -fileset sources_1
 
-update_compile_order -fileset sources_1
-set_property SOURCE_SET sources_1 [get_filesets sim_1]
+# Add similation sources
 add_files -fileset sim_1 -norecurse -scan_for_includes {/users/start2015/r0583050/Thesis/python/testfiles/des_tests_pipeline_input.txt /users/start2015/r0583050/Thesis/python/testfiles/lfsr_tests.txt /users/start2015/r0583050/Thesis/python/testfiles/des_tests_pipeline_expected.txt}
 add_files -fileset sim_1 -norecurse -scan_for_includes {/users/start2015/r0583050/Thesis/verilog/tb/tb_lfsr_automatic.v /users/start2015/r0583050/Thesis/verilog/tb/tb_des_block.v /users/start2015/r0583050/Thesis/verilog/tb/tb_des_pipelined_automatic.v}
-update_compile_order -fileset sim_1
-# Disabling source management mode.  This is to allow the top design properties to be set without GUI intervention.
-set_property source_mgmt_mode None [current_project]
-set_property top tb_des_pipelined [get_filesets sim_1]
-set_property top_lib xil_defaultlib [get_filesets sim_1]
-# Re-enabling previously disabled source management mode.
-set_property source_mgmt_mode All [current_project]
-update_compile_order -fileset sim_1
-launch_simulation
-launch_simulation
-source tb_des_pipelined.tcl
-config_webtalk -user on
-set_property -name {xsim.simulate.runtime} -value {10000ns} -objects [get_filesets sim_1]
-close_sim
-launch_simulation
-source tb_des_pipelined.tcl
-close_sim
-launch_simulation
-source tb_des_pipelined.tcl
-close_sim
-launch_runs synth_1 -jobs 3
-wait_on_run synth_1
-open_run synth_1 -name synth_1
-report_utilization -name utilization_1
-close_design
-launch_runs impl_1 -jobs 3
-wait_on_run impl_1
-# Disabling source management mode.  This is to allow the top design properties to be set without GUI intervention.
-set_property source_mgmt_mode None [current_project]
-set_property top hweval_des_block [current_fileset]
-# Re-enabling previously disabled source management mode.
-set_property source_mgmt_mode All [current_project]
-reset_run synth_1
+
 update_compile_order -fileset sources_1
-launch_runs impl_1 -jobs 4
-wait_on_run impl_1
-reset_run synth_1
-launch_runs synth_1 -jobs 4
-wait_on_run synth_1
-reset_run synth_1
-launch_runs synth_1 -jobs 4
-wait_on_run synth_1
-# Disabling source management mode.  This is to allow the top design properties to be set without GUI intervention.
-set_property source_mgmt_mode None [current_project]
-set_property top hweval_des_pipelined [current_fileset]
-# Re-enabling previously disabled source management mode.
-set_property source_mgmt_mode All [current_project]
-update_compile_order -fileset sources_1
-reset_run synth_1
-launch_runs synth_1 -jobs 4
-wait_on_run synth_1
-reset_simulation -simset sim_1 -mode behavioral
-# Disabling source management mode.  This is to allow the top design properties to be set without GUI intervention.
-set_property source_mgmt_mode None [current_project]
-set_property top hweval_des_block [current_fileset]
-# Re-enabling previously disabled source management mode.
-set_property source_mgmt_mode All [current_project]
-update_compile_order -fileset sources_1
-reset_run synth_1
+
+# Run synthesis
 launch_runs synth_1 -jobs 3
-wait_on_run synth_1
-reset_run synth_1
-launch_runs synth_1 -jobs 3
-wait_on_run synth_1
+
+start_gui
+
+##########################################################
+

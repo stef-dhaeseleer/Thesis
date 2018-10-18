@@ -1,5 +1,5 @@
 all:	
-	#vivado -mode batch -source build.tcl	
+	vivado -mode batch -source build.tcl	
 	#ln -s ../src/sdk/ rsa_project/rsa_project.sdk
 
 open:
