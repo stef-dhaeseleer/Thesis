@@ -49,7 +49,7 @@ module tb_des_block();
 
         #`RESET_TIME
 
-        seed <= 64'b1001000010000100000000000000000010000000100000000000000000000000;
+        seed <= 64'b0000000000000000000000000000000000000000000000000000000000000000;
         
         $display("Starting test...");         
         $display("");
@@ -58,6 +58,60 @@ module tb_des_block();
         
         start <= 1;
                      
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+
+        start <= 0;
+
         #`CLK_PERIOD;
         #`CLK_PERIOD;
         #`CLK_PERIOD;

@@ -1,14 +1,17 @@
 `timescale 1ns / 1ps
 
-//`include "des/des_pipelined.v"
-//`include "des/primitives/lfsr.v"
-//`include "des/primitives/mask_xor.v"
+`include "des/des_pipelined.v"
+`include "des/primitives/lfsr.v"
+`include "des/primitives/mask_xor.v"
+`include "des/primitives/message_counter.v"
+`include "des/primitives/message_counter_partial.v"
 
 module des_block(
     input clk,                  // clock
     input rst_n,                // reset, active low signal
     input start,                // signals the block to start working, valid data is on the input lines
-    input [63:0] message_seed,  // input value of the initial message seed for LFSR message generation
+    input [63:0] message_seed,  // input value of the initial message seed for message generation
+    //input [3:0] region_select,  // input value to select the region for the counter to operate in
     output [9:0] counter,       // output counter to keep track of the amounts of 1's
     output reg valid            // signals that the output are valid results
     );
@@ -34,7 +37,9 @@ module des_block(
     // Parameters
     localparam [1:0]    init = 2'h0;    // Possible states
     localparam [1:0]    working = 2'h1;    
-    localparam [1:0]    finished = 2'h2;
+    localparam [1:0]    finishing = 2'h2;
+    localparam [1:0]    finished = 2'h3;
+
 
     parameter [63:0] mask_i = 64'h1584458925484615;
     parameter [63:0] mask_o = 64'h49845174789897;
@@ -62,6 +67,15 @@ module des_block(
         end
         working: begin
             next_state <= working;
+            if (start == 1'b0) begin
+                next_state <= finishing;
+            end
+        end
+        finishing: begin    // First let the pipeline go empty then stop
+            next_state <= finishing;
+            if (ciphertext_valid == 1'b0) begin
+                next_state <= finished;
+            end
         end
         finished: begin
             next_state <= finished;
@@ -83,7 +97,7 @@ module des_block(
 
         end
         finished: begin
-            
+            valid <= 1'b1;
         end
         endcase
     end
@@ -99,13 +113,29 @@ module des_block(
         .output_valid   (ciphertext_valid),
         .result         (ciphertext));
 
-    lfsr lfsr(  // Used to generate the messages for the encryption
+    //lfsr lfsr(  // Used to generate the messages for the encryption
+    //    .clk            (clk),
+    //    .rst_n          (rst_n),
+    //    .start          (start),            // Start the LFSR generation when this module receives a start signal
+    //    .message_seed   (message_seed),
+    //    .lfsr           (message),
+    //    .valid          (message_valid));   // signals when the output of this module contains valid messages chaning every cycle
+
+    message_counter message_counter(  // Used to generate the messages for the encryption
         .clk            (clk),
         .rst_n          (rst_n),
-        .start          (start),            // Start the LFSR generation when this module receives a start signal
+        .start          (start),            // Start the message generation when this module receives a start signal
         .message_seed   (message_seed),
-        .lfsr           (message),
+        .counter        (message),
         .valid          (message_valid));   // signals when the output of this module contains valid messages chaning every cycle
+
+    //message_counter message_counter(  // Used to generate the messages for the encryption
+    //    .clk            (clk),
+    //    .rst_n          (rst_n),
+    //    .start          (start),            // Start the message generation when this module receives a start signal
+    //    .region_select  (region_select),
+    //    .counter        (message),
+    //    .valid          (message_valid));   // signals when the output of this module contains valid messages chaning every cycle
 
     mask_xor input_mask(  // Used to generate bit from mask operation in the message register
         .message        (message),
