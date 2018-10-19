@@ -1,10 +1,10 @@
 `timescale 1ns / 1ps
 
-`include "des/des_pipelined.v"
-`include "des/primitives/lfsr.v"
-`include "des/primitives/mask_xor.v"
-`include "des/primitives/message_counter.v"
-`include "des/primitives/message_counter_partial.v"
+//`include "des/des_pipelined.v"
+//`include "des/primitives/lfsr.v"
+//`include "des/primitives/mask_xor.v"
+//`include "des/primitives/message_counter.v"
+//`include "des/primitives/message_counter_partial.v"
 
 module des_block(
     input clk,                  // clock
@@ -121,21 +121,21 @@ module des_block(
     //    .lfsr           (message),
     //    .valid          (message_valid));   // signals when the output of this module contains valid messages chaning every cycle
 
-    message_counter message_counter(  // Used to generate the messages for the encryption
-        .clk            (clk),
-        .rst_n          (rst_n),
-        .start          (start),            // Start the message generation when this module receives a start signal
-        .message_seed   (message_seed),
-        .counter        (message),
-        .valid          (message_valid));   // signals when the output of this module contains valid messages chaning every cycle
-
     //message_counter message_counter(  // Used to generate the messages for the encryption
     //    .clk            (clk),
     //    .rst_n          (rst_n),
     //    .start          (start),            // Start the message generation when this module receives a start signal
-    //    .region_select  (region_select),
+    //    .message_seed   (message_seed),
     //    .counter        (message),
     //    .valid          (message_valid));   // signals when the output of this module contains valid messages chaning every cycle
+
+    message_counter_partial message_counter(  // Used to generate the messages for the encryption
+        .clk            (clk),
+        .rst_n          (rst_n),
+        .start          (start),            // Start the message generation when this module receives a start signal
+        .region_select  (message_seed[3:0]),
+        .counter        (message),
+        .valid          (message_valid));   // signals when the output of this module contains valid messages chaning every cycle
 
     mask_xor input_mask(  // Used to generate bit from mask operation in the message register
         .message        (message),

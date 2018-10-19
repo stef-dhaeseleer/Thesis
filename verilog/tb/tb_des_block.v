@@ -42,14 +42,12 @@ module tb_des_block();
     //Test data
     initial begin
 
-        $dumpfile("tb/vcd/tb_des_block.vcd");
-        $dumpvars(0, tb_des_block);
+        //$dumpfile("tb/vcd/tb_des_block.vcd");
+        //$dumpvars(0, tb_des_block);
         
-        //file = $fopen("lfsr_tests.txt", "r"); 
-
         #`RESET_TIME
 
-        seed <= 64'b0000000000000000000000000000000000000000000000000000000000000000;
+        seed <= 64'b0000000000000000000000000000000000000000000000000000000000000010;
         
         $display("Starting test...");         
         $display("");
