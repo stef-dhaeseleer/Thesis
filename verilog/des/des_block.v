@@ -10,8 +10,8 @@ module des_block(
     input clk,                  // clock
     input rst_n,                // reset, active low signal
     input start,                // signals the block to start working, valid data is on the input lines
-    input [63:0] message_seed,  // input value of the initial message seed for message generation
-    //input [3:0] region_select,  // input value to select the region for the counter to operate in
+    //input [63:0] message_seed,  // input value of the initial message seed for message generation
+    input [3:0] region_select,  // input value to select the region for the counter to operate in
     output [9:0] counter,       // output counter to keep track of the amounts of 1's
     output reg valid            // signals that the output are valid results
     );
@@ -133,7 +133,7 @@ module des_block(
         .clk            (clk),
         .rst_n          (rst_n),
         .start          (start),            // Start the message generation when this module receives a start signal
-        .region_select  (message_seed[3:0]),
+        .region_select  (region_select),
         .counter        (message),
         .valid          (message_valid));   // signals when the output of this module contains valid messages chaning every cycle
 

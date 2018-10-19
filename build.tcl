@@ -14,6 +14,7 @@ add_files /users/start2015/r0583050/Thesis/verilog/hweval_des_block.v
 add_files -norecurse -scan_for_includes {/users/start2015/r0583050/Thesis/verilog/des/des_unroll8.v /users/start2015/r0583050/Thesis/verilog/des/des_unroll2.v /users/start2015/r0583050/Thesis/verilog/des/des_unroll4.v /users/start2015/r0583050/Thesis/verilog/des/des_unrollfull.v}
 add_files -norecurse -scan_for_includes /users/start2015/r0583050/Thesis/verilog/hweval_des_block.v
 add_files -norecurse -scan_for_includes /users/start2015/r0583050/Thesis/verilog/des/des_roundfunction.v
+add_files -norecurse -scan_for_includes {/users/start2015/r0583050/Thesis/verilog/des/primitives/message_counter_partial.v /users/start2015/r0583050/Thesis/verilog/des/primitives/message_counter.v}
 
 update_compile_order -fileset sources_1
 
