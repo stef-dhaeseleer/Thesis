@@ -53,6 +53,9 @@ module lfsr(
         end
         working: begin
             next_state <= working;
+            if (start == 1'b0) begin
+                next_state <= init;
+            end
         end
         default: begin
             next_state <= init;

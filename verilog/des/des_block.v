@@ -9,7 +9,7 @@ module des_block(
     input rst_n,                // reset, active low signal
     input start,                // signals the block to start working, valid data is on the input lines
     input [63:0] message_seed,  // input value of the initial message seed for LFSR message generation
-    output reg [9:0] counter,       // output counter to keep track of the amounts of 1's
+    output [9:0] counter,       // output counter to keep track of the amounts of 1's
     output reg valid            // signals that the output are valid results
     );
 
@@ -18,6 +18,7 @@ module des_block(
 
     reg [767:0] round_keys = 768'h1;        // NOTE: Should this be a reg here or an input?
     reg [17:0] mask_i_bit_buffer;           // Used to buffer the mask bits, needed due to the pipeline delay
+    reg [9:0] counter_reg;
 
     reg mask_result;
 
@@ -134,11 +135,13 @@ module des_block(
 
     always @(posedge clk) begin     // Counter
         if (rst_n == 1'b0) begin
-            counter <= 10'd0;
+            counter_reg <= 10'd0;
         end
         else if (mask_result == 1'b1) begin
-            counter <= counter + 1;
+            counter_reg <= counter_reg + 1;
         end
     end
+
+    assign counter = counter_reg[9:0];
      
 endmodule
