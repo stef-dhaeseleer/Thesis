@@ -16,15 +16,15 @@ module tb_des_block();
     reg             clk;
     reg             rst_n;
     reg             start;
-    reg     [63:0]  seed;
+    reg     [15:0]  region;
     wire            valid;
         
     //Instantiating lfsr module
     des_block des_block(
-        .clk            (clk),
-        .rst_n          (rst_n),
-        .start          (start),
-        .message_seed   (seed),
+        .clk            (clk   ),
+        .rst_n          (rst_n ),
+        .start          (start ),
+        .region_select  (region),
         .valid          (valid));
 
     //Generate a clock
@@ -42,12 +42,12 @@ module tb_des_block();
     //Test data
     initial begin
 
-        //$dumpfile("tb/vcd/tb_des_block.vcd");
-        //$dumpvars(0, tb_des_block);
+        $dumpfile("tb/vcd/tb_des_block.vcd");
+        $dumpvars(0, tb_des_block);
         
         #`RESET_TIME
 
-        seed <= 64'b0000000000000000000000000000000000000000000000000000000000000010;
+        region <= 16'b0000000000000100;
         
         $display("Starting test...");         
         $display("");
@@ -107,9 +107,15 @@ module tb_des_block();
         #`CLK_PERIOD;
         #`CLK_PERIOD;
         #`CLK_PERIOD;
-
-        start <= 0;
-
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
         #`CLK_PERIOD;
         #`CLK_PERIOD;
         #`CLK_PERIOD;

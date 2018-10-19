@@ -1,17 +1,17 @@
 `timescale 1ns / 1ps
 
-//`include "des/des_pipelined.v"
-//`include "des/primitives/lfsr.v"
-//`include "des/primitives/mask_xor.v"
-//`include "des/primitives/message_counter.v"
-//`include "des/primitives/message_counter_partial.v"
+`include "des/des_pipelined.v"
+`include "des/primitives/lfsr.v"
+`include "des/primitives/mask_xor.v"
+`include "des/primitives/message_counter.v"
+`include "des/primitives/message_counter_partial.v"
 
 module des_block(
     input clk,                  // clock
     input rst_n,                // reset, active low signal
     input start,                // signals the block to start working, valid data is on the input lines
     //input [63:0] message_seed,  // input value of the initial message seed for message generation
-    input [3:0] region_select,  // input value to select the region for the counter to operate in
+    input [15:0] region_select,  // input value to select the region for the counter to operate in
     output [9:0] counter,       // output counter to keep track of the amounts of 1's
     output reg valid            // signals that the output are valid results
     );
@@ -30,6 +30,7 @@ module des_block(
 
 
     wire message_valid;     // Set when LFSR output is valid, used as start signal for the DES encryption
+    wire counter_done;
     wire ciphertext_valid;
     wire mask_i_bit;
     wire mask_o_bit;
@@ -70,6 +71,9 @@ module des_block(
             if (start == 1'b0) begin
                 next_state <= finishing;
             end
+            else if (counter_done == 1'b1) begin
+                next_state <= finishing;
+            end
         end
         finishing: begin    // First let the pipeline go empty then stop
             next_state <= finishing;
@@ -79,6 +83,9 @@ module des_block(
         end
         finished: begin
             next_state <= finished;
+            if (start == 1'b0) begin    // Will stay here as long as start is one (to allow to read the valid results)
+                next_state <= init;     // Go back to init when start goes to zero
+            end
         end
         default: begin
             next_state <= init;
@@ -129,13 +136,14 @@ module des_block(
     //    .counter        (message),
     //    .valid          (message_valid));   // signals when the output of this module contains valid messages chaning every cycle
 
-    message_counter_partial message_counter(  // Used to generate the messages for the encryption
-        .clk            (clk),
-        .rst_n          (rst_n),
-        .start          (start),            // Start the message generation when this module receives a start signal
+    message_counter_partial message_counter(    // Used to generate the messages for the encryption
+        .clk            (clk          ),
+        .rst_n          (rst_n        ),
+        .start          (start        ),        // Start the message generation when this module receives a start signal
         .region_select  (region_select),
-        .counter        (message),
-        .valid          (message_valid));   // signals when the output of this module contains valid messages chaning every cycle
+        .counter        (message      ),
+        .valid          (message_valid),        // signals when the output of this module contains valid messages every cycle
+        .done           (counter_done ));       // Signals when this unit has gone through all the messages
 
     mask_xor input_mask(  // Used to generate bit from mask operation in the message register
         .message        (message),
@@ -154,6 +162,9 @@ module des_block(
         else if (message_valid == 1'b1) begin
             mask_i_bit_buffer <= {mask_i_bit, mask_i_bit_buffer[17:1]};
         end
+        else if (ciphertext_valid == 1'b1) begin
+            mask_i_bit_buffer <= {1'b0, mask_i_bit_buffer[17:1]};   // keep shifting for the last operations in the pipeline, fill register with zeros
+        end
     end
 
     // When ciphertext_valid is set, mask_i_bit_buffer[0] contains the mask_i_bit that is associated with the current mask_o_bit
@@ -165,7 +176,10 @@ module des_block(
 
     always @(posedge clk) begin     // Counter
         if (rst_n == 1'b0) begin
-            counter_reg <= 10'd0;
+            counter_reg <= 10'h0;
+        end
+        else if (start == 1'b0) begin
+            counter_reg <= 10'h0;
         end
         else if (mask_result == 1'b1) begin
             counter_reg <= counter_reg + 1;
