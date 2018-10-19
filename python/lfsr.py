@@ -9,15 +9,17 @@ def lfsr(seed, taps, file):
         else:
             feedback_bit = 1
 
-        for i in range(0, 63):
-            seed[i] = seed[i+1]
+        for j in range(0, 63):
+            seed[j] = seed[j+1]
 
         seed[63] = feedback_bit
 
         seed_string = ""
 
-        for i in seed:
-            seed_string += str(i)
+        #for j in seed:
+        #    seed_string += str(j)
+
+	seed_string = ''.join([str(j) for j in seed])
 
         file.write(seed_string + "\n")
         
@@ -29,18 +31,17 @@ def generate_tests_lfsr(taps):
 
     print ("Started generating test data...")
     print ("Test for duplicates in the file: tr 'A-Z' 'a-z' < ./testfiles/lfsr_tests.txt | sort | uniq -d")
-    print ()
+    print 
 
     file_output = open("testfiles/lfsr_tests.txt", "w")
 
     # List represenating all 64 bit values in our seed
     # first element is bit 64 in the verilog design, will thus shift to the left
-    seed = [1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    seed = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-    seed_string = ""
-
-    for i in seed:
-        seed_string += str(i)
+    #for i in seed:
+    #    seed_string += str(i)
+    seed_string = ''.join([str(j) for j in seed])
 
     print ("seed: " + seed_string)
 
@@ -50,13 +51,13 @@ def generate_tests_lfsr(taps):
 
     file_output.close
 
-    print ()
+    print 
     print ("Finished making test files!")
 
 
 def main():
 
-    generate_tests_lfsr(100000)
+    generate_tests_lfsr(1000000)
     
 
 if __name__ == '__main__':

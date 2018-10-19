@@ -1,5 +1,8 @@
 `timescale 1ns / 1ps
 
+// Source for polynomial;
+// http://courses.cse.tamu.edu/walker/csce680/lfsr_table.pdf
+
 module lfsr(
     input clk,                  // clock
     input rst_n,                // reset, active low signal
