@@ -14,19 +14,19 @@ module hweval_des_block(
 );
 
     reg             start;
-    reg  [63:0]     message_seed;
+    reg  [15:0]     region_select;
     wire [9:0]      counter;
     wire            output_valid;
        
     // Instantiate the different DES units to compare them  
     des_block des_block (
-        .clk            (clk         ),
-        .rst_n          (rst_n       ),
-        .start          (start       ),
-        .message_seed   (message_seed),                                  
-        .counter        (counter     ),
-        .valid          (output_valid));
- 
+        .clk            (clk          ),
+        .rst_n          (rst_n        ),
+        .start          (start        ),
+        .region_select  (region_select),                                  
+        .counter        (counter      ),
+        .valid          (output_valid ));
+
     // Assign values to the inputs to the adder
     always @(posedge(clk)) begin
         if (rst_n==0) begin

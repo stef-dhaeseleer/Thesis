@@ -16,6 +16,9 @@
 	(
 		// Users to add ports here
 
+		output wire CMD_DATA,
+		output wire CMD_DATA_VALID,
+
 		// User ports ends
 		// Do not modify the ports beyond this line
 
@@ -83,15 +86,15 @@
 
 	// AXI4LITE signals
 	reg [C_S_AXI_ADDR_WIDTH-1 : 0] 	axi_awaddr;
-	reg  	axi_awready;
-	reg  	axi_wready;
-	reg [1 : 0] 	axi_bresp;
-	reg  	axi_bvalid;
+	reg  							axi_awready;
+	reg  							axi_wready;
+	reg [1 : 0] 					axi_bresp;
+	reg  							axi_bvalid;
 	reg [C_S_AXI_ADDR_WIDTH-1 : 0] 	axi_araddr;
-	reg  	axi_arready;
+	reg  							axi_arready;
 	reg [C_S_AXI_DATA_WIDTH-1 : 0] 	axi_rdata;
-	reg [1 : 0] 	axi_rresp;
-	reg  	axi_rvalid;
+	reg [1 : 0] 					axi_rresp;
+	reg  							axi_rvalid;
 
 	// Example-specific design signals
 	// local parameter for addressing 32 bit / 64 bit C_S_AXI_DATA_WIDTH
@@ -216,6 +219,12 @@
 	// and the slave is ready to accept the write address and write data.
 	assign slv_reg_wren = axi_wready && S_AXI_WVALID && axi_awready && S_AXI_AWVALID;
 
+	// ***************
+
+	reg r_cmd_data_valid;
+
+	// ***************
+
 	always @( posedge S_AXI_ACLK )
 	begin
 	  if ( S_AXI_ARESETN == 1'b0 )
@@ -224,6 +233,11 @@
 	      slv_reg1 <= 0;
 	      slv_reg2 <= 0;
 	      slv_reg3 <= 0;
+
+	      // **************
+	      r_cmd_data_valid <= 1'b0;
+	      // **************
+
 	    end 
 	  else begin
 	    if (slv_reg_wren)
@@ -235,13 +249,22 @@
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 0
 	                slv_reg0[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // **************
+	      			r_cmd_data_valid <= 1'b1;
+	      			// **************
+
 	              end  
 	          2'h1:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 1
-	                slv_reg1[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	                //slv_reg1[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // slave register one is used by the PL to signal done to the PS
+	                // This register can thus not be set by the AXI slave
+
 	              end  
 	          2'h2:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
@@ -265,6 +288,25 @@
 	                    end
 	        endcase
 	      end
+
+      	  // ********************
+		  else begin
+		 	if (1_cmd_read) begin 	// Data form first port read in wrapper
+		 		r_cmd_data_valid <= 1'b0;
+		 	end
+		 	if (CMD_DATA_VALID) begin
+                slv_reg1 <= 0;
+            end
+            if (2_data_valid) begin
+                slv_reg1 <= 1;
+                r_port2_data_read <= 1; // Indicates that the AXI saw this, slv_reg has been set
+            end
+            else begin
+                r_port2_data_read <= 0;
+            end
+		  end
+		  // ********************
+
 	  end
 	end    
 
@@ -398,6 +440,9 @@
 	end    
 
 	// Add user logic here
+
+	assign CMD_DATA = slv_reg0;
+	assign CMD_DATA_VALID = r_cmd_data_valid;
 
 	// User logic ends
 

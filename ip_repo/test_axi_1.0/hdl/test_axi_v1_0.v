@@ -43,7 +43,14 @@
 		output wire  s00_axi_rvalid,
 		input wire  s00_axi_rready
 	);
-// Instantiation of Axi Bus Interface S00_AXI
+
+	// ********************
+	wire [31:0] cmd_data;
+	wire cmd_data_valid;
+    wire cmd_data_read; // TODO: do this signal next (1)
+	// ********************
+
+	// Instantiation of Axi Bus Interface S00_AXI
 	test_axi_v1_0_S00_AXI # ( 
 		.C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
 		.C_S_AXI_ADDR_WIDTH(C_S00_AXI_ADDR_WIDTH)
@@ -68,12 +75,24 @@
 		.S_AXI_RDATA(s00_axi_rdata),
 		.S_AXI_RRESP(s00_axi_rresp),
 		.S_AXI_RVALID(s00_axi_rvalid),
-		.S_AXI_RREADY(s00_axi_rready)
+		.S_AXI_RREADY(s00_axi_rready),
+		// *****************
+		.CMD_DATA(cmd_data),
+		.CMD_DATA_VALID(cmd_data_valid)
 	);
 
 	// Add user logic here
 	
-	// Look for commands on the input when the CPU writes them
+	des_block_wrapper des_block_wrapper (
+        .clk            (s00_axi_aclk   	),
+        .rst_n          (s00_axi_aresetn   	),
+        .cmd            (cmd_data   		),
+        .cmd_valid      (cmd_data_valid   	),
+        .data_in        (   ),
+        // *******
+        .cmd_read       (   ),
+        .done           (   ),
+        .data_out       (   ));
 
 	// User logic ends
 
