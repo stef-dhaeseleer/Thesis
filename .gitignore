@@ -9,3 +9,5 @@ thesis_des/*
 *.jou
 *.log
 *.str
+test_axi
+xgui

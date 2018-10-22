@@ -12,7 +12,7 @@ uart:
 	screen /dev/ttyUSB1 115200
 
 clean:
-	#rm vivado.* vivado_* .Xil/ -rf webtalk* -f
+	rm vivado.* vivado_* .Xil/ -rf webtalk* -f
 
 cleanall: clean
 	#rm -rf rsa_project
