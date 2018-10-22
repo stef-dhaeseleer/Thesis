@@ -11,3 +11,4 @@ thesis_des/*
 *.str
 test_axi
 xgui
+ip_repo/edit_*
