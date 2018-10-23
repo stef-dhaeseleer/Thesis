@@ -6,9 +6,20 @@ module des_block_wrapper(
     input cmd_valid,        // input command valid
     input [15:0] data_in,   // input data to set the region of the DES block
     output cmd_read,        // signals that the input command has been read, input data also read
-    output reg done,            // signals that the operations are done, output data also valid
+    output reg done,        // signals that the operations are done, output data also valid
     output [63:0] data_out  // ouput data for the counter value
     );
+    
+    // TODO: Add signals (1)
+    // Create an enable signal and make start a pulse only
+    // Create an output for the cipher text for testing purposes (routed from the des block output)
+    // Will take an input to see if we are in test mode (flag to the des block)
+    // Will generate a signal to the des block to advance the test one step when data has been read by the CPU
+
+    // TODO: add more registers to AXI, each piece of data its own (1)
+    // Add signals to see if the data has been read by the CPU
+
+    // TODO: should be able to set the key from the CPU: but this will be a lot of bits... (1)
 
     // Nets and regs
     reg [1:0] state, next_state;        // State variables
@@ -35,7 +46,8 @@ module des_block_wrapper(
     localparam [3:0]    set_region      = 4'h2;
     localparam [3:0]    start           = 4'h3;
     localparam [3:0]    waiting         = 4'h4;
-    localparam [3:0]    finished        = 4'h5;
+    localparam [3:0]    finishing       = 4'h5;
+    localparam [3:0]    finished        = 4'h6;
 
 
     // Functions
@@ -81,17 +93,20 @@ module des_block_wrapper(
             next_state <= waiting;
 
             if (des_finished == 1'b1) begin
-                next_state <= finished;
+                next_state <= finishing;
             end
         end
-        finished: begin     // Signal that we are done, set output data and wait for data read
-            next_state <= finished;
+        finishing: begin     // Signal that we are done, set output data and wait for data read
+            next_state <= finishing;
 
             if (cmd_valid==1'b1) begin
                 if (cmd == CMD_OUTPUT_READ) begin
-                    next_state <= init;
+                    next_state <= finished;
                 end
             end 
+        end
+        finished: begin
+            next_state <= init;
         end
         endcase
 
@@ -128,14 +143,19 @@ module des_block_wrapper(
         end
         start: begin
             start_des <= 1'b1;
+            cmd_read_reg <= 1'b1;
         end
         waiting: begin
             start_des <= 1'b1;
         end
-        finished: begin     // des block will re-init when we go back to init state here (and drop start value)
+        finishing: begin     // des block will re-init when we go back to init state here (and drop start value)
             done <= 1'b1;
             start_des <= 1'b1;  // Keep start up or counter will be reset
             load_counter <= 1'b1;
+        end
+        finished: begin
+            done <= 1'b1;
+            cmd_read_reg <= 1'b1;
         end
         endcase
 

@@ -16,6 +16,12 @@ module des_block(
     output reg valid            // signals that the output are valid results
     );
 
+    // TODO: Add signals (1)
+    // Create an enable signal and make start a pulse only
+    // Create an output for the cipher text for testing purposes
+    // Will take an input to see if we are in test mode (flag)
+    // Another input advance the test one step
+
     // Nets and regs
     reg [1:0] state, next_state;            // State variables
 
@@ -178,7 +184,7 @@ module des_block(
         if (rst_n == 1'b0) begin
             counter_reg <= 47'h0;
         end
-        else if (start == 1'b0) begin
+        else if (start == 1'b0) begin   // TODO: change this!!! Make a reset counter input (1)
             counter_reg <= 47'h0;
         end
         else if (mask_result == 1'b1) begin

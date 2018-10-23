@@ -14,6 +14,10 @@ module des_encryption_pipelined(
     output [1:64] result            // the resulting encrypted version of the input message
     );
 
+    // TODO: need an internal enable signal instead of keeping start on (and this with output valid signals) (1)
+    // Then we also need a pause signal to stop everything (enable to zero to pause operation)
+    // Then we need an input_valid to see when we should stop filling the pipeline yet keep the rest enabled
+
     // Nets and regs
     reg output_valid_stage_0;   // This one has to be a reg at this level in the hierarchy
     wire output_valid_stage_1;  // The rest are wires here to connect the valid registers in the rounfunction submodules
@@ -299,7 +303,7 @@ module des_encryption_pipelined(
         end
     end
 
-    always @(posedge clk) begin     // For setting output_validwhen output_valid_stage_16 is enabled  
+    always @(posedge clk) begin     // For setting output_valid when output_valid_stage_16 is enabled  
         output_valid <= 1'b0; 
 
         if (rst_n == 1'b0) begin
