@@ -18,6 +18,10 @@
 
 		output wire CMD_DATA,
 		output wire CMD_DATA_VALID,
+		input wire CMD_DATA_READ,
+		input wire DES_DONE,	// NOTE: not reporting read back to the wrapper now, should do this? (1)
+		input wire [63:0] DES_COUNTER,
+		output wire [31:0] DES_REGION,
 
 		// User ports ends
 		// Do not modify the ports beyond this line
@@ -222,6 +226,8 @@
 	// ***************
 
 	reg r_cmd_data_valid;
+	reg r_region_data_valid;
+	reg r_des_region;
 
 	// ***************
 
@@ -272,6 +278,10 @@
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 2
 	                slv_reg2[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // **************
+	      			r_region_data_valid <= 1'b1;
+	      			// **************
 	              end  
 	          2'h3:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
@@ -291,19 +301,26 @@
 
       	  // ********************
 		  else begin
-		 	if (1_cmd_read) begin 	// Data form first port read in wrapper
+		 	if (CMD_DATA_READ == 1'b1) begin 	// Indicates that the wrapper has read the command
 		 		r_cmd_data_valid <= 1'b0;
 		 	end
-		 	if (CMD_DATA_VALID) begin
+		 	if (CMD_DATA_VALID == 1'b1) begin
                 slv_reg1 <= 0;
             end
-            if (2_data_valid) begin
+            if (r_region_data_valid == 1'b1) begin
+            	r_des_region <= slv_reg2; 	// Buffer the region data from the slave reg into another reg
+            end
+            if (DES_DONE == 1'b1) begin
                 slv_reg1 <= 1;
-                r_port2_data_read <= 1; // Indicates that the AXI saw this, slv_reg has been set
+                //done_read <= 1; // Indicates that the AXI saw this, slv_reg has been set
+
+                // Will this work?
+                slv_reg2 <= DES_COUNTER[63:32];	// Set to the upper part of counter
+                slv_reg3 <= DES_COUNTER[31:0];	// Set to the lower part of counter
             end
-            else begin
-                r_port2_data_read <= 0;
-            end
+            //else begin
+                //r_port2_data_read <= 0;
+            //end
 		  end
 		  // ********************
 
@@ -443,6 +460,7 @@
 
 	assign CMD_DATA = slv_reg0;
 	assign CMD_DATA_VALID = r_cmd_data_valid;
+	assign DES_REGION = r_des_region;
 
 	// User logic ends
 

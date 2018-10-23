@@ -45,9 +45,13 @@
 	);
 
 	// ********************
+	wire [63:0] des_counter;
+	wire [31:0] region_data;
 	wire [31:0] cmd_data;
+
 	wire cmd_data_valid;
-    wire cmd_data_read; // TODO: do this signal next (1)
+    wire cmd_data_read;
+    wire des_done;
 	// ********************
 
 	// Instantiation of Axi Bus Interface S00_AXI
@@ -78,7 +82,11 @@
 		.S_AXI_RREADY(s00_axi_rready),
 		// *****************
 		.CMD_DATA(cmd_data),
-		.CMD_DATA_VALID(cmd_data_valid)
+		.CMD_DATA_VALID(cmd_data_valid),
+		.CMD_DATA_READ(cmd_data_read),
+		.DES_DONE(des_done),
+		.DES_COUNTER(des_counter),
+		.DES_REGION(region_data)
 	);
 
 	// Add user logic here
@@ -88,11 +96,11 @@
         .rst_n          (s00_axi_aresetn   	),
         .cmd            (cmd_data   		),
         .cmd_valid      (cmd_data_valid   	),
-        .data_in        (   ),
+        .data_in        (region_data   		),
         // *******
-        .cmd_read       (   ),
-        .done           (   ),
-        .data_out       (   ));
+        .cmd_read       (cmd_data_read   	),
+        .done           (des_done   		),
+        .data_out       (des_counter   		));
 
 	// User logic ends
 
