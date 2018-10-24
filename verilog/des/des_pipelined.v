@@ -1,24 +1,24 @@
 `timescale 1ns / 1ps
 
-//`include "des/des_roundfunction_pipelined.v"
-//`include "des/primitives/ip_inverse_permutation.v"
-//`include "des/primitives/ip_permutation.v"
+`include "des/des_roundfunction_pipelined.v"
+`include "des/primitives/ip_inverse_permutation.v"
+`include "des/primitives/ip_permutation.v"
 
 module des_encryption_pipelined(
     input clk,                      // clock
     input rst_n,                    // reset, active low signal
     input start,                    // signals the block to start working, valid data is on the input lines
+    input pause,                    // pause all operations inside this block
+    input input_valid,              // indicates if the input message is valid
     input [1:64] message,           // the message to be encrypted
     input [1:768] round_keys,       // all roundkeys used in a series (16*48 bits)
-    output reg output_valid,   // signals that the operations are done, valid result is on the output lines
+    output reg output_valid,        // signals that the operations are done, valid result is on the output lines
     output [1:64] result            // the resulting encrypted version of the input message
     );
 
-    // TODO: need an internal enable signal instead of keeping start on (and this with output valid signals) (1)
-    // Then we also need a pause signal to stop everything (enable to zero to pause operation)
-    // Then we need an input_valid to see when we should stop filling the pipeline yet keep the rest enabled
-
     // Nets and regs
+    reg enable;
+
     reg output_valid_stage_0;   // This one has to be a reg at this level in the hierarchy
     wire output_valid_stage_1;  // The rest are wires here to connect the valid registers in the rounfunction submodules
     wire output_valid_stage_2;
@@ -93,9 +93,75 @@ module des_encryption_pipelined(
     reg [1:64] permuted_message_reg;
     reg [1:64] result_reg;
 
+    reg [1:0] state, next_state;            // State variables
+
     // Parameters
+    localparam [1:0]    init = 2'h0;    // Possible states
+    localparam [1:0]    running = 2'h1;    
+    localparam [1:0]    paused = 2'h2;
 
     //---------------------------FSM---------------------------------------------------------------
+
+     always @(posedge clk) begin // State register
+        if (rst_n == 1'b0) begin   // Synchronous reset
+            state <= init;
+        end
+        else begin
+            state <= next_state;
+        end
+    end
+
+    always @(*) begin   // Next state logic
+        case (state)
+        init: begin
+            next_state <= init;
+            if (start == 1'b1) begin
+                next_state <= running;
+            end
+        end
+        running: begin
+            next_state <= running;
+            if (paused == 1'b1) begin
+                next_state <= paused;
+            end
+        end
+        paused: begin
+            next_state <= paused;
+            if (paused == 1'b0) begin    // Will stay here as long as start is one (to allow to read the valid results)
+                next_state <= running;   // Go back to init when start goes to zero
+            end
+        end
+        default: begin
+            next_state <= init;
+        end
+        endcase
+    end
+
+    always @(*) begin   // Output logic, signals to set: valid
+        output_valid_stage_0 <= 1'b0;
+        output_valid <= 1'b0;
+        enable <= 1'b0;
+
+        case (state)
+        init: begin
+
+        end
+        running: begin
+            enable <= 1'b1;
+
+            if (input_valid == 1'b1) begin
+                output_valid_stage_0 <= 1'b1;
+            end
+
+            if (output_valid_stage_16 == 1'b1) begin
+                output_valid <= 1'b1;
+            end
+        end
+        paused: begin
+
+        end
+        endcase
+    end
 
     //---------------------------DATAPATH---------------------------------------------------------------
 
@@ -115,7 +181,7 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func2(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_1),
+            .i_valid    (output_valid_stage_1 & enable),
             .L_in       (L_temp1),
             .R_in       (R_temp1),
             .Kn         (current_round_key2),
@@ -126,7 +192,7 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func3(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_2),
+            .i_valid    (output_valid_stage_2 & enable),
             .L_in       (L_temp2),
             .R_in       (R_temp2),
             .Kn         (current_round_key3),
@@ -137,7 +203,7 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func4(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_3),
+            .i_valid    (output_valid_stage_3 & enable),
             .L_in       (L_temp3),
             .R_in       (R_temp3),
             .Kn         (current_round_key4),
@@ -148,7 +214,7 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func5(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_4),
+            .i_valid    (output_valid_stage_4 & enable),
             .L_in       (L_temp4),
             .R_in       (R_temp4),
             .Kn         (current_round_key5),
@@ -159,7 +225,7 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func6(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_5),
+            .i_valid    (output_valid_stage_5 & enable),
             .L_in       (L_temp5),
             .R_in       (R_temp5),
             .Kn         (current_round_key6),
@@ -170,7 +236,7 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func7(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_6),
+            .i_valid    (output_valid_stage_6 & enable),
             .L_in       (L_temp6),
             .R_in       (R_temp6),
             .Kn         (current_round_key7),
@@ -181,7 +247,7 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func8(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_7),
+            .i_valid    (output_valid_stage_7 & enable),
             .L_in       (L_temp7),
             .R_in       (R_temp7),
             .Kn         (current_round_key8),
@@ -192,7 +258,7 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func9(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_8),
+            .i_valid    (output_valid_stage_8 & enable),
             .L_in       (L_temp8),
             .R_in       (R_temp8),
             .Kn         (current_round_key9),
@@ -203,7 +269,7 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func10(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_9),
+            .i_valid    (output_valid_stage_9 & enable),
             .L_in       (L_temp9),
             .R_in       (R_temp9),
             .Kn         (current_round_key10),
@@ -214,7 +280,7 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func11(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_10),
+            .i_valid    (output_valid_stage_10 & enable),
             .L_in       (L_temp10),
             .R_in       (R_temp10),
             .Kn         (current_round_key11),
@@ -225,7 +291,7 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func12(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_11),
+            .i_valid    (output_valid_stage_11 & enable),
             .L_in       (L_temp11),
             .R_in       (R_temp11),
             .Kn         (current_round_key12),
@@ -236,7 +302,7 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func13(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_12),
+            .i_valid    (output_valid_stage_12 & enable),
             .L_in       (L_temp12),
             .R_in       (R_temp12),
             .Kn         (current_round_key13),
@@ -247,7 +313,7 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func14(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_13),
+            .i_valid    (output_valid_stage_13 & enable),
             .L_in       (L_temp13),
             .R_in       (R_temp13),
             .Kn         (current_round_key14),
@@ -258,7 +324,7 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func15(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_14),
+            .i_valid    (output_valid_stage_14 & enable),
             .L_in       (L_temp14),
             .R_in       (R_temp14),
             .Kn         (current_round_key15),
@@ -269,7 +335,7 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func16(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_15),
+            .i_valid    (output_valid_stage_15 & enable),
             .L_in       (L_temp15),
             .R_in       (R_temp15),
             .Kn         (current_round_key16),
@@ -286,34 +352,6 @@ module des_encryption_pipelined(
     ip_inverse_permutation ip_inv(
             .data_i    ({R_out, L_out}),
             .data_o    (result_wire));
-
-    always @(posedge clk) begin
-
-    end
-
-    always @(posedge clk) begin     // For setting output_valid_stage_0 when start is enabled
-        output_valid_stage_0 <= 1'b0;
-
-        if (rst_n == 1'b0) begin
-            output_valid_stage_0 <= 1'b0;
-        end
-
-        else if (start == 1'b1) begin
-            output_valid_stage_0 <= 1'b1;
-        end
-    end
-
-    always @(posedge clk) begin     // For setting output_valid when output_valid_stage_16 is enabled  
-        output_valid <= 1'b0; 
-
-        if (rst_n == 1'b0) begin
-            output_valid <= 1'b0;
-        end
-
-        else if (output_valid_stage_16 == 1'b1) begin
-            output_valid <= 1'b1;
-        end
-    end
     
     always @(posedge clk) begin     // Loading the data from the pipeline stages into the register
         permuted_message_reg <= permuted_message;

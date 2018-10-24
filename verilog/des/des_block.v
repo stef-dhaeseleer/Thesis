@@ -1,10 +1,10 @@
 `timescale 1ns / 1ps
 
-//`include "des/des_pipelined.v"
-//`include "des/primitives/lfsr.v"
-//`include "des/primitives/mask_xor.v"
-//`include "des/primitives/message_counter.v"
-//`include "des/primitives/message_counter_partial.v"
+`include "des/des_pipelined.v"
+`include "des/primitives/lfsr.v"
+`include "des/primitives/mask_xor.v"
+`include "des/primitives/message_counter.v"
+`include "des/primitives/message_counter_partial.v"
 
 module des_block(
     input clk,                  // clock
@@ -107,6 +107,9 @@ module des_block(
             
         end
         working: begin
+
+        end
+        finishing: begin
 
         end
         finished: begin

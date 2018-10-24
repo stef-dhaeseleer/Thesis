@@ -5,7 +5,7 @@
 `define EOF 32'hFFFF_FFFF 
 `define NULL 0 
 
-//`include "des/des_pipelined.v"
+`include "des/des_pipelined.v"
 
 // iverilog tb/tb_des_pipelined_automatic.v
 // vvp a.out
@@ -16,6 +16,8 @@ module tb_des_pipelined();
     reg     clk;
     reg     rst_n;
     reg     start;
+    reg     pause;
+    reg     input_valid;
     reg [1:64] message;
     reg [1:768] round_keys;
     wire output_valid;
@@ -29,13 +31,15 @@ module tb_des_pipelined();
         
     //Instantiating montgomery module
     des_encryption_pipelined des_encryption_instance( 
-            .clk        (clk       ),
-            .rst_n      (rst_n     ),
-            .start      (start     ),
-            .message    (message   ),
-            .round_keys (round_keys),
-            .output_valid       (output_valid      ),
-            .result     (result    ));
+            .clk                (clk            ),
+            .rst_n              (rst_n          ),
+            .start              (start          ),
+            .pause              (pause          ),
+            .input_valid        (input_valid    ),
+            .message            (message        ),
+            .round_keys         (round_keys     ),
+            .output_valid       (output_valid   ),
+            .result             (result         ));
 
     //Generate a clock
     initial begin
@@ -52,14 +56,14 @@ module tb_des_pipelined();
     //Test data
     initial begin
 
-        //$dumpfile("tb/vcd/tb_des_pipelined.vcd");
-        //$dumpvars(0, tb_des_pipelined);
+        $dumpfile("tb/vcd/tb_des_pipelined.vcd");
+        $dumpvars(0, tb_des_pipelined);
 
-        //file = $fopenr("../python/testfiles/des_tests_pipeline_input.txt"); 
-        //file2 = $fopenr("../python/testfiles/des_tests_pipeline_expected.txt"); 
+        file = $fopenr("../python/testfiles/des_tests_pipeline_input.txt"); 
+        file2 = $fopenr("../python/testfiles/des_tests_pipeline_expected.txt"); 
         
-        file = $fopen("des_tests_pipeline_input.txt", "r"); 
-        file2 = $fopen("des_tests_pipeline_expected.txt", "r");
+        //file = $fopen("des_tests_pipeline_input.txt", "r"); 
+        //file2 = $fopen("des_tests_pipeline_expected.txt", "r");
 
         #`RESET_TIME
 
@@ -68,17 +72,25 @@ module tb_des_pipelined();
         // Init side parameters
         nb_tests <= 0;
         nb_correct <= 0;
+
+        pause <= 0;
+        input_valid <= 0;
         
         $display("Starting test...");         
         $display("");
                                
         #`CLK_PERIOD;
 
+        start <= 1;
+        #`CLK_PERIOD;
+        start <= 0;
+
         while (!$feof(file)) 
             begin 
             // Wait until rising clock, read stimulus 
             @(posedge clk) 
-                start <= 1;
+
+                input_valid <= 1;
 
                 r = $fscanf(file, "%b\n", message); 
                 r2 = $fscanf(file2, "%b\n", expected); 
