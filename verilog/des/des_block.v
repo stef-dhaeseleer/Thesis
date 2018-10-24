@@ -7,33 +7,33 @@
 `include "des/primitives/message_counter_partial.v"
 
 module des_block(
-    input clk,                  // clock
-    input rst_n,                // reset, active low signal
-    input start,                // signals the block to start working, valid data is on the input lines
-    //input [63:0] message_seed,  // input value of the initial message seed for message generation
-    input [15:0] region_select,  // input value to select the region for the counter to operate in
-    output [47:0] counter,       // output counter to keep track of the amounts of 1's
-    output reg valid            // signals that the output are valid results
+    input clk,                      // clock
+    input rst_n,                    // reset, active low signal
+    input start,                    // signals the block to start working, valid data is on the input lines
+    input restart_block,            // signal used to reset the counter
+    input test_enabled,             // signals to run in test mode
+    input test_advance,             // signals to advance one step in the test
+    input [15:0] region_select,     // input value to select the region for the counter to operate in
+    output [47:0] counter,          // output counter to keep track of the amounts of 1's
+    output [63:0] ciphertext_out,   // ciphertext output for testing
+    output reg done                 // signals that the output are valid results
     );
 
-    // TODO: Add signals (1)
-    // Create an enable signal and make start a pulse only
-    // Create an output for the cipher text for testing purposes
-    // Will take an input to see if we are in test mode (flag)
-    // Another input advance the test one step
-
     // Nets and regs
-    reg [1:0] state, next_state;            // State variables
+    reg [2:0] state, next_state;            // State variables
 
     reg [767:0] round_keys = 768'h1;        // NOTE: Should this be a reg here or an input?
     reg [17:0] mask_i_bit_buffer;           // Used to buffer the mask bits, needed due to the pipeline delay
     reg [47:0] counter_reg;
 
+    reg enable;
     reg mask_result;
+    reg start_des;
+    reg pause_des;
+    reg start_message;
 
     wire [63:0] message;
     wire [63:0] ciphertext;
-
 
     wire message_valid;     // Set when LFSR output is valid, used as start signal for the DES encryption
     wire counter_done;
@@ -42,11 +42,13 @@ module des_block(
     wire mask_o_bit;
 
     // Parameters
-    localparam [1:0]    init = 2'h0;    // Possible states
-    localparam [1:0]    working = 2'h1;    
-    localparam [1:0]    finishing = 2'h2;
-    localparam [1:0]    finished = 2'h3;
-
+    localparam [2:0]    init        = 3'h0;    // Possible states
+    localparam [2:0]    working     = 3'h1;    
+    localparam [2:0]    finishing   = 3'h2;
+    localparam [2:0]    finished    = 3'h3;
+    localparam [2:0]    test_run    = 3'h4;
+    localparam [2:0]    test_pause  = 3'h5;
+    localparam [2:0]    test_init   = 3'h6;
 
     parameter [63:0] mask_i = 64'h1584458925484615;
     parameter [63:0] mask_o = 64'h49845174789897;
@@ -69,17 +71,21 @@ module des_block(
         init: begin
             next_state <= init;
             if (start == 1'b1) begin
-                next_state <= working;
+                if (test_enabled == 1'b1) begin
+                    next_state <= test_init;
+                end
+                else begin
+                    next_state <= working;
+                end
             end
         end
         working: begin
             next_state <= working;
-            if (start == 1'b0) begin
+
+            if (counter_done == 1'b1) begin
                 next_state <= finishing;
             end
-            else if (counter_done == 1'b1) begin
-                next_state <= finishing;
-            end
+
         end
         finishing: begin    // First let the pipeline go empty then stop
             next_state <= finishing;
@@ -89,8 +95,34 @@ module des_block(
         end
         finished: begin
             next_state <= finished;
-            if (start == 1'b0) begin    // Will stay here as long as start is one (to allow to read the valid results)
+
+            if (restart_block == 1'b1) begin    // Will stay here as long as start is one (to allow to read the valid results)
                 next_state <= init;     // Go back to init when start goes to zero
+            end
+        end
+        test_init: begin
+            next_state <= test_init;
+            if (test_enabled == 1'b0) begin
+                next_state <= init;
+            end
+            else if (ciphertext_valid == 1'b1) begin
+                next_state <= test_pause;
+            end
+        end
+        test_run: begin
+            next_state <= test_pause;
+            if (test_enabled == 1'b0) begin
+                next_state <= init;
+            end
+        end
+        test_pause: begin   // In this state, valid ciphertext is on the output lines of this block
+                            // Let the CPU check this and then continue
+            next_state <= test_pause;
+            if (test_enabled == 1'b0) begin
+                next_state <= init;
+            end
+            else if (test_advance == 1'b1) begin
+                next_state <= test_run;
             end
         end
         default: begin
@@ -100,20 +132,46 @@ module des_block(
     end
 
     always @(*) begin   // Output logic, signals to set: valid
-        valid <= 1'b0;
+        done <= 1'b0;
+        enable <= 1'b0;
+        start_des <= 1'b0;
+        pause_des <= 1'b0;
+        start_message <= 1'b0;
 
         case (state)
         init: begin
-            
-        end
-        working: begin
+            pause_des <= 1'b1;
 
+            if (start == 1'b1) begin
+                start_des <= 1'b1;
+                start_message <= 1'b1;
+                pause_des <= 1'b0;
+            end
+        end    
+        working: begin
+            enable <= 1'b1;
         end
         finishing: begin
 
         end
         finished: begin
-            valid <= 1'b1;
+            done <= 1'b1;
+        end
+        test_init: begin
+            enable <= 1'b1;
+            pause_des <= 1'b0;
+            if (ciphertext_valid == 1'b1) begin
+                enable <= 1'b0;
+                pause_des <= 1'b1;
+            end
+        end
+        test_run: begin
+            enable <= 1'b1;
+            pause_des <= 1'b0;
+        end
+        test_pause: begin
+            enable <= 1'b0;
+            pause_des <= 1'b1;
         end
         endcase
     end
@@ -123,8 +181,10 @@ module des_block(
     des_encryption_pipelined des(
         .clk            (clk),                      
         .rst_n          (rst_n),
-        .start          (message_valid),     // We can start the encryption module when the messages are being generated
-        .message        (message),           // Will be generated at random through an LFSR
+        .start          (start_des),
+        .pause          (pause_des),
+        .input_valid    (message_valid),     
+        .message        (message),           
         .round_keys     (round_keys),
         .output_valid   (ciphertext_valid),
         .result         (ciphertext));
@@ -148,8 +208,10 @@ module des_block(
     message_counter_partial message_counter(    // Used to generate the messages for the encryption
         .clk            (clk          ),
         .rst_n          (rst_n        ),
-        .start          (start        ),        // Start the message generation when this module receives a start signal
-        .region_select  (region_select),
+        .start          (start_message),        // Start the message generation when this module receives a start signal
+        .pause          (pause_des    ),
+        .reset_counter  (restart_block  ),
+        .region_select  (region_select),        // Stored in a reg inside this block
         .counter        (message      ),
         .valid          (message_valid),        // signals when the output of this module contains valid messages every cycle
         .done           (counter_done ));       // Signals when this unit has gone through all the messages
@@ -168,11 +230,16 @@ module des_block(
         if (rst_n == 1'b0) begin
             mask_i_bit_buffer <= 18'h0;
         end
-        else if (message_valid == 1'b1) begin
-            mask_i_bit_buffer <= {mask_i_bit, mask_i_bit_buffer[17:1]};
+        else if (restart_block == 1'b1) begin
+            mask_i_bit_buffer <= 18'h0;
         end
-        else if (ciphertext_valid == 1'b1) begin
-            mask_i_bit_buffer <= {1'b0, mask_i_bit_buffer[17:1]};   // keep shifting for the last operations in the pipeline, fill register with zeros
+        else if (enable == 1'b1) begin  // Only process output when enabled
+            if (message_valid == 1'b1) begin
+                mask_i_bit_buffer <= {mask_i_bit, mask_i_bit_buffer[17:1]};
+            end
+            else if (ciphertext_valid == 1'b1) begin
+                mask_i_bit_buffer <= {1'b0, mask_i_bit_buffer[17:1]};   // keep shifting for the last operations in the pipeline, fill register with zeros
+            end
         end
     end
 
@@ -187,14 +254,15 @@ module des_block(
         if (rst_n == 1'b0) begin
             counter_reg <= 47'h0;
         end
-        else if (start == 1'b0) begin   // TODO: change this!!! Make a reset counter input (1)
+        else if (restart_block == 1'b1) begin
             counter_reg <= 47'h0;
         end
-        else if (mask_result == 1'b1) begin
+        else if (mask_result == 1'b1 & enable == 1'b1) begin    // Only count new values when enabled
             counter_reg <= counter_reg + 1;
         end
     end
 
     assign counter = counter_reg[47:0];
+    assign ciphertext_out = ciphertext;
      
 endmodule

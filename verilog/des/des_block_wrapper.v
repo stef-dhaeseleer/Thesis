@@ -120,7 +120,7 @@ module des_block_wrapper(
         .start          (start_des    ),
         .region_select  (region_reg   ),
         .counter        (des_counter  ),
-        .valid          (des_finished ));
+        .done           (des_finished ));
 
     assign cmd_read = cmd_read_reg;
     assign data_out = counter_reg;

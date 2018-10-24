@@ -16,7 +16,12 @@ module tb_des_block();
     reg             clk;
     reg             rst_n;
     reg             start;
+    reg             restart_block;
+    reg             test_enabled;
+    reg             test_advance;
     reg     [15:0]  region;
+    wire    [47:0]  counter;
+    wire    [63:0]  ciphertext_out;
     wire            valid;
         
     //Instantiating lfsr module
@@ -24,8 +29,13 @@ module tb_des_block();
         .clk            (clk   ),
         .rst_n          (rst_n ),
         .start          (start ),
+        .restart_block    (restart_block),
+        .test_enabled   (test_enabled),
+        .test_advance   (test_advance),
         .region_select  (region),
-        .valid          (valid));
+        .counter        (counter),
+        .ciphertext_out (ciphertext_out),
+        .done           (done));
 
     //Generate a clock
     initial begin
@@ -48,6 +58,10 @@ module tb_des_block();
         #`RESET_TIME
 
         region <= 16'b0000000000000100;
+
+        restart_block <= 0;
+        test_enabled <= 0;
+        test_advance <= 0;
         
         $display("Starting test...");         
         $display("");
@@ -55,7 +69,9 @@ module tb_des_block();
         #`CLK_PERIOD;
         
         start <= 1;
-                     
+        test_enabled <= 1;
+        #`CLK_PERIOD;
+        start <= 0;    
         #`CLK_PERIOD;
         #`CLK_PERIOD;
         #`CLK_PERIOD;
@@ -78,15 +94,34 @@ module tb_des_block();
         #`CLK_PERIOD;
         #`CLK_PERIOD;
         #`CLK_PERIOD;
+
+        test_advance <= 1;
+        #`CLK_PERIOD;
+        test_advance <= 0;
+
         #`CLK_PERIOD;
         #`CLK_PERIOD;
         #`CLK_PERIOD;
         #`CLK_PERIOD;
         #`CLK_PERIOD;
+
+        test_enabled <= 0;
+
         #`CLK_PERIOD;
         #`CLK_PERIOD;
         #`CLK_PERIOD;
         #`CLK_PERIOD;
+
+        restart_block <= 1;
+        #`CLK_PERIOD;
+        restart_block <= 0;
+
+        #`CLK_PERIOD;
+
+        start <= 1;
+        #`CLK_PERIOD;
+        start <= 0; 
+
         #`CLK_PERIOD;
         #`CLK_PERIOD;
         #`CLK_PERIOD;

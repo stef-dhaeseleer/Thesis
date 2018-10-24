@@ -8,10 +8,11 @@ module des_roundfunction_pipelined(
     input clk,              // clock
     input rst_n,            // reset, active low signal
     input wire i_valid,     // signals that the input to this block is valid
+    input enable,           // signal to see if we enable the roundfunction, stop in state when not enabled
     input [1:32] L_in,      // the left part for the roundfunction
     input [1:32] R_in,      // the right part for the roundfunction
     input [1:48] Kn,        // the incomming key for this roundfunction instance
-    output reg o_valid,    // signals that the output is valid for the next block to use
+    output reg o_valid,     // signals that the output is valid for the next block to use
     output [1:32] L_out,    // the outgoing left part of the roundfunction
     output [1:32] R_out     // the outgoing right part of the roundfunction
     );
@@ -49,22 +50,28 @@ module des_roundfunction_pipelined(
 
     // Logic for setting o_valid when i_valid is true
     always @(posedge clk) begin // Signals to set: o_valid
-        o_valid <= 1'b0;
-
-        if (rst_n == 1'b0) begin
+        if (enable == 1'b1) begin
             o_valid <= 1'b0;
-        end
 
-        else if (i_valid == 1'b1) begin
-            o_valid <= 1'b1;
+            if (rst_n == 1'b0) begin
+                o_valid <= 1'b0;
+            end
+
+            else if (i_valid == 1'b1) begin
+                o_valid <= 1'b1;
+            end
         end
     end
     
     // Logic for loading the pipeline register
     always @(posedge clk) begin
-        S_out_reg <= s_out;
-        R_in_reg <= R_in;
-        L_in_reg <= L_in;
+        if (enable == 1'b1) begin
+            if (i_valid == 1'b1) begin
+                S_out_reg <= s_out;
+                R_in_reg <= R_in;
+                L_in_reg <= L_in;
+            end
+        end
     end
 
     assign L_out = R_in_reg[1:32];  // Assign the outputs to the registers with the values

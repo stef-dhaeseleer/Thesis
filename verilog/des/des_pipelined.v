@@ -121,13 +121,13 @@ module des_encryption_pipelined(
         end
         running: begin
             next_state <= running;
-            if (paused == 1'b1) begin
+            if (pause == 1'b1) begin
                 next_state <= paused;
             end
         end
         paused: begin
             next_state <= paused;
-            if (paused == 1'b0) begin    // Will stay here as long as start is one (to allow to read the valid results)
+            if (pause == 1'b0) begin    // Will stay here as long as start is one (to allow to read the valid results)
                 next_state <= running;   // Go back to init when start goes to zero
             end
         end
@@ -156,9 +156,13 @@ module des_encryption_pipelined(
             if (output_valid_stage_16 == 1'b1) begin
                 output_valid <= 1'b1;
             end
+
+            //if (pause == 1'b1) begin
+            //    enable <= 1'b0;
+            //end
         end
         paused: begin
-
+            enable <= 1'b0;
         end
         endcase
     end
@@ -171,6 +175,7 @@ module des_encryption_pipelined(
             .clk        (clk ),
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_0),
+            .enable     (enable ),
             .L_in       (permuted_message_reg[1:32]),
             .R_in       (permuted_message_reg[33:64]),
             .Kn         (current_round_key1),
@@ -181,7 +186,8 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func2(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_1 & enable),
+            .i_valid    (output_valid_stage_1),
+            .enable     (enable ),
             .L_in       (L_temp1),
             .R_in       (R_temp1),
             .Kn         (current_round_key2),
@@ -192,7 +198,8 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func3(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_2 & enable),
+            .i_valid    (output_valid_stage_2),
+            .enable     (enable ),
             .L_in       (L_temp2),
             .R_in       (R_temp2),
             .Kn         (current_round_key3),
@@ -203,7 +210,8 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func4(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_3 & enable),
+            .i_valid    (output_valid_stage_3),
+            .enable     (enable ),
             .L_in       (L_temp3),
             .R_in       (R_temp3),
             .Kn         (current_round_key4),
@@ -214,7 +222,8 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func5(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_4 & enable),
+            .i_valid    (output_valid_stage_4),
+            .enable     (enable ),
             .L_in       (L_temp4),
             .R_in       (R_temp4),
             .Kn         (current_round_key5),
@@ -225,7 +234,8 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func6(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_5 & enable),
+            .i_valid    (output_valid_stage_5),
+            .enable     (enable ),
             .L_in       (L_temp5),
             .R_in       (R_temp5),
             .Kn         (current_round_key6),
@@ -236,7 +246,8 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func7(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_6 & enable),
+            .i_valid    (output_valid_stage_6),
+            .enable     (enable ),
             .L_in       (L_temp6),
             .R_in       (R_temp6),
             .Kn         (current_round_key7),
@@ -247,7 +258,8 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func8(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_7 & enable),
+            .i_valid    (output_valid_stage_7),
+            .enable     (enable ),
             .L_in       (L_temp7),
             .R_in       (R_temp7),
             .Kn         (current_round_key8),
@@ -258,7 +270,8 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func9(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_8 & enable),
+            .i_valid    (output_valid_stage_8),
+            .enable     (enable ),
             .L_in       (L_temp8),
             .R_in       (R_temp8),
             .Kn         (current_round_key9),
@@ -269,7 +282,8 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func10(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_9 & enable),
+            .i_valid    (output_valid_stage_9),
+            .enable     (enable ),
             .L_in       (L_temp9),
             .R_in       (R_temp9),
             .Kn         (current_round_key10),
@@ -280,7 +294,8 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func11(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_10 & enable),
+            .i_valid    (output_valid_stage_10),
+            .enable     (enable ),
             .L_in       (L_temp10),
             .R_in       (R_temp10),
             .Kn         (current_round_key11),
@@ -291,7 +306,8 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func12(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_11 & enable),
+            .i_valid    (output_valid_stage_11),
+            .enable     (enable ),
             .L_in       (L_temp11),
             .R_in       (R_temp11),
             .Kn         (current_round_key12),
@@ -302,7 +318,8 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func13(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_12 & enable),
+            .i_valid    (output_valid_stage_12),
+            .enable     (enable ),
             .L_in       (L_temp12),
             .R_in       (R_temp12),
             .Kn         (current_round_key13),
@@ -313,7 +330,8 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func14(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_13 & enable),
+            .i_valid    (output_valid_stage_13),
+            .enable     (enable ),
             .L_in       (L_temp13),
             .R_in       (R_temp13),
             .Kn         (current_round_key14),
@@ -324,7 +342,8 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func15(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_14 & enable),
+            .i_valid    (output_valid_stage_14),
+            .enable     (enable ),
             .L_in       (L_temp14),
             .R_in       (R_temp14),
             .Kn         (current_round_key15),
@@ -335,7 +354,8 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func16(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_15 & enable),
+            .i_valid    (output_valid_stage_15),
+            .enable     (enable ),
             .L_in       (L_temp15),
             .R_in       (R_temp15),
             .Kn         (current_round_key16),
@@ -355,7 +375,13 @@ module des_encryption_pipelined(
     
     always @(posedge clk) begin     // Loading the data from the pipeline stages into the register
         permuted_message_reg <= permuted_message;
-        result_reg <= result_wire;
+    end
+
+    always @(posedge clk) begin     // Loading the data from the pipeline stages into the register
+        
+        if (enable == 1'b1) begin
+            result_reg <= result_wire;
+        end
     end    
 
     assign result = result_reg;
