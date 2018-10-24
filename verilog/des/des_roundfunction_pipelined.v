@@ -9,6 +9,7 @@ module des_roundfunction_pipelined(
     input rst_n,            // reset, active low signal
     input wire i_valid,     // signals that the input to this block is valid
     input enable,           // signal to see if we enable the roundfunction, stop in state when not enabled
+    input restart_block,    // restart this block, set o_valid to zero
     input [1:32] L_in,      // the left part for the roundfunction
     input [1:32] R_in,      // the right part for the roundfunction
     input [1:48] Kn,        // the incomming key for this roundfunction instance
@@ -50,7 +51,12 @@ module des_roundfunction_pipelined(
 
     // Logic for setting o_valid when i_valid is true
     always @(posedge clk) begin // Signals to set: o_valid
-        if (enable == 1'b1) begin
+
+        if (restart_block == 1'b1) begin
+            o_valid <= 1'b0;
+        end
+        
+        else if (enable == 1'b1) begin
             o_valid <= 1'b0;
 
             if (rst_n == 1'b0) begin

@@ -61,6 +61,9 @@ module des_block(
         if (rst_n == 1'b0) begin   // Synchronous reset
             state <= init;
         end
+        else if (restart_block == 1'b1) begin
+            state <= init;
+        end
         else begin
             state <= next_state;
         end
@@ -95,10 +98,6 @@ module des_block(
         end
         finished: begin
             next_state <= finished;
-
-            if (restart_block == 1'b1) begin    // Will stay here as long as start is one (to allow to read the valid results)
-                next_state <= init;     // Go back to init when start goes to zero
-            end
         end
         test_init: begin
             next_state <= test_init;
@@ -183,7 +182,8 @@ module des_block(
         .rst_n          (rst_n),
         .start          (start_des),
         .pause          (pause_des),
-        .input_valid    (message_valid),     
+        .input_valid    (message_valid),   
+        .restart_block  (restart_block), 
         .message        (message),           
         .round_keys     (round_keys),
         .output_valid   (ciphertext_valid),

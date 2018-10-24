@@ -10,6 +10,7 @@ module des_encryption_pipelined(
     input start,                    // signals the block to start working, valid data is on the input lines
     input pause,                    // pause all operations inside this block
     input input_valid,              // indicates if the input message is valid
+    input restart_block,            // restart the operation of this block
     input [1:64] message,           // the message to be encrypted
     input [1:768] round_keys,       // all roundkeys used in a series (16*48 bits)
     output reg output_valid,        // signals that the operations are done, valid result is on the output lines
@@ -106,6 +107,9 @@ module des_encryption_pipelined(
         if (rst_n == 1'b0) begin   // Synchronous reset
             state <= init;
         end
+        else if (restart_block == 1'b1) begin
+            state <= init;
+        end
         else begin
             state <= next_state;
         end
@@ -156,10 +160,6 @@ module des_encryption_pipelined(
             if (output_valid_stage_16 == 1'b1) begin
                 output_valid <= 1'b1;
             end
-
-            //if (pause == 1'b1) begin
-            //    enable <= 1'b0;
-            //end
         end
         paused: begin
             enable <= 1'b0;
@@ -176,6 +176,7 @@ module des_encryption_pipelined(
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_0),
             .enable     (enable ),
+            .restart_block (restart_block),
             .L_in       (permuted_message_reg[1:32]),
             .R_in       (permuted_message_reg[33:64]),
             .Kn         (current_round_key1),
@@ -188,6 +189,7 @@ module des_encryption_pipelined(
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_1),
             .enable     (enable ),
+            .restart_block (restart_block),
             .L_in       (L_temp1),
             .R_in       (R_temp1),
             .Kn         (current_round_key2),
@@ -200,6 +202,7 @@ module des_encryption_pipelined(
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_2),
             .enable     (enable ),
+            .restart_block (restart_block),
             .L_in       (L_temp2),
             .R_in       (R_temp2),
             .Kn         (current_round_key3),
@@ -212,6 +215,7 @@ module des_encryption_pipelined(
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_3),
             .enable     (enable ),
+            .restart_block (restart_block),
             .L_in       (L_temp3),
             .R_in       (R_temp3),
             .Kn         (current_round_key4),
@@ -224,6 +228,7 @@ module des_encryption_pipelined(
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_4),
             .enable     (enable ),
+            .restart_block (restart_block),
             .L_in       (L_temp4),
             .R_in       (R_temp4),
             .Kn         (current_round_key5),
@@ -236,6 +241,7 @@ module des_encryption_pipelined(
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_5),
             .enable     (enable ),
+            .restart_block (restart_block),
             .L_in       (L_temp5),
             .R_in       (R_temp5),
             .Kn         (current_round_key6),
@@ -248,6 +254,7 @@ module des_encryption_pipelined(
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_6),
             .enable     (enable ),
+            .restart_block (restart_block),
             .L_in       (L_temp6),
             .R_in       (R_temp6),
             .Kn         (current_round_key7),
@@ -260,6 +267,7 @@ module des_encryption_pipelined(
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_7),
             .enable     (enable ),
+            .restart_block (restart_block),
             .L_in       (L_temp7),
             .R_in       (R_temp7),
             .Kn         (current_round_key8),
@@ -272,6 +280,7 @@ module des_encryption_pipelined(
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_8),
             .enable     (enable ),
+            .restart_block (restart_block),
             .L_in       (L_temp8),
             .R_in       (R_temp8),
             .Kn         (current_round_key9),
@@ -284,6 +293,7 @@ module des_encryption_pipelined(
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_9),
             .enable     (enable ),
+            .restart_block (restart_block),
             .L_in       (L_temp9),
             .R_in       (R_temp9),
             .Kn         (current_round_key10),
@@ -296,6 +306,7 @@ module des_encryption_pipelined(
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_10),
             .enable     (enable ),
+            .restart_block (restart_block),
             .L_in       (L_temp10),
             .R_in       (R_temp10),
             .Kn         (current_round_key11),
@@ -308,6 +319,7 @@ module des_encryption_pipelined(
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_11),
             .enable     (enable ),
+            .restart_block (restart_block),
             .L_in       (L_temp11),
             .R_in       (R_temp11),
             .Kn         (current_round_key12),
@@ -320,6 +332,7 @@ module des_encryption_pipelined(
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_12),
             .enable     (enable ),
+            .restart_block (restart_block),
             .L_in       (L_temp12),
             .R_in       (R_temp12),
             .Kn         (current_round_key13),
@@ -332,6 +345,7 @@ module des_encryption_pipelined(
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_13),
             .enable     (enable ),
+            .restart_block (restart_block),
             .L_in       (L_temp13),
             .R_in       (R_temp13),
             .Kn         (current_round_key14),
@@ -344,6 +358,7 @@ module des_encryption_pipelined(
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_14),
             .enable     (enable ),
+            .restart_block (restart_block),
             .L_in       (L_temp14),
             .R_in       (R_temp14),
             .Kn         (current_round_key15),
@@ -356,6 +371,7 @@ module des_encryption_pipelined(
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_15),
             .enable     (enable ),
+            .restart_block (restart_block),
             .L_in       (L_temp15),
             .R_in       (R_temp15),
             .Kn         (current_round_key16),
