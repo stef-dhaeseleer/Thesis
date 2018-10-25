@@ -14,6 +14,7 @@ module des_block(
     input test_enabled,             // signals to run in test mode
     input test_advance,             // signals to advance one step in the test
     input [15:0] region_select,     // input value to select the region for the counter to operate in
+    output test_data_valid,         // signals that the output data for test mode is now valid
     output [47:0] counter,          // output counter to keep track of the amounts of 1's
     output [63:0] ciphertext_out,   // ciphertext output for testing
     output reg done                 // signals that the output are valid results
@@ -31,6 +32,7 @@ module des_block(
     reg start_des;
     reg pause_des;
     reg start_message;
+    reg reg_test_data_valid;
 
     wire [63:0] message;
     wire [63:0] ciphertext;
@@ -136,6 +138,7 @@ module des_block(
         start_des <= 1'b0;
         pause_des <= 1'b0;
         start_message <= 1'b0;
+        reg_test_data_valid <= 1'b0;
 
         case (state)
         init: begin
@@ -171,6 +174,7 @@ module des_block(
         test_pause: begin
             enable <= 1'b0;
             pause_des <= 1'b1;
+            reg_test_data_valid <= 1'b1;
         end
         endcase
     end
@@ -264,5 +268,6 @@ module des_block(
 
     assign counter = counter_reg[47:0];
     assign ciphertext_out = ciphertext;
+    assign test_data_valid = reg_test_data_valid;
      
 endmodule
