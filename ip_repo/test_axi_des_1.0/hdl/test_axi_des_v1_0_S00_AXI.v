@@ -267,6 +267,7 @@
 
         // Write the standard values to regs here
         r_test_advance <= 1'b0; // Set to zero when not written to, this way it only stays high one cycle
+        r_region_data_valid <= 1'b0; // Set to zero when not written to, this way it only stays high one cycle
 
         slv_reg4 <= DES_TEST_RESULT_READY;  // Set the test result register for the CPU to read
         slv_reg3 <= 1'b0;   // Command read register standard zero for the CPU to read
