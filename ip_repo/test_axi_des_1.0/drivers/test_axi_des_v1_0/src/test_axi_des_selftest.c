@@ -1,6 +1,6 @@
 
 /***************************** Include Files *******************************/
-#include "test_axi.h"
+#include "test_axi_des.h"
 #include "xparameters.h"
 #include "stdio.h"
 #include "xil_io.h"
@@ -17,7 +17,7 @@
  * If the hardware system is not built correctly, this function may never
  * return to the caller.
  *
- * @param   baseaddr_p is the base address of the TEST_AXIinstance to be worked on.
+ * @param   baseaddr_p is the base address of the TEST_AXI_DESinstance to be worked on.
  *
  * @return
  *
@@ -28,7 +28,7 @@
  * @note    Self test may fail if data memory and device are not on the same bus.
  *
  */
-XStatus TEST_AXI_Reg_SelfTest(void * baseaddr_p)
+XStatus TEST_AXI_DES_Reg_SelfTest(void * baseaddr_p)
 {
 	u32 baseaddr;
 	int write_loop_index;
@@ -47,9 +47,9 @@ XStatus TEST_AXI_Reg_SelfTest(void * baseaddr_p)
 	xil_printf("User logic slave module test...\n\r");
 
 	for (write_loop_index = 0 ; write_loop_index < 4; write_loop_index++)
-	  TEST_AXI_mWriteReg (baseaddr, write_loop_index*4, (write_loop_index+1)*READ_WRITE_MUL_FACTOR);
+	  TEST_AXI_DES_mWriteReg (baseaddr, write_loop_index*4, (write_loop_index+1)*READ_WRITE_MUL_FACTOR);
 	for (read_loop_index = 0 ; read_loop_index < 4; read_loop_index++)
-	  if ( TEST_AXI_mReadReg (baseaddr, read_loop_index*4) != (read_loop_index+1)*READ_WRITE_MUL_FACTOR){
+	  if ( TEST_AXI_DES_mReadReg (baseaddr, read_loop_index*4) != (read_loop_index+1)*READ_WRITE_MUL_FACTOR){
 	    xil_printf ("Error reading register value at address %x\n", (int)baseaddr + read_loop_index*4);
 	    return XST_FAILURE;
 	  }

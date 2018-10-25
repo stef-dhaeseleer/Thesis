@@ -1,26 +1,32 @@
 
-#ifndef TEST_AXI_H
-#define TEST_AXI_H
+#ifndef TEST_AXI_DES_H
+#define TEST_AXI_DES_H
 
 
 /****************** Include Files ********************/
 #include "xil_types.h"
 #include "xstatus.h"
 
-#define TEST_AXI_S00_AXI_SLV_REG0_OFFSET 0
-#define TEST_AXI_S00_AXI_SLV_REG1_OFFSET 4
-#define TEST_AXI_S00_AXI_SLV_REG2_OFFSET 8
-#define TEST_AXI_S00_AXI_SLV_REG3_OFFSET 12
+#define TEST_AXI_DES_S00_AXI_SLV_REG0_OFFSET 0
+#define TEST_AXI_DES_S00_AXI_SLV_REG1_OFFSET 4
+#define TEST_AXI_DES_S00_AXI_SLV_REG2_OFFSET 8
+#define TEST_AXI_DES_S00_AXI_SLV_REG3_OFFSET 12
+#define TEST_AXI_DES_S00_AXI_SLV_REG4_OFFSET 16
+#define TEST_AXI_DES_S00_AXI_SLV_REG5_OFFSET 20
+#define TEST_AXI_DES_S00_AXI_SLV_REG6_OFFSET 24
+#define TEST_AXI_DES_S00_AXI_SLV_REG7_OFFSET 28
+#define TEST_AXI_DES_S00_AXI_SLV_REG8_OFFSET 32
+#define TEST_AXI_DES_S00_AXI_SLV_REG9_OFFSET 36
 
 
 /**************************** Type Definitions *****************************/
 /**
  *
- * Write a value to a TEST_AXI register. A 32 bit write is performed.
+ * Write a value to a TEST_AXI_DES register. A 32 bit write is performed.
  * If the component is implemented in a smaller width, only the least
  * significant data is written.
  *
- * @param   BaseAddress is the base address of the TEST_AXIdevice.
+ * @param   BaseAddress is the base address of the TEST_AXI_DESdevice.
  * @param   RegOffset is the register offset from the base to write to.
  * @param   Data is the data written to the register.
  *
@@ -28,30 +34,30 @@
  *
  * @note
  * C-style signature:
- * 	void TEST_AXI_mWriteReg(u32 BaseAddress, unsigned RegOffset, u32 Data)
+ * 	void TEST_AXI_DES_mWriteReg(u32 BaseAddress, unsigned RegOffset, u32 Data)
  *
  */
-#define TEST_AXI_mWriteReg(BaseAddress, RegOffset, Data) \
+#define TEST_AXI_DES_mWriteReg(BaseAddress, RegOffset, Data) \
   	Xil_Out32((BaseAddress) + (RegOffset), (u32)(Data))
 
 /**
  *
- * Read a value from a TEST_AXI register. A 32 bit read is performed.
+ * Read a value from a TEST_AXI_DES register. A 32 bit read is performed.
  * If the component is implemented in a smaller width, only the least
  * significant data is read from the register. The most significant data
  * will be read as 0.
  *
- * @param   BaseAddress is the base address of the TEST_AXI device.
+ * @param   BaseAddress is the base address of the TEST_AXI_DES device.
  * @param   RegOffset is the register offset from the base to write to.
  *
  * @return  Data is the data from the register.
  *
  * @note
  * C-style signature:
- * 	u32 TEST_AXI_mReadReg(u32 BaseAddress, unsigned RegOffset)
+ * 	u32 TEST_AXI_DES_mReadReg(u32 BaseAddress, unsigned RegOffset)
  *
  */
-#define TEST_AXI_mReadReg(BaseAddress, RegOffset) \
+#define TEST_AXI_DES_mReadReg(BaseAddress, RegOffset) \
     Xil_In32((BaseAddress) + (RegOffset))
 
 /************************** Function Prototypes ****************************/
@@ -63,7 +69,7 @@
  * If the hardware system is not built correctly, this function may never
  * return to the caller.
  *
- * @param   baseaddr_p is the base address of the TEST_AXI instance to be worked on.
+ * @param   baseaddr_p is the base address of the TEST_AXI_DES instance to be worked on.
  *
  * @return
  *
@@ -74,6 +80,6 @@
  * @note    Self test may fail if data memory and device are not on the same bus.
  *
  */
-XStatus TEST_AXI_Reg_SelfTest(void * baseaddr_p);
+XStatus TEST_AXI_DES_Reg_SelfTest(void * baseaddr_p);
 
-#endif // TEST_AXI_H
+#endif // TEST_AXI_DES_H

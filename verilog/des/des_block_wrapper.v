@@ -1,4 +1,4 @@
-`include "des/des_block.v"
+//`include "des/des_block.v"
 
 module des_block_wrapper(
     input clk,                  // clock

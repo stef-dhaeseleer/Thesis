@@ -1,7 +1,7 @@
 
 `timescale 1 ns / 1 ps
 
-	module test_axi_v1_0_S00_AXI #
+	module test_axi_des_v1_0_S00_AXI #
 	(
 		// Users to add parameters here
 
@@ -11,17 +11,10 @@
 		// Width of S_AXI data bus
 		parameter integer C_S_AXI_DATA_WIDTH	= 32,
 		// Width of S_AXI address bus
-		parameter integer C_S_AXI_ADDR_WIDTH	= 4
+		parameter integer C_S_AXI_ADDR_WIDTH	= 6
 	)
 	(
 		// Users to add ports here
-
-		output wire CMD_DATA,
-		output wire CMD_DATA_VALID,
-		input wire CMD_DATA_READ,
-		input wire DES_DONE,	// NOTE: not reporting read back to the wrapper now, should do this? (1)
-		input wire [63:0] DES_COUNTER,
-		output wire [31:0] DES_REGION,
 
 		// User ports ends
 		// Do not modify the ports beyond this line
@@ -90,15 +83,15 @@
 
 	// AXI4LITE signals
 	reg [C_S_AXI_ADDR_WIDTH-1 : 0] 	axi_awaddr;
-	reg  							axi_awready;
-	reg  							axi_wready;
-	reg [1 : 0] 					axi_bresp;
-	reg  							axi_bvalid;
+	reg  	axi_awready;
+	reg  	axi_wready;
+	reg [1 : 0] 	axi_bresp;
+	reg  	axi_bvalid;
 	reg [C_S_AXI_ADDR_WIDTH-1 : 0] 	axi_araddr;
-	reg  							axi_arready;
+	reg  	axi_arready;
 	reg [C_S_AXI_DATA_WIDTH-1 : 0] 	axi_rdata;
-	reg [1 : 0] 					axi_rresp;
-	reg  							axi_rvalid;
+	reg [1 : 0] 	axi_rresp;
+	reg  	axi_rvalid;
 
 	// Example-specific design signals
 	// local parameter for addressing 32 bit / 64 bit C_S_AXI_DATA_WIDTH
@@ -106,15 +99,21 @@
 	// ADDR_LSB = 2 for 32 bits (n downto 2)
 	// ADDR_LSB = 3 for 64 bits (n downto 3)
 	localparam integer ADDR_LSB = (C_S_AXI_DATA_WIDTH/32) + 1;
-	localparam integer OPT_MEM_ADDR_BITS = 1;
+	localparam integer OPT_MEM_ADDR_BITS = 3;
 	//----------------------------------------------
 	//-- Signals for user logic register space example
 	//------------------------------------------------
-	//-- Number of Slave Registers 4
+	//-- Number of Slave Registers 10
 	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg0;
 	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg1;
 	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg2;
 	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg3;
+	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg4;
+	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg5;
+	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg6;
+	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg7;
+	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg8;
+	reg [C_S_AXI_DATA_WIDTH-1:0]	slv_reg9;
 	wire	 slv_reg_rden;
 	wire	 slv_reg_wren;
 	reg [C_S_AXI_DATA_WIDTH-1:0]	 reg_data_out;
@@ -223,14 +222,6 @@
 	// and the slave is ready to accept the write address and write data.
 	assign slv_reg_wren = axi_wready && S_AXI_WVALID && axi_awready && S_AXI_AWVALID;
 
-	// ***************
-
-	reg r_cmd_data_valid;
-	reg r_region_data_valid;
-	reg r_des_region;
-
-	// ***************
-
 	always @( posedge S_AXI_ACLK )
 	begin
 	  if ( S_AXI_ARESETN == 1'b0 )
@@ -239,91 +230,101 @@
 	      slv_reg1 <= 0;
 	      slv_reg2 <= 0;
 	      slv_reg3 <= 0;
-
-	      // **************
-	      r_cmd_data_valid <= 1'b0;
-	      // **************
-
+	      slv_reg4 <= 0;
+	      slv_reg5 <= 0;
+	      slv_reg6 <= 0;
+	      slv_reg7 <= 0;
+	      slv_reg8 <= 0;
+	      slv_reg9 <= 0;
 	    end 
 	  else begin
 	    if (slv_reg_wren)
 	      begin
 	        case ( axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )
-	          2'h0:
+	          4'h0:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 0
 	                slv_reg0[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
-
-	                // **************
-	      			r_cmd_data_valid <= 1'b1;
-	      			// **************
-
 	              end  
-	          2'h1:
+	          4'h1:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 1
-	                //slv_reg1[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
-
-	                // slave register one is used by the PL to signal done to the PS
-	                // This register can thus not be set by the AXI slave
-
+	                slv_reg1[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
 	              end  
-	          2'h2:
+	          4'h2:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 2
 	                slv_reg2[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
-
-	                // **************
-	      			r_region_data_valid <= 1'b1;
-	      			// **************
 	              end  
-	          2'h3:
+	          4'h3:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 3
 	                slv_reg3[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
 	              end  
+	          4'h4:
+	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
+	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
+	                // Respective byte enables are asserted as per write strobes 
+	                // Slave register 4
+	                slv_reg4[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	              end  
+	          4'h5:
+	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
+	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
+	                // Respective byte enables are asserted as per write strobes 
+	                // Slave register 5
+	                slv_reg5[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	              end  
+	          4'h6:
+	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
+	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
+	                // Respective byte enables are asserted as per write strobes 
+	                // Slave register 6
+	                slv_reg6[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	              end  
+	          4'h7:
+	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
+	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
+	                // Respective byte enables are asserted as per write strobes 
+	                // Slave register 7
+	                slv_reg7[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	              end  
+	          4'h8:
+	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
+	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
+	                // Respective byte enables are asserted as per write strobes 
+	                // Slave register 8
+	                slv_reg8[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	              end  
+	          4'h9:
+	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
+	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
+	                // Respective byte enables are asserted as per write strobes 
+	                // Slave register 9
+	                slv_reg9[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	              end  
 	          default : begin
 	                      slv_reg0 <= slv_reg0;
 	                      slv_reg1 <= slv_reg1;
 	                      slv_reg2 <= slv_reg2;
 	                      slv_reg3 <= slv_reg3;
+	                      slv_reg4 <= slv_reg4;
+	                      slv_reg5 <= slv_reg5;
+	                      slv_reg6 <= slv_reg6;
+	                      slv_reg7 <= slv_reg7;
+	                      slv_reg8 <= slv_reg8;
+	                      slv_reg9 <= slv_reg9;
 	                    end
 	        endcase
 	      end
-
-      	  // ********************
-		  else begin
-		 	if (CMD_DATA_READ == 1'b1) begin 	// Indicates that the wrapper has read the command
-		 		r_cmd_data_valid <= 1'b0;
-		 	end
-		 	if (CMD_DATA_VALID == 1'b1) begin
-                slv_reg1 <= 0;
-            end
-            if (r_region_data_valid == 1'b1) begin
-            	r_des_region <= slv_reg2; 	// Buffer the region data from the slave reg into another reg
-            end
-            if (DES_DONE == 1'b1) begin
-                slv_reg1 <= 1;
-                //done_read <= 1; // Indicates that the AXI saw this, slv_reg has been set
-
-                // Will this work?
-                slv_reg2 <= DES_COUNTER[63:32];	// Set to the upper part of counter
-                slv_reg3 <= DES_COUNTER[31:0];	// Set to the lower part of counter
-            end
-            //else begin
-                //r_port2_data_read <= 0;
-            //end
-		  end
-		  // ********************
-
 	  end
 	end    
 
@@ -429,10 +430,16 @@
 	begin
 	      // Address decoding for reading registers
 	      case ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )
-	        2'h0   : reg_data_out <= slv_reg0;
-	        2'h1   : reg_data_out <= slv_reg1;
-	        2'h2   : reg_data_out <= slv_reg2;
-	        2'h3   : reg_data_out <= slv_reg3;
+	        4'h0   : reg_data_out <= slv_reg0;
+	        4'h1   : reg_data_out <= slv_reg1;
+	        4'h2   : reg_data_out <= slv_reg2;
+	        4'h3   : reg_data_out <= slv_reg3;
+	        4'h4   : reg_data_out <= slv_reg4;
+	        4'h5   : reg_data_out <= slv_reg5;
+	        4'h6   : reg_data_out <= slv_reg6;
+	        4'h7   : reg_data_out <= slv_reg7;
+	        4'h8   : reg_data_out <= slv_reg8;
+	        4'h9   : reg_data_out <= slv_reg9;
 	        default : reg_data_out <= 0;
 	      endcase
 	end
@@ -457,10 +464,6 @@
 	end    
 
 	// Add user logic here
-
-	assign CMD_DATA = slv_reg0;
-	assign CMD_DATA_VALID = r_cmd_data_valid;
-	assign DES_REGION = r_des_region;
 
 	// User logic ends
 
