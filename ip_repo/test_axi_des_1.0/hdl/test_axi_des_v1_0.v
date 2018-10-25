@@ -1,4 +1,3 @@
-
 `timescale 1 ns / 1 ps
 
 	module test_axi_des_v1_0 #
@@ -43,6 +42,22 @@
 		output wire  s00_axi_rvalid,
 		input wire  s00_axi_rready
 	);
+
+	// ********************
+
+	wire [63:0] des_counter;
+	wire [63:0] des_ciphertext;
+	wire [31:0] region_data;
+	wire [31:0] cmd_data;
+ 	wire cmd_data_valid;
+    wire cmd_data_read;
+    wire des_done;
+    wire des_test_advance;
+    wire des_test_result_ready;
+
+	// ********************
+
+
 // Instantiation of Axi Bus Interface S00_AXI
 	test_axi_des_v1_0_S00_AXI # ( 
 		.C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
@@ -68,7 +83,17 @@
 		.S_AXI_RDATA(s00_axi_rdata),
 		.S_AXI_RRESP(s00_axi_rresp),
 		.S_AXI_RVALID(s00_axi_rvalid),
-		.S_AXI_RREADY(s00_axi_rready)
+		.S_AXI_RREADY(s00_axi_rready),
+		// **************************************
+		.CMD_DATA(cmd_data),
+		.CMD_DATA_VALID(cmd_data_valid),
+		.CMD_DATA_READ(cmd_data_read),
+		.DES_DONE(des_done),
+		.DES_COUNTER(des_counter),
+		.DES_REGION(region_data),
+		.TEST_ADVANCE(des_test_advance),
+		.DES_TEST_RESULT_READY(des_test_result_ready),
+		.DES_CIPHERTEXT(des_ciphertext)
 	);
 
 	// Add user logic here
@@ -76,15 +101,16 @@
 	des_block_wrapper des_block_wrapper(
         .clk (s00_axi_aclk),
         .rst_n (s00_axi_aresetn),
-        .cmd (),
-        .cmd_valid (),
-        .advance_test_cmd (),
-        .region (),
-        .cmd_read (),
-        .test_res_ready (),
-        .done (),
-        .counter (),
-        .ciphertext ()
+        .cmd (cmd_data),
+        .cmd_valid (cmd_data_valid),
+        .advance_test_cmd (des_test_advance),
+        .region (region_data),
+        // **********************************
+        .cmd_read (cmd_data_read),
+        .test_res_ready (des_test_result_ready),
+        .done (des_done),
+        .counter (des_counter),
+        .ciphertext (des_ciphertext)
         );
 
 	// User logic ends

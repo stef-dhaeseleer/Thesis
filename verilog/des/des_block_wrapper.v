@@ -1,4 +1,6 @@
-//`include "des/des_block.v"
+`timescale 1ns / 1ps
+
+`include "des/des_block.v"
 
 module des_block_wrapper(
     input clk,                  // clock
@@ -103,14 +105,14 @@ module des_block_wrapper(
         start: begin    // Sets the start signal for the des block
             next_state <= waiting;
         end
-        waiting: begin  // Keeps the start signal for the des block up and waits for it to finish
+        waiting: begin
             next_state <= waiting;
 
             if (des_finished == 1'b1) begin
                 next_state <= finishing;
             end
         end
-        finishing: begin     // Signal that we are done, set output data and wait for data read
+        finishing: begin
             next_state <= finishing;
 
             if (cmd_valid==1'b1) begin
@@ -119,7 +121,7 @@ module des_block_wrapper(
                 end
             end 
         end
-        test_mode: begin     // Signal that we are done, set output data and wait for data read
+        test_mode: begin
             next_state <= test_mode;
 
             if (cmd_valid==1'b1) begin
@@ -176,6 +178,7 @@ module des_block_wrapper(
         end
         test_mode: begin
             test_enabled <= 1'b1;
+            cmd_read_reg <= 1'b1;
 
             if (des_test_data_valid == 1'b1) begin
                 reg_test_res_ready <= 1'b1;
