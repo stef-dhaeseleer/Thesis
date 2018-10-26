@@ -8,7 +8,7 @@ module des_block_wrapper(
     input [31:0] cmd,                  // input command
     input cmd_valid,            // input command valid
     input advance_test_cmd,
-    input [15:0] region,       // input data to set the region of the DES block
+    input [31:0] region,       // input data to set the region of the DES block
     output cmd_read,            // signals that the input command has been read, input data also read
     output test_res_ready,      
     output done,            // signals that the operations are done, output data also valid
@@ -212,7 +212,7 @@ module des_block_wrapper(
 
     always @(posedge clk) begin     // Load the region into the register
         if (load_region == 1'b1) begin
-            region_reg <= region;
+            region_reg <= region[15:0];
         end
     end
 
