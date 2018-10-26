@@ -5,7 +5,7 @@
 module des_block_wrapper(
     input clk,                  // clock
     input rst_n,                // reset, active low signal
-    input cmd,                  // input command
+    input [31:0] cmd,                  // input command
     input cmd_valid,            // input command valid
     input advance_test_cmd,
     input [15:0] region,       // input data to set the region of the DES block
@@ -15,14 +15,6 @@ module des_block_wrapper(
     output [63:0] counter,      // counter output for the CPU
     output [63:0] ciphertext    // ciphertext output for the CPU
     );
-    
-    // TODO: Add signals (1)
-    // Create an output for the cipher text for testing purposes (routed from the des block output)
-    // Will take an input to see if we are in test mode (flag to the des block)
-    // Will generate a signal to the des block to advance the test one step when data has been read by the CPU
-
-    // TODO: add more registers to AXI, each piece of data its own (1)
-    // Add signals to see if the data has been read by the CPU
 
     // TODO: should be able to set the key from the CPU: but this will be a lot of bits... (1)
 
@@ -41,6 +33,7 @@ module des_block_wrapper(
 
     reg [15:0] region_reg;
     reg [63:0] counter_reg;
+    reg [63:0] ciphertext_reg;
 
     wire des_finished;
     wire des_test_data_valid;
@@ -213,6 +206,7 @@ module des_block_wrapper(
 
     assign cmd_read = cmd_read_reg;
     assign counter = counter_reg;
+    assign ciphertext = ciphertext_reg;
     assign test_res_ready = reg_test_res_ready;
     assign done = reg_done;
 
@@ -226,6 +220,10 @@ module des_block_wrapper(
         if (load_counter == 1'b1) begin
             counter_reg <= des_counter;
         end
+    end
+
+    always @(posedge clk) begin     // Load the ciphertext into the register
+        ciphertext_reg <= ciphertext_out;
     end
      
 endmodule
