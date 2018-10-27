@@ -7,6 +7,8 @@
 from des_functions import *
 from des_keygen import *
 
+import binascii
+
 def DES_encrypt(message, key, file, file_2):
 
 	cipher = ""
@@ -237,13 +239,44 @@ def generate_tests_pipeline():
 	print ()
 	print ("Finished making test files!")
 
+def generate_test_data_hw():
+
+	print ("Started printing test data...")
+	print ()
+
+	file_input = open("testfiles/des_tests_hw.txt", "r")
+
+	counter = 0
+
+	print("region set to zero for tests")
+	print ("round_keys <= 768'b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;")
+
+	for line in file_input:
+
+		counter += 1
+
+		args = line.split()
+
+		master_key = args[0]
+		message = args[1]
+
+		ciphertext = DES_encrypt(message, master_key)
+
+		print ("message: "  + message)
+		print ("ciphertext: " + hex(int(ciphertext, 2)))
+
+	file_input.close
+
+	print ()
+	print ("Finished making test files!")
+
 
 def main():
 
 	#generate_test_files_NIST()
 	#generate_test_data_pipeline()
-	generate_tests_pipeline()
-	
+	#generate_tests_pipeline()
+	generate_test_data_hw()
 
 if __name__ == '__main__':
     main()

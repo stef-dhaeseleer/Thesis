@@ -23,7 +23,7 @@ module des_block(
     // Nets and regs
     reg [2:0] state, next_state;            // State variables
 
-    reg [767:0] round_keys = 768'h1;        // NOTE: Should this be a reg here or an input?
+    reg [767:0] round_keys = 768'h0;        // NOTE: Should this be a reg here or an input?
     reg [17:0] mask_i_bit_buffer;           // Used to buffer the mask bits, needed due to the pipeline delay
     reg [47:0] counter_reg;
 

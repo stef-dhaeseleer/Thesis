@@ -54,8 +54,9 @@ module des_block_wrapper(
     localparam [3:0]    waiting         = 4'h3;
     localparam [3:0]    finishing       = 4'h4;
     localparam [3:0]    restart         = 4'h5;
-    localparam [3:0]    test_mode       = 4'h6;
-    localparam [3:0]    advance_test    = 4'h7;
+    localparam [3:0]    test_init       = 4'h6;
+    localparam [3:0]    test_mode       = 4'h7;
+    localparam [3:0]    advance_test    = 4'h8;
 
     // Functions
 
@@ -81,9 +82,9 @@ module des_block_wrapper(
                     CMD_START:                            
                         next_state <= start;
                     CMD_TEST_MODE: 
-                        next_state <= test_mode;
+                        next_state <= test_init;
                     CMD_RESTART:
-                        next_state <= init;
+                        next_state <= restart;
                     default:
                         next_state <= state;
                 endcase
@@ -101,6 +102,7 @@ module des_block_wrapper(
         waiting: begin
             next_state <= waiting;
 
+            // TODO: should I add a restart here too? (1)
             if (des_finished == 1'b1) begin
                 next_state <= finishing;
             end
@@ -113,6 +115,9 @@ module des_block_wrapper(
                     next_state <= restart;
                 end
             end 
+        end
+        test_init: begin
+            next_state <= test_mode;
         end
         test_mode: begin
             next_state <= test_mode;
@@ -169,9 +174,13 @@ module des_block_wrapper(
             reg_done <= 1'b1;
             load_counter <= 1'b1;
         end
+        test_init: begin
+            test_enabled <= 1'b1;
+            start_des <= 1'b1;
+            cmd_read_reg <= 1'b1;
+        end
         test_mode: begin
             test_enabled <= 1'b1;
-            cmd_read_reg <= 1'b1;
 
             if (des_test_data_valid == 1'b1) begin
                 reg_test_res_ready <= 1'b1;
