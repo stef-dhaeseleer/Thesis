@@ -4,6 +4,8 @@
 #include <stdint.h>
 
 #include "interface.h"
+#include "math.h"
+
 #include "xil_printf.h"
 
 #define CMD_READ_REGION             0

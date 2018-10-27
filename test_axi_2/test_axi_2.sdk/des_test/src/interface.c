@@ -14,7 +14,7 @@ void set_cmd(unsigned int cmd) {
     axi_port[0] = cmd;
 }
 
-void set_region(uint16_t * region) {
+void set_region(uint16_t region) {
     // Set register 1 of the AXI to the specified region
     axi_port[1] = region;
 }

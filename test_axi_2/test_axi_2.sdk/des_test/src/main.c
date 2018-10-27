@@ -18,7 +18,7 @@
 #include "hw.h"
 
 /*
- *
+ * Main of the control host for the DES cryptanalysis implementation.
  *
  */
 

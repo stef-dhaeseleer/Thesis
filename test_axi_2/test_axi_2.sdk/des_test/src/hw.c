@@ -81,7 +81,7 @@ void test_hw(){
     xil_printf("\r\n");
 }
 
-void start_hw(uint16_t * region) {
+void start_hw(uint16_t region) {
     xil_printf("Starting the HW... \r\n");
     xil_printf("\r\n");
 
@@ -103,8 +103,43 @@ void start_hw(uint16_t * region) {
 
     // Wait for the HW to finish 
     //wait_for_done();
-
 }
+
+void monitor_hw() {
+    xil_printf("Monitoring the HW... \r\n");
+    xil_printf("\r\n");
+
+    uint16_t region = 0;
+
+    uint32_t counter[2] = 0;
+    uint32_t result[2] = 0;
+
+    while(region <= 65535) {
+
+        // TODO: Add a loop over all blocks here for multi block support (1)
+
+        // Start the HW
+        start_hw(region);
+
+        // Wait for the HW to finish 
+        wait_for_done();
+
+        // Get the resulting counter and add to our counter
+        result[1] = axi_port[7];
+        result[0] = axi_port[8];
+
+        mp_add(counter, result, counter, 2);
+
+        // Restart the block
+        restart_hw();
+
+        // Increment region
+        region = region + 1;
+
+    }
+    
+}
+
 
 void restart_hw() {
     set_cmd(CMD_RESTART);
