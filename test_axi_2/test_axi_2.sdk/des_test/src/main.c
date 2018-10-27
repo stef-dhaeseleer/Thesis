@@ -10,24 +10,32 @@
 
 #include <stdio.h>
 
+#include "xil_printf.h"
+#include "xil_cache.h"
+
+#include "platform/platform.h"
+#include "interface.h"
+#include "hw.h"
+
 /*
  *
- * Print a greeting message on standard output and exit.
- *
- * On embedded platforms this might require semi-hosting or similar.
- *
- * For example, for toolchains derived from GNU Tools for Embedded,
- * to enable semi-hosting, the following was added to the linker:
- *
- * --specs=rdimon.specs -Wl,--start-group -lgcc -lc -lc -lm -lrdimon -Wl,--end-group
- *
- * Adjust it for other toolchains.
  *
  */
 
-int
-main(void)
-{
-  printf("Hello ARM World!" "\n");
-  return 0;
+int main() {
+
+    xil_printf("Initializing the platform... \r\n");
+    xil_printf("\r\n");
+
+    init_platform();
+    interface_init();
+
+    xil_printf("Platform initialized! \r\n");
+    xil_printf("\r\n");
+
+    // Run a test on the HW
+    test_hw();
+    restart_hw();
+
+    return 0;
 }
