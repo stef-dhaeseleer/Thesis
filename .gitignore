@@ -14,6 +14,7 @@ ip_repo/edit_*
 webtalk
 RemoteSystemsTempFiles
 .metadata
+standalone_bsp_0
 
 *.jou
 *.log

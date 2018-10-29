@@ -3,8 +3,8 @@
  Name        : main.c
  Author      : Stef D'haeseleer
  Version     :
- Copyright   : Your copyright notice
- Description : Hello World in C
+ Copyright   :
+ Description :
  ============================================================================
  */
 
