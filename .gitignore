@@ -14,6 +14,7 @@ ip_repo/edit_*
 webtalk
 RemoteSystemsTempFiles
 .metadata
+.settings
 standalone_bsp_0
 
 *.jou
@@ -27,5 +28,7 @@ standalone_bsp_0
 *.sim
 *.srcs
 *.tmp
+
+test_axi_2/test_axi_2.sdk/des_test/src
 
 
