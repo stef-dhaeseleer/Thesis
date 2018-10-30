@@ -16,6 +16,6 @@
 
 void test_hw();
 void restart_hw();
-void start_hw(uint16_t * region);
+void start_hw(uint16_t region);
 
 #endif

@@ -15,6 +15,7 @@ webtalk
 RemoteSystemsTempFiles
 .metadata
 .settings
+.Xil
 standalone_bsp_0
 
 *.jou
@@ -30,5 +31,8 @@ standalone_bsp_0
 *.tmp
 
 test_axi_2/test_axi_2.sdk/des_test/src
+test_axi_3
+axi_test_old
+
 
 

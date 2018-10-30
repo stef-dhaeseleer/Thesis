@@ -111,8 +111,8 @@ void monitor_hw() {
 
     uint16_t region = 0;
 
-    uint32_t counter[2] = 0;
-    uint32_t result[2] = 0;
+    uint32_t counter[2] = {0};
+    uint32_t result[2] = {0};
 
     while(region <= 65535) {
 
