@@ -153,7 +153,7 @@ module des_block_wrapper(
         restart_block <= 1'b0;
         test_enabled <= 1'b0;
         test_advance <= 1'b0;
-        reg_test_res_ready <= 1'b1;
+        reg_test_res_ready <= 1'b0;
 
         case (state)
         init: begin

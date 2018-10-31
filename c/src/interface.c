@@ -27,7 +27,9 @@ void advance_test() {
 void wait_for_cmd_read() {
     // Check register 3 of the AXI for the command read signal
     while(axi_port[3]==0)
-    {}
+    {
+    	//sleep(1);
+    }
 }
 
 void wait_for_test_res_ready() {

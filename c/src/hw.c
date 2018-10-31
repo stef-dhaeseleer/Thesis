@@ -24,18 +24,22 @@ void test_hw(){
     // First set the region to be used to all zeros
     uint16_t region = 0;
     set_region(region);
-    // TODO: is it okay to just do these after eachother or should I leave time in between? (1)
+    sleep(1);
+    // TODO: is it okay to just do these after each other or should I leave time in between? (1)
+    xil_printf("Selected region: %x \r\n", region);
     set_cmd(CMD_READ_REGION);
+    sleep(1);
+    xil_printf("CMD sent to HW");
     wait_for_cmd_read();
 
-    xil_printf("Selected region: %x \r\n", region);
+    xil_printf("CMD read by HW");
     xil_printf("\r\n");
 
     // Start the DES engine in test mode
     set_cmd(CMD_TEST_MODE);
     wait_for_cmd_read();
 
-    // Wait untill the first ciphertext result is ready
+    // Wait until the first ciphertext result is ready
     wait_for_test_res_ready();
 
     // Now check and print the result

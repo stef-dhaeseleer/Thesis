@@ -270,7 +270,7 @@
         r_region_data_valid <= 1'b0; // Set to zero when not written to, this way it only stays high one cycle
 
         slv_reg4 <= DES_TEST_RESULT_READY;  // Set the test result register for the CPU to read
-        slv_reg3 <= 1'b0;   // Command read register standard zero for the CPU to read
+        //slv_reg3 <= CMD_DATA_READ;          // Set the cmd read register for the CPU to read
 
         slv_reg5 <= DES_CIPHERTEXT[63:32];  // Set to the upper part of the ciphertext
         slv_reg6 <= DES_CIPHERTEXT[31:0];   // Set to the lower part of the ciphertext
@@ -288,6 +288,7 @@
 
                     // **************
                     r_cmd_data_valid <= 1'b1;
+                    slv_reg3 <= 1'b0;
                     // **************
 
                   end  
@@ -416,6 +417,7 @@
           else begin
                 if (CMD_DATA_READ == 1'b1) begin    // Indicates that the wrapper has read the command
                     r_cmd_data_valid <= 1'b0;
+                    slv_reg3 <= 1'b1;
                 end
                 if (r_region_data_valid == 1'b1) begin
                     r_des_region <= slv_reg1;   // Buffer the region data from the slave reg into another reg
@@ -432,9 +434,6 @@
                 
                     slv_reg7 <= DES_COUNTER[63:32];  // Set to the upper part of the counter
                     slv_reg8 <= DES_COUNTER[31:0];   // Set to the lower part of the counter
-                end
-                if (CMD_DATA_READ == 1'b1) begin    // Indicates that the wrapper has read the command
-                    slv_reg3 <= 1'b1;   // Set command read register
                 end
           end
 

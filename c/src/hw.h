@@ -7,6 +7,7 @@
 #include "math.h"
 
 #include "xil_printf.h"
+#include "sleep.h"
 
 #define CMD_READ_REGION             0
 #define CMD_START                   1

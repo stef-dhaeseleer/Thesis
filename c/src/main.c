@@ -13,7 +13,7 @@
 #include "xil_printf.h"
 #include "xil_cache.h"
 
-#include "platform/platform.h"
+#include "platform.h"
 #include "interface.h"
 #include "hw.h"
 
@@ -24,6 +24,7 @@
 
 int main() {
 
+	xil_printf("\r\n");
     xil_printf("Initializing the platform... \r\n");
     xil_printf("\r\n");
 
