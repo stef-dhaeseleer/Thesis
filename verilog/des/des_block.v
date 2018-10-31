@@ -28,6 +28,7 @@ module des_block(
     reg [47:0] counter_reg;
 
     reg enable;
+    reg counter_enable;
     reg mask_result;
     reg start_des;
     reg pause_des;
@@ -231,20 +232,21 @@ module des_block(
         .result         (mask_o_bit));
 
     always @(posedge clk) begin     // Logic for buffering mask_i_bit into mask_i_bit_buffer
+        
         if (rst_n == 1'b0) begin
             mask_i_bit_buffer <= 18'h0;
         end
         else if (restart_block == 1'b1) begin
             mask_i_bit_buffer <= 18'h0;
         end
-        else if (enable == 1'b1) begin  // Only process output when enabled
+        //else if (enable == 1'b1) begin  // Only process output when enabled
             if (message_valid == 1'b1) begin
                 mask_i_bit_buffer <= {mask_i_bit, mask_i_bit_buffer[17:1]};
             end
             else if (ciphertext_valid == 1'b1) begin
                 mask_i_bit_buffer <= {1'b0, mask_i_bit_buffer[17:1]};   // keep shifting for the last operations in the pipeline, fill register with zeros
             end
-        end
+        //end
     end
 
     // When ciphertext_valid is set, mask_i_bit_buffer[0] contains the mask_i_bit that is associated with the current mask_o_bit
@@ -253,6 +255,15 @@ module des_block(
             mask_result <= mask_o_bit ^ mask_i_bit_buffer[0];   // This value can be used to activate the counter
         end
     end
+    
+    always @(posedge clk) begin
+            if (ciphertext_valid == 1'b1) begin
+                counter_enable <= 1'b1;   // This value can be used to activate the counter
+            end
+            else begin
+                counter_enable <= 1'b0;
+            end
+        end
 
     always @(posedge clk) begin     // Counter
         if (rst_n == 1'b0) begin

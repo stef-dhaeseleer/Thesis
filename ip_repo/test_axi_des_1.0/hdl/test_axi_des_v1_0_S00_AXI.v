@@ -274,6 +274,9 @@
 
         slv_reg5 <= DES_CIPHERTEXT[63:32];  // Set to the upper part of the ciphertext
         slv_reg6 <= DES_CIPHERTEXT[31:0];   // Set to the lower part of the ciphertext
+        
+        slv_reg7 <= DES_COUNTER[63:32];  // Set to the upper part of the counter
+        slv_reg8 <= DES_COUNTER[31:0];   // Set to the lower part of the counter
 
         if (slv_reg_wren)
           begin
@@ -431,9 +434,6 @@
                 end
                 if (DES_DONE == 1'b1) begin
                     slv_reg9 <= 1;  // This is the done signal, set to one here
-                
-                    slv_reg7 <= DES_COUNTER[63:32];  // Set to the upper part of the counter
-                    slv_reg8 <= DES_COUNTER[31:0];   // Set to the lower part of the counter
                 end
           end
 
