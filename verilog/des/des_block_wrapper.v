@@ -19,7 +19,7 @@ module des_block_wrapper(
     // TODO: should be able to set the key from the CPU: but this will be a lot of bits... (1)
 
     // Nets and regs
-    reg [1:0] state, next_state;        // State variables
+    reg [3:0] state, next_state;        // State variables
 
     reg load_region;
     reg cmd_read_reg;

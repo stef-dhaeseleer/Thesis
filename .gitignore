@@ -7,6 +7,7 @@
 Python/__pycache__/*
 *.command
 *.out
+*.pyc
 
 thesis_des/*
 xgui
@@ -17,6 +18,15 @@ RemoteSystemsTempFiles
 .settings
 .Xil
 standalone_bsp_0
+c/src/src
+des_test_bsp
+design_1_wrapper_hw_platform_0
+Debug
+.sdk
+.temp
+
+Xilinx.spec
+lscript.ld
 
 *.jou
 *.log
@@ -29,8 +39,9 @@ standalone_bsp_0
 *.sim
 *.srcs
 *.tmp
+*.hdf
 
-test_axi_2/test_axi_2.sdk/des_test/src
+
 test_axi_3
 axi_test_old
 

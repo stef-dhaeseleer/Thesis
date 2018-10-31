@@ -63,7 +63,7 @@ module message_counter_partial(
                 next_state <= init;
             end
             else if (counter_reg == {64-N{1'b1}}) begin
-            //if (counter_reg == 64'h10) begin
+            //else if (counter_reg == 64'h10) begin
                 next_state <= finished;
             end
         end
