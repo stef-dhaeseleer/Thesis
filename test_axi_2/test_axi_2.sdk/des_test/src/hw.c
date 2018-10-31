@@ -113,8 +113,11 @@ void test_hw(){
     xil_printf("Expected  : %08x%08x \r\n", test[1], test[0]);
     xil_printf("\r\n");
 
+
+
     xil_printf("Testing completed! \r\n");
     xil_printf("Result: %x/%x correct! \r\n", nb_correct, nb_tests);
+    xil_printf("Counter: %08x%08x, expected: %x \r\n", axi_port[7], axi_port[8], 4);
     xil_printf("\r\n");
 }
 

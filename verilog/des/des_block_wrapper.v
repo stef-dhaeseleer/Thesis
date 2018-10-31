@@ -181,6 +181,7 @@ module des_block_wrapper(
         end
         test_mode: begin
             test_enabled <= 1'b1;
+            load_counter <= 1'b1;
 
             if (des_test_data_valid == 1'b1) begin
                 reg_test_res_ready <= 1'b1;
