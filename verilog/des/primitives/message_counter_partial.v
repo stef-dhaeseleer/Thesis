@@ -62,6 +62,7 @@ module message_counter_partial(
             else if (reset_counter == 1'b1) begin
                 next_state <= init;
             end
+		    // TODO: change this and next back to full (1)
             //else if (counter_reg == {64-N{1'b1}}) begin
             else if (counter_reg == 64'h20) begin
                 next_state <= finished;
@@ -100,7 +101,7 @@ module message_counter_partial(
         end
         first: begin
             load_counter <= 1'b1;
-            valid <= 1'b1;      
+            valid <= 1'b1;  // Already valid here to allow the DES unit to also process the all zero message of the counter
         end
         working: begin
             valid <= 1'b1;

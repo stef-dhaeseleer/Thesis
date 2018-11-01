@@ -12,6 +12,7 @@
 
 #include "xil_printf.h"
 #include "xil_cache.h"
+#include "sleep.h"
 
 #include "platform.h"
 #include "interface.h"
@@ -23,6 +24,8 @@
  */
 
 int main() {
+
+	uint32_t region = 0x00000000;
 
 	xil_printf("\r\n");
     xil_printf("Initializing the platform... \r\n");
@@ -36,7 +39,12 @@ int main() {
 
     // Run a test on the HW
     test_hw();
+    sleep(5);
+
     restart_hw();
+    sleep(2);
+
+    start_hw(region);
 
     return 0;
 }

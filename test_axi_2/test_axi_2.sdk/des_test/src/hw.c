@@ -117,7 +117,7 @@ void test_hw(){
 
     xil_printf("Testing completed! \r\n");
     xil_printf("Result: %x/%x correct! \r\n", nb_correct, nb_tests);
-    xil_printf("Counter: %08x%08x, expected: %08x \r\n", axi_port[7], axi_port[8], 4);
+    xil_printf("Counter: %08x%08x, expected: %08x%08x \r\n", axi_port[7], axi_port[8], 0, 4);
     xil_printf("\r\n");
 }
 
@@ -141,7 +141,11 @@ void start_hw(uint16_t region) {
     xil_printf("\r\n");
 
     // Wait for the HW to finish 
-    //wait_for_done();
+    wait_for_done();
+
+    xil_printf("Run complete! \r\n");
+    xil_printf("Counter: %08x%08x \r\n", axi_port[7], axi_port[8]);
+    xil_printf("\r\n");
 }
 
 void monitor_hw() {

@@ -182,8 +182,6 @@ module des_encryption_pipelined(
             .restart_block (restart_block),
             .L_in       (permuted_message_reg[1:32]),
             .R_in       (permuted_message_reg[33:64]),
-            //.L_in       (permuted_message[1:32]),
-            //.R_in       (permuted_message[33:64]),
             .Kn         (current_round_key1),
             .o_valid    (output_valid_stage_1),
             .L_out      (L_temp1),
