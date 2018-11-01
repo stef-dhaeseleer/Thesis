@@ -29,7 +29,6 @@ module des_block(
 
     reg enable;
     reg counter_enable;
-    reg mask_result;
     reg start_des;
     reg pause_des;
     reg start_message;
@@ -43,6 +42,7 @@ module des_block(
     wire ciphertext_valid;
     wire mask_i_bit;
     wire mask_o_bit;
+    wire mask_result;
 
     // Parameters
     localparam [2:0]    init        = 3'h0;    // Possible states
@@ -248,13 +248,6 @@ module des_block(
             end
         //end
     end
-
-    // When ciphertext_valid is set, mask_i_bit_buffer[0] contains the mask_i_bit that is associated with the current mask_o_bit
-    always @(posedge clk) begin
-        if (ciphertext_valid == 1'b1) begin
-            mask_result <= mask_o_bit ^ mask_i_bit_buffer[0];   // This value can be used to activate the counter
-        end
-    end
     
     always @(posedge clk) begin
             if (ciphertext_valid == 1'b1) begin
@@ -272,7 +265,7 @@ module des_block(
         else if (restart_block == 1'b1) begin
             counter_reg <= 47'h0;
         end
-        else if (mask_result == 1'b1 & enable == 1'b1) begin    // Only count new values when enabled
+        else if (mask_result == 1'b1 & counter_enable == 1'b1) begin    // Only count new values when enabled
             counter_reg <= counter_reg + 1;
         end
     end
@@ -280,5 +273,6 @@ module des_block(
     assign counter = counter_reg[47:0];
     assign ciphertext_out = ciphertext;
     assign test_data_valid = reg_test_data_valid;
+    assign mask_result = mask_o_bit ^ mask_i_bit_buffer[0];
      
 endmodule

@@ -19,7 +19,8 @@ module des_encryption_pipelined(
 
     // Nets and regs
     reg enable;
-
+    reg output_valid_stage_0_reg;
+    
     reg output_valid_stage_0;   // This one has to be a reg at this level in the hierarchy
     wire output_valid_stage_1;  // The rest are wires here to connect the valid registers in the rounfunction submodules
     wire output_valid_stage_2;
@@ -141,6 +142,7 @@ module des_encryption_pipelined(
         endcase
     end
 
+    //always @(posedge clk) begin   // Output logic, signals to set: valid
     always @(*) begin   // Output logic, signals to set: valid
         output_valid_stage_0 <= 1'b0;
         output_valid <= 1'b0;
@@ -174,11 +176,14 @@ module des_encryption_pipelined(
     des_roundfunction_pipelined round_func1(
             .clk        (clk ),
             .rst_n      (rst_n),
-            .i_valid    (output_valid_stage_0),
+            //.i_valid    (output_valid_stage_0),
+            .i_valid    (output_valid_stage_0_reg),
             .enable     (enable ),
             .restart_block (restart_block),
             .L_in       (permuted_message_reg[1:32]),
             .R_in       (permuted_message_reg[33:64]),
+            //.L_in       (permuted_message[1:32]),
+            //.R_in       (permuted_message[33:64]),
             .Kn         (current_round_key1),
             .o_valid    (output_valid_stage_1),
             .L_out      (L_temp1),
@@ -390,6 +395,10 @@ module des_encryption_pipelined(
             .data_o    (result_wire));
     
     always @(posedge clk) begin     // Loading the data from the pipeline stages into the register
+        output_valid_stage_0_reg <= output_valid_stage_0;
+    end
+    
+    always @(posedge clk) begin     // Loading the data from the pipeline stages into the register
         permuted_message_reg <= permuted_message;
     end
 
@@ -399,7 +408,7 @@ module des_encryption_pipelined(
             result_reg <= result_wire;
         end
     end    
-
+    
     assign result = result_reg;
     
     assign current_round_key1 = round_keys[1:48];

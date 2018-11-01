@@ -270,7 +270,7 @@ def generate_test_data_hw():
 
 		print ("message: "  + message)
 		print ("ciphertext: " + hex(int(ciphertext, 2)))
-		print ("counter: " + str(counter))
+		print ("counter: " + hex(counter))
 
 	file_input.close
 
