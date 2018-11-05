@@ -15,8 +15,9 @@
 #define CMD_RESTART                 3
 
 
-void test_hw();
-void restart_hw();
-void start_hw(uint16_t region);
+void test_hw(unsigned int * port);
+void restart_hw(unsigned int * port);
+void start_hw(uint16_t region, unsigned int * port);
+void monitor_hw(unsigned int * port);
 
 #endif
