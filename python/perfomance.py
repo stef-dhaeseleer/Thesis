@@ -2,8 +2,8 @@ import math
 
 def main():
     
-	clock_freq = 107	# Clock frequency in MHz
-	nb_blocks = 36		# Number of DES calculation blocks
+	clock_freq = 125	# Clock frequency in MHz
+	nb_blocks = 32		# Number of DES calculation blocks
 
 	seconds_per_day = 24*60*60
 	
