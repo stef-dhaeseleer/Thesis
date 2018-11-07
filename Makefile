@@ -11,11 +11,11 @@ open:
 
 des:
 	#vivado thesis_des/thesis_des.xpr -tempDir /tmp &
-	vivado -mode batch -source tcl/open_des.tcl
+	vivado -mode batch -source tcl/open_des.tcl &
 
 axi:
 	#vivado test_axi_2/test_axi_2.xpr -tempDir /tmp &
-	vivado -mode batch -source tcl/open_axi.tcl
+	vivado -mode batch -source tcl/open_axi.tcl &
 
 uart:
 	screen /dev/ttyACM0 115200
