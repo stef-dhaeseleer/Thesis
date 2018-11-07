@@ -1,5 +1,5 @@
 all:	
-	vivado -mode batch -source build.tcl	
+	vivado -mode batch -source tcl/build.tcl	
 	#ln -s ../src/sdk/ rsa_project/rsa_project.sdk
 
 source:
@@ -10,10 +10,12 @@ open:
 	vivado &
 
 des:
-	vivado thesis_des/thesis_des.xpr -tempDir /tmp &
+	#vivado thesis_des/thesis_des.xpr -tempDir /tmp &
+	vivado -mode batch -source tcl/open_des.tcl
 
 axi:
-	vivado test_axi_2/test_axi_2.xpr -tempDir /tmp &
+	#vivado test_axi_2/test_axi_2.xpr -tempDir /tmp &
+	vivado -mode batch -source tcl/open_axi.tcl
 
 uart:
 	screen /dev/ttyACM0 115200
