@@ -86,11 +86,11 @@ module des_block_wrapper(
                     CMD_RESTART:
                         next_state <= restart;
                     default:
-                        next_state <= state;
+                        next_state <= init;
                 endcase
             end
             else begin  // If no new command is received
-                next_state <= state;
+                next_state <= init;
             end
         end
         set_region: begin   // Sets the signal to load the region into a register, than listen for commands again
@@ -136,6 +136,9 @@ module des_block_wrapper(
             next_state <= test_mode;
         end
         restart: begin
+            next_state <= init;
+        end
+        default: begin
             next_state <= init;
         end
         endcase
