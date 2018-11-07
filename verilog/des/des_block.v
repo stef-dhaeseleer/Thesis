@@ -24,6 +24,7 @@ module des_block(
     reg [2:0] state, next_state;            // State variables
 
     reg [767:0] round_keys = 768'h0;        // NOTE: Should this be a reg here or an input?
+    //reg [33:0] mask_i_bit_buffer;           // Used to buffer the mask bits, needed due to the pipeline delay
     reg [17:0] mask_i_bit_buffer;           // Used to buffer the mask bits, needed due to the pipeline delay
     reg [47:0] counter_reg;
 
@@ -234,16 +235,20 @@ module des_block(
     always @(posedge clk) begin     // Logic for buffering mask_i_bit into mask_i_bit_buffer
         
         if (rst_n == 1'b0) begin
+            //mask_i_bit_buffer <= 34'h0;
             mask_i_bit_buffer <= 18'h0;
         end
         else if (restart_block == 1'b1) begin
+            //mask_i_bit_buffer <= 34'h0;
             mask_i_bit_buffer <= 18'h0;
         end
         //else if (enable == 1'b1) begin  // Only process output when enabled
             if (message_valid == 1'b1) begin
+                //mask_i_bit_buffer <= {mask_i_bit, mask_i_bit_buffer[33:1]};
                 mask_i_bit_buffer <= {mask_i_bit, mask_i_bit_buffer[17:1]};
             end
             else if (ciphertext_valid == 1'b1) begin
+                //mask_i_bit_buffer <= {1'b0, mask_i_bit_buffer[33:1]};   // keep shifting for the last operations in the pipeline, fill register with zeros
                 mask_i_bit_buffer <= {1'b0, mask_i_bit_buffer[17:1]};   // keep shifting for the last operations in the pipeline, fill register with zeros
             end
         //end
