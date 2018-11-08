@@ -55,6 +55,8 @@ int main() {
 
     start_hw(region, port);
 
+    print_reg_contents(port);
+
     /*
     xil_printf("Testing block 1... \r\n");
     xil_printf("\r\n");

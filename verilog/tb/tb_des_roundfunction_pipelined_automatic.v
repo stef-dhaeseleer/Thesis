@@ -5,7 +5,7 @@
 `define EOF 32'hFFFF_FFFF 
 `define NULL 0 
 
-`include "des/des_roundfunction_pipelined.v"
+//`include "des/des_roundfunction_pipelined.v"
 
 // iverilog tb/tb_des_roundfunction_pipelined_automatic.v
 // vvp a.out
@@ -16,6 +16,7 @@ module tb_des_roundfunction_pipelined();
     reg     clk;
     reg     rst_n;
     reg     i_valid;
+    reg     enable;
     reg     [1:32] L_in;
     reg     [1:32] R_in;
     reg     [1:48] Kn;
@@ -31,10 +32,11 @@ module tb_des_roundfunction_pipelined();
     integer file, r; 
         
     //Instantiating montgomery module
-    des_roundfunction_pipelined des_roundfunction_instance( 
+    des_roundfunction_pipelined_2 des_roundfunction_instance( 
             .clk        (clk    ),
             .rst_n      (rst_n  ),
             .i_valid    (i_valid),
+            .enable     (enable ),
             .L_in       (L_in   ),
             .R_in       (R_in   ),
             .Kn         (Kn     ),
@@ -57,17 +59,25 @@ module tb_des_roundfunction_pipelined();
     //Test data
     initial begin
 
-        $dumpfile("tb/vcd/tb_des_roundfunction_pipelined.vcd");
-        $dumpvars(0, tb_des_roundfunction_pipelined);
+        //$dumpfile("tb/vcd/tb_des_roundfunction_pipelined.vcd");
+        //$dumpvars(0, tb_des_roundfunction_pipelined);
 
-        file = $fopenr("../python/testfiles/roundfunction_tests.txt"); 
-
+        //file = $fopenr("../python/testfiles/roundfunction_tests.txt"); 
+        file = $fopen("roundfunction_tests.txt", "r"); 
+        
         #`RESET_TIME
 
         // Init side parameters
         nb_tests <= 15'd0;
         nb_correct <= 15'd0;
+        
+        i_valid<=0;
+        
+        enable<=1;
                                
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
+        #`CLK_PERIOD;
         #`CLK_PERIOD;
 
         while (!$feof(file)) 

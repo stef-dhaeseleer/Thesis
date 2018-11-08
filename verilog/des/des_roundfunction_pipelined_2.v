@@ -4,7 +4,7 @@
 //`include "des/primitives/s_boxes.v"
 //`include "des/primitives/p_permutation.v"
 
-module des_roundfunction_pipelined(
+module des_roundfunction_pipelined_2(
     input clk,              // clock
     input rst_n,            // reset, active low signal
     input wire i_valid,     // signals that the input to this block is valid
@@ -57,8 +57,6 @@ module des_roundfunction_pipelined(
     // Logic for setting o_valid when intern_valid is true
     always @(posedge clk) begin // Signals to set: o_valid
 
-        o_valid <= 1'b0;
-
         if (restart_block == 1'b1) begin
             o_valid <= 1'b0;
         end
@@ -78,8 +76,6 @@ module des_roundfunction_pipelined(
 
      // Logic for setting intern_valid when i_valid is true
     always @(posedge clk) begin // Signals to set: intern_valid
-
-        intern_valid <= 1'b0;
 
         if (restart_block == 1'b1) begin
             intern_valid <= 1'b0;

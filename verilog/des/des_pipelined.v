@@ -173,7 +173,7 @@ module des_encryption_pipelined(
 
     // Modules
     // The roundfunction
-    des_roundfunction_pipelined round_func1(
+    des_roundfunction_pipelined_2 round_func1(
             .clk        (clk ),
             .rst_n      (rst_n),
             //.i_valid    (output_valid_stage_0),
@@ -187,7 +187,7 @@ module des_encryption_pipelined(
             .L_out      (L_temp1),
             .R_out      (R_temp1));
 
-    des_roundfunction_pipelined round_func2(
+    des_roundfunction_pipelined_2 round_func2(
             .clk        (clk ),
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_1),
@@ -200,7 +200,7 @@ module des_encryption_pipelined(
             .L_out      (L_temp2),
             .R_out      (R_temp2));
 
-    des_roundfunction_pipelined round_func3(
+    des_roundfunction_pipelined_2 round_func3(
             .clk        (clk ),
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_2),
@@ -213,7 +213,7 @@ module des_encryption_pipelined(
             .L_out      (L_temp3),
             .R_out      (R_temp3));
 
-    des_roundfunction_pipelined round_func4(
+    des_roundfunction_pipelined_2 round_func4(
             .clk        (clk ),
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_3),
@@ -226,7 +226,7 @@ module des_encryption_pipelined(
             .L_out      (L_temp4),
             .R_out      (R_temp4)); 
 
-    des_roundfunction_pipelined round_func5(
+    des_roundfunction_pipelined_2 round_func5(
             .clk        (clk ),
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_4),
@@ -239,7 +239,7 @@ module des_encryption_pipelined(
             .L_out      (L_temp5),
             .R_out      (R_temp5));
 
-    des_roundfunction_pipelined round_func6(
+    des_roundfunction_pipelined_2 round_func6(
             .clk        (clk ),
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_5),
@@ -252,7 +252,7 @@ module des_encryption_pipelined(
             .L_out      (L_temp6),
             .R_out      (R_temp6));
 
-    des_roundfunction_pipelined round_func7(
+    des_roundfunction_pipelined_2 round_func7(
             .clk        (clk ),
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_6),
@@ -265,7 +265,7 @@ module des_encryption_pipelined(
             .L_out      (L_temp7),
             .R_out      (R_temp7));
 
-    des_roundfunction_pipelined round_func8(
+    des_roundfunction_pipelined_2 round_func8(
             .clk        (clk ),
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_7),
@@ -278,7 +278,7 @@ module des_encryption_pipelined(
             .L_out      (L_temp8),
             .R_out      (R_temp8));     
 
-    des_roundfunction_pipelined round_func9(
+    des_roundfunction_pipelined_2 round_func9(
             .clk        (clk ),
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_8),
@@ -291,7 +291,7 @@ module des_encryption_pipelined(
             .L_out      (L_temp9),
             .R_out      (R_temp9));
 
-    des_roundfunction_pipelined round_func10(
+    des_roundfunction_pipelined_2 round_func10(
             .clk        (clk ),
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_9),
@@ -304,7 +304,7 @@ module des_encryption_pipelined(
             .L_out      (L_temp10),
             .R_out      (R_temp10));
 
-    des_roundfunction_pipelined round_func11(
+    des_roundfunction_pipelined_2 round_func11(
             .clk        (clk ),
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_10),
@@ -317,7 +317,7 @@ module des_encryption_pipelined(
             .L_out      (L_temp11),
             .R_out      (R_temp11));
 
-    des_roundfunction_pipelined round_func12(
+    des_roundfunction_pipelined_2 round_func12(
             .clk        (clk ),
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_11),
@@ -330,7 +330,7 @@ module des_encryption_pipelined(
             .L_out      (L_temp12),
             .R_out      (R_temp12)); 
 
-    des_roundfunction_pipelined round_func13(
+    des_roundfunction_pipelined_2 round_func13(
             .clk        (clk ),
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_12),
@@ -343,7 +343,7 @@ module des_encryption_pipelined(
             .L_out      (L_temp13),
             .R_out      (R_temp13));
 
-    des_roundfunction_pipelined round_func14(
+    des_roundfunction_pipelined_2 round_func14(
             .clk        (clk ),
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_13),
@@ -356,7 +356,7 @@ module des_encryption_pipelined(
             .L_out      (L_temp14),
             .R_out      (R_temp14));
 
-    des_roundfunction_pipelined round_func15(
+    des_roundfunction_pipelined_2 round_func15(
             .clk        (clk ),
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_14),
@@ -369,7 +369,7 @@ module des_encryption_pipelined(
             .L_out      (L_temp15),
             .R_out      (R_temp15));
 
-    des_roundfunction_pipelined round_func16(
+    des_roundfunction_pipelined_2 round_func16(
             .clk        (clk ),
             .rst_n      (rst_n),
             .i_valid    (output_valid_stage_15),
