@@ -41,11 +41,12 @@ void print_reg_contents(unsigned int * port) {
 
 void wait_for_cmd_read(unsigned int * port) {
     // Check register 3 of the AXI for the command read signal
-    while(port[3]==0)
-    {
+    //while(port[3]==0)
+    //{
     	//print_reg_contents(port);
     	//sleep(5);
-    }
+    //}
+	sleep(1);
 }
 
 void wait_for_test_res_ready(unsigned int * port) {

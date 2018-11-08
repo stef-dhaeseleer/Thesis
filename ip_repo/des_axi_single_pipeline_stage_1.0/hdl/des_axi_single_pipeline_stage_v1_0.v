@@ -1,6 +1,7 @@
+
 `timescale 1 ns / 1 ps
 
-	module test_axi_des_v1_0 #
+	module des_axi_single_pipeline_stage_v1_0 #
 	(
 		// Users to add parameters here
 
@@ -14,8 +15,6 @@
 	)
 	(
 		// Users to add ports here
-		
-		input wire  des_clk,
 
 		// User ports ends
 		// Do not modify the ports beyond this line
@@ -61,10 +60,10 @@
 
 
 // Instantiation of Axi Bus Interface S00_AXI
-	test_axi_des_v1_0_S00_AXI # ( 
+	des_axi_single_pipeline_stage_v1_0_S00_AXI # ( 
 		.C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
 		.C_S_AXI_ADDR_WIDTH(C_S00_AXI_ADDR_WIDTH)
-	) test_axi_des_v1_0_S00_AXI_inst (
+	) des_axi_single_pipeline_stage_v1_0_S00_AXI_inst (
 		.S_AXI_ACLK(s00_axi_aclk),
 		.S_AXI_ARESETN(s00_axi_aresetn),
 		.S_AXI_AWADDR(s00_axi_awaddr),
@@ -101,7 +100,7 @@
 	// Add user logic here
 	
 	des_block_wrapper des_block_wrapper(
-        .clk (des_clk),
+        .clk (s00_axi_aclk),
         .rst_n (s00_axi_aresetn),
         .cmd (cmd_data),
         .cmd_valid (cmd_data_valid),
