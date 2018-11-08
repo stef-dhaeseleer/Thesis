@@ -57,6 +57,7 @@ module des_block_wrapper(
     localparam [3:0]    test_init       = 4'h6;
     localparam [3:0]    test_mode       = 4'h7;
     localparam [3:0]    advance_test    = 4'h8;
+    localparam [3:0]    advance_test_wait    = 4'h9;
 
     // Functions
 
@@ -133,7 +134,14 @@ module des_block_wrapper(
             end
         end
         advance_test: begin
-            next_state <= test_mode;
+            next_state <= advance_test_wait;
+        end
+        advance_test_wait: begin
+            next_state <= advance_test_wait;
+            
+            if (advance_test_cmd == 1'b0) begin
+                next_state <= test_mode;
+            end
         end
         restart: begin
             next_state <= init;
@@ -193,6 +201,9 @@ module des_block_wrapper(
         advance_test: begin
             test_enabled <= 1'b1;
             test_advance <= 1'b1;
+        end
+        advance_test_wait: begin
+            test_enabled <= 1'b1;
         end
         restart: begin
             cmd_read_reg <= 1'b1;
