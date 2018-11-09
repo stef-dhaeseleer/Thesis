@@ -1,0 +1,10 @@
+
+
+OPTION psf_version = 2.1;
+
+BEGIN DRIVER des_single_pipelin_stage_two_clocks
+	OPTION supported_peripherals = (des_single_pipelin_stage_two_clocks);
+	OPTION copyfiles = all;
+	OPTION VERSION = 1.0;
+	OPTION NAME = des_single_pipelin_stage_two_clocks;
+END DRIVER
