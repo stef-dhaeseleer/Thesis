@@ -1,0 +1,7 @@
+//arch = zynq; split = false; format = BIN
+the_ROM_image:
+{
+	[bootloader]/users/start2015/r0583050/Thesis/des_fsbl/des_fsbl.sdk/des_fsbl/Debug/des_fsbl.elf
+	/users/start2015/r0583050/Thesis/des_fsbl/des_fsbl.runs/impl_1/design_1_wrapper.bit
+	/users/start2015/r0583050/BuildZynq/u-boot-xlnx/u-boot.elf
+}
