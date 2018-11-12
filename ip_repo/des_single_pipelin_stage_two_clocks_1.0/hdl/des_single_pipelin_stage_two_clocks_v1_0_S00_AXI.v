@@ -19,7 +19,7 @@
         output wire [31:0] CMD_DATA,
         output wire CMD_DATA_VALID,
         input wire CMD_DATA_READ,
-        input wire DES_DONE,    // NOTE: not reporting read back to the wrapper now, should do this? (1)
+        input wire DES_DONE,
         input wire [63:0] DES_COUNTER,
         output wire [31:0] DES_REGION,
         output wire TEST_ADVANCE,

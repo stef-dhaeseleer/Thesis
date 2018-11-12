@@ -48,16 +48,18 @@ module des_block_wrapper(
     localparam CMD_TEST_MODE    = 4'h2;
     localparam CMD_RESTART      = 4'h3;
 
-    localparam [3:0]    init            = 4'h0;     // Possible states
-    localparam [3:0]    set_region      = 4'h1;
-    localparam [3:0]    start           = 4'h2;
-    localparam [3:0]    waiting         = 4'h3;
-    localparam [3:0]    finishing       = 4'h4;
-    localparam [3:0]    restart         = 4'h5;
-    localparam [3:0]    test_init       = 4'h6;
-    localparam [3:0]    test_mode       = 4'h7;
-    localparam [3:0]    advance_test    = 4'h8;
-    localparam [3:0]    advance_test_wait    = 4'h9;
+    localparam [3:0]    init                = 4'h0;     // Possible states
+    localparam [3:0]    set_region          = 4'h1;
+    localparam [3:0]    start               = 4'h2;
+    localparam [3:0]    waiting             = 4'h3;
+    localparam [3:0]    finishing           = 4'h4;
+    localparam [3:0]    restart             = 4'h5;
+    localparam [3:0]    test_init           = 4'h6;
+    localparam [3:0]    test_mode           = 4'h7;
+    localparam [3:0]    advance_test        = 4'h8;
+    localparam [3:0]    advance_test_wait   = 4'h9;
+    localparam [3:0]    start_init          = 4'ha;
+    localparam [3:0]    test_start          = 4'hb;
 
     // Functions
 
@@ -81,7 +83,7 @@ module des_block_wrapper(
                     CMD_READ_REGION:
                         next_state <= set_region;
                     CMD_START:                            
-                        next_state <= start;
+                        next_state <= start_init;
                     CMD_TEST_MODE: 
                         next_state <= test_init;
                     CMD_RESTART:
@@ -95,7 +97,16 @@ module des_block_wrapper(
             end
         end
         set_region: begin   // Sets the signal to load the region into a register, than listen for commands again
-            next_state <= init;
+            next_state <= set_region;
+            if (cmd_valid == 1'b0) begin
+                next_state <= init;
+            end
+        end
+        start_init: begin
+            next_state <= start_init;
+            if (cmd_valid == 1'b0) begin
+                next_state <= start;
+            end
         end
         start: begin    // Sets the start signal for the des block
             next_state <= waiting;
@@ -118,6 +129,12 @@ module des_block_wrapper(
             end 
         end
         test_init: begin
+            next_state <= test_init;
+            if (cmd_valid == 1'b0) begin
+                next_state <= test_start;
+            end
+        end
+        test_start: begin
             next_state <= test_mode;
         end
         test_mode: begin
@@ -144,7 +161,10 @@ module des_block_wrapper(
             end
         end
         restart: begin
-            next_state <= init;
+            next_state <= restart;
+            if (cmd_valid == 1'b0) begin
+                next_state <= init;
+            end
         end
         default: begin
             next_state <= init;
@@ -174,9 +194,11 @@ module des_block_wrapper(
             load_region <= 1'b1;
             cmd_read_reg <= 1'b1;
         end
+        start_init: begin
+            cmd_read_reg <= 1'b1;
+        end
         start: begin
             start_des <= 1'b1;
-            cmd_read_reg <= 1'b1;
         end
         waiting: begin
 
@@ -186,9 +208,11 @@ module des_block_wrapper(
             load_counter <= 1'b1;
         end
         test_init: begin
+            cmd_read_reg <= 1'b1;
+        end
+        test_start: begin
             test_enabled <= 1'b1;
             start_des <= 1'b1;
-            cmd_read_reg <= 1'b1;
         end
         test_mode: begin
             test_enabled <= 1'b1;
