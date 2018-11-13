@@ -1,0 +1,22 @@
+#!/bin/bash
+# Copies needed files to the SD card
+
+cd
+
+cd Thesis/des_fsbl/des_fsbl.sdk/des_fsbl/bootimage/
+rm BOOT.bin
+bootgen -image output.bif -o BOOT.bin -w on
+
+cd
+
+cd BuildZynq/
+cp linux-xlnx/arch/arm/boot/uImage .
+cp linux-xlnx/arch/arm/boot/dts/zynq-zed.dtb .
+cp ../Thesis/des_fsbl/des_fsbl.sdk/des_fsbl/bootimage/BOOT.bin .
+
+mv zynq-zed.dtb devicetree.dtb
+
+cp devicetree.dtb /run/media/r0583050/78AD-4DD0/
+cp uImage /run/media/r0583050/78AD-4DD0/
+cp uramdisk.image.gz /run/media/r0583050/78AD-4DD0/
+cp BOOT.bin /run/media/r0583050/78AD-4DD0/
