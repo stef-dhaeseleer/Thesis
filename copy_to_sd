@@ -3,6 +3,12 @@
 
 cd
 
+cd BuildZynq/
+cp linux-xlnx/arch/arm/boot/uImage .
+cp linux-xlnx/arch/arm/boot/dts/zynq-zed.dtb .
+
+cd
+
 cd Thesis/des_fsbl/des_fsbl.sdk/des_fsbl/bootimage/
 rm BOOT.bin
 bootgen -image output.bif -o BOOT.bin -w on
@@ -10,8 +16,6 @@ bootgen -image output.bif -o BOOT.bin -w on
 cd
 
 cd BuildZynq/
-cp linux-xlnx/arch/arm/boot/uImage .
-cp linux-xlnx/arch/arm/boot/dts/zynq-zed.dtb .
 cp ../Thesis/des_fsbl/des_fsbl.sdk/des_fsbl/bootimage/BOOT.bin .
 
 mv zynq-zed.dtb devicetree.dtb
