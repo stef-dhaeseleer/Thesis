@@ -1,6 +1,7 @@
 # References
 # https://pgi-jcns.fz-juelich.de/portal/pages/using-c-from-python.html
 # https://docs.python.org/3/library/ctypes.html
+# https://forums.xilinx.com/t5/Embedded-Linux/Shared-Library-Creation-from-Xilinx-SDK-for-Zynq/td-p/246716
 
 # CMD_READ_REGION  = 0
 # CMD_START        = 1
