@@ -65,3 +65,7 @@ void wait_for_done(unsigned int * port) {
 
     }
 }
+
+void get_done(unsigned int * port) {
+    return port[9];
+}

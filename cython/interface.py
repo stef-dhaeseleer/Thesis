@@ -26,6 +26,8 @@ _hw.wait_for_cmd_read.argtypes = (ctypes.POINTER(ctypes.c_uint))
 _hw.wait_for_test_res_ready.argtypes = (ctypes.POINTER(ctypes.c_uint))
 _hw.wait_for_done.argtypes = (ctypes.POINTER(ctypes.c_uint))
 
+_hw.get_done.argtypes = (ctypes.POINTER(ctypes.c_uint))
+
 # Set the needed command parameters
 CMD_READ_REGION  = 0
 CMD_START        = 1
@@ -49,8 +51,47 @@ def set_region(region, port):
 
     print("Region has been set!")
 
+def start_block(port):
+
+    global _hw
+
+    print()
+    print("Starting the block...")
+
+    _hw.set_cmd(ctypes.c_uint(CMD_START), ctypes.POINTER(ctypes.c_uint(port)))
+    _hw.wait_for_cmd_read(ctypes.POINTER(ctypes.c_uint(port)))
+
+    print("Block has been started!")
+
+def restart_block(port):
+
+    global _hw
+
+    print()
+    print("Restarting the block...")
+
+    _hw.set_cmd(ctypes.c_uint(CMD_RESTART), ctypes.POINTER(ctypes.c_uint(port)))
+    _hw.wait_for_cmd_read(ctypes.POINTER(ctypes.c_uint(port)))
+
+    print("Block has been restarted!")
+
+def test_block(port):
+
+    global _hw
+
+    print()
+    print("Starting TEST MODE...")
+
+    # TODO: Call the hw.c function for the test here
+
+    print("TEST MODE has been started!")
 
 
+def get_done(port):
+
+    global _hw
+
+    _hw.get_done(ctypes.POINTER(ctypes.c_uint(port)))
 
 
 
