@@ -1,6 +1,6 @@
 TO BUILD LIB:
 cd src
-arm-linux-gnueabihf-gcc -fPIC -shared -o libhw.so interface.c
+arm-linux-gnueabihf-gcc -fPIC -shared -o libhw.so hw.c
 
 TO COPY LIB TO HERE:
 cp src/libhw.so .
