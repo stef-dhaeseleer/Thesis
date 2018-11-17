@@ -69,3 +69,15 @@ void wait_for_done(unsigned int * port) {
 void get_done(unsigned int * port) {
     return port[9];
 }
+
+void get_region(unsigned int * port) {
+    return port[1];
+}
+
+void get_counter_lower(unsigned int * port) {
+    return port[8];
+}
+
+void get_counter_upper(unsigned int * port) {
+    return port[7];
+}

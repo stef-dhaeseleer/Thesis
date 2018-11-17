@@ -19,5 +19,9 @@ void wait_for_test_res_ready(unsigned int * port);
 void wait_for_done(unsigned int * port);
 
 void get_done(unsigned int * port);
+void get_region(unsigned int * port);
+void get_counter_lower(unsigned int * port);
+void get_counter_upper(unsigned int * port);
+
 
 #endif
