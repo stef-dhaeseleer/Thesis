@@ -1,4 +1,4 @@
-import interface.py
+import interface
 
 # Define all the port addresses for passing to the c code
 ports = [0x43C00000, 0x43C10000]
@@ -16,9 +16,9 @@ last_region = 0x00000000
 
 def get_hw_status():
 
-    print()
+    print
     print("REPORTING BLOCK STATUS: ")
-    print()
+    print
 
     status = 0
 
@@ -46,21 +46,21 @@ def test_hw_functionality():
 def start_des(block_nb, region):
     
     # First check if block is not currently active!
-    if (blocks_status[i] == 1):
+    if (blocks_status[block_nb] == 1):
         print ("Block " + str(block_nb) + " is currently active, let it finish before starting it again or restart it!")
         return
 
     port = ports[block_nb]
     
     # Start a new block given the block_nb and the region to operate on 
-    set_region(region, port)
-    start_block(port)
+    interface.set_region(region, port)
+    interface.start_block(port)
 
     # Update the last_region and blocks_status
     blocks_status[block_nb] = 1 
     last_region = region
 
-    print ()
+    print
     print ("Everything updated!")
 
 def restart_des(block_nb):
@@ -68,12 +68,12 @@ def restart_des(block_nb):
     port = ports[block_nb]
     
     # Start a new block given the block_nb and the region to operate on 
-    restart_block(port)
+    interface.restart_block(port)
 
     # Update the last_region and blocks_status
     blocks_status[block_nb] = 0 
     
-    print ()
+    print
     print ("Everything updated!")
 
 def get_results_des(block_nb):
@@ -81,7 +81,7 @@ def get_results_des(block_nb):
     port = ports[block_nb]
 
     # First check if block is currently active!
-    if (blocks_status[i] == 0):
+    if (blocks_status[block_nb] == 0):
         print ("Block " + str(block_nb) + " is currently inactive! Cannot get results")
         return
     else:
@@ -93,14 +93,14 @@ def get_results_des(block_nb):
 
     # Process the results of the block and write them to the results file
 
-    region = get_region(port)
-    high, low = get_counter(port)
+    region = interface.get_region(port)
+    high, low = interface.get_counter(port)
 
     file = open(file_path, 'aw')    # Append and write to the file
     file.write(str(hex(region)) + " : " + str(high) + str(low)) 
     file.close() 
 
-    print ()
+    print
     print ("All results processed, the block will now be restarted!")
     
     restart_des(block_nb)

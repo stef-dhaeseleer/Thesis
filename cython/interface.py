@@ -9,28 +9,34 @@
 # CMD_RESTART      = 3
 
 import ctypes
-import hw.py
 
 # Set the data for the C shared object library
 
-_hw = ctypes.CDLL('./libhw.so')
+_hw = ctypes.cdll.LoadLibrary('/home/root/cython/libhw.so')
+#_hw = ctypes.CDLL('/home/root/cython/libhw.so')
+#_hw = ctypes.CDLL('./mylib.so')
 
-_hw.interface_init.argtypes = ()
+_hw.interface_init.argtypes = []
 
-_hw.set_cmd.argtypes = (ctypes.c_uint, ctypes.POINTER(ctypes.c_uint))
-_hw.set_region.argtypes = (ctypes.c_uint16, ctypes.POINTER(ctypes.c_uint))
-_hw.advance_test.argtypes = (ctypes.POINTER(ctypes.c_uint))
+_hw.set_cmd.argtypes = [ctypes.c_uint, ctypes.POINTER(ctypes.c_uint)]
+_hw.set_region.argtypes = [ctypes.c_uint16, ctypes.POINTER(ctypes.c_uint)]
+_hw.advance_test.argtypes = [ctypes.POINTER(ctypes.c_uint)]
 
-_hw.print_reg_contents.argtypes = (ctypes.POINTER(ctypes.c_uint))
+_hw.print_reg_contents.argtypes = [ctypes.POINTER(ctypes.c_uint)]
 
-_hw.wait_for_cmd_read.argtypes = (ctypes.POINTER(ctypes.c_uint))
-_hw.wait_for_test_res_ready.argtypes = (ctypes.POINTER(ctypes.c_uint))
-_hw.wait_for_done.argtypes = (ctypes.POINTER(ctypes.c_uint))
+_hw.wait_for_cmd_read.argtypes = [ctypes.POINTER(ctypes.c_uint)]
+_hw.wait_for_test_res_ready.argtypes = [ctypes.POINTER(ctypes.c_uint)]
+_hw.wait_for_done.argtypes = [ctypes.POINTER(ctypes.c_uint)]
 
-_hw.get_done.argtypes = (ctypes.POINTER(ctypes.c_uint))
-_hw.get_region.argtypes = (ctypes.POINTER(ctypes.c_uint))
-_hw.get_counter_lower.argtypes = (ctypes.POINTER(ctypes.c_uint))
-_hw.get_counter_upper.argtypes = (ctypes.POINTER(ctypes.c_uint))
+_hw.get_done.argtypes = [ctypes.POINTER(ctypes.c_uint)]
+_hw.get_region.argtypes = [ctypes.POINTER(ctypes.c_uint)]
+_hw.get_counter_lower.argtypes = [ctypes.POINTER(ctypes.c_uint)]
+_hw.get_counter_upper.argtypes = [ctypes.POINTER(ctypes.c_uint)]
+
+_hw.test_hw.argtypes = [ctypes.POINTER(ctypes.c_uint)]
+_hw.restart_hw.argtypes = [ctypes.POINTER(ctypes.c_uint)]
+_hw.start_hw.argtypes = [ctypes.c_uint16, ctypes.POINTER(ctypes.c_uint)]
+_hw.monitor_hw.argtypes = [ctypes.POINTER(ctypes.c_uint)]
 
 
 # Set the needed command parameters
@@ -46,7 +52,7 @@ def set_region(region, port):
 
     global _hw
 
-    print()
+    print
     print("Setting the region...")
 
     # Set the region, set the command and wait for command read
@@ -60,7 +66,7 @@ def start_block(port):
 
     global _hw
 
-    print()
+    print
     print("Starting the block...")
 
     _hw.set_cmd(ctypes.c_uint(CMD_START), ctypes.POINTER(ctypes.c_uint(port)))
@@ -72,7 +78,7 @@ def restart_block(port):
 
     global _hw
 
-    print()
+    print
     print("Restarting the HW...")
 
     restart_hw(port)
@@ -81,7 +87,7 @@ def test_block(port):
 
     global _hw
 
-    print()
+    print
     print("Starting TEST MODE...")
 
     test_hw(port)
@@ -108,7 +114,29 @@ def get_counter(port):
 
     return high, low
 
+def test_hw(port):
 
+    global _hw
+
+    # Set the region, set the command and wait for command read
+    _hw.test_hw(ctypes.POINTER(ctypes.c_uint(port)))
+
+def restart_hw(port):
+
+    global _hw
+
+    # Set the region, set the command and wait for command read
+    _hw.restart_hw(ctypes.POINTER(ctypes.c_uint(port)))
+
+def start_hw_wait_finish(region, port):
+
+    global _hw
+
+    print
+    print("Starting the HW...")
+
+    # Set the region, set the command and wait for command read
+    _hw.start_hw(ctypes.c_uint16(region), ctypes.POINTER(ctypes.c_uint(port)))
 
 
 
