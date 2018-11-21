@@ -1,6 +1,8 @@
 *.vvp
 *.vcd
 
+*.o
+
 *.sublime-project
 *.sublime-workspace
 
