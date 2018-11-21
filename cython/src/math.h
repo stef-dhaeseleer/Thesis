@@ -2,10 +2,10 @@
 #define _SW_H_
 
 #include <stdint.h>
+#include <stdio.h>
+
 
 //#include "libxil.a"
-
-#include "xil_printf.h"
 
 // Calculates res = a + b.
 // a and b represent large integers stored in uint32_t arrays

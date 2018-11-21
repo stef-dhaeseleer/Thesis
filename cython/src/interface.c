@@ -1,9 +1,5 @@
 #include "interface.h"
 
-#include "xil_cache.h"
-#include "xil_printf.h"
-
-
 void interface_init() {
     axi_port_0 = (unsigned int *)0x43C00000;
     axi_port_1 = (unsigned int *)0x43C10000;
@@ -25,18 +21,18 @@ void advance_test(unsigned int * port) {
 }
 
 void print_reg_contents(unsigned int * port) {
-	xil_printf("0: %x \r\n", port[0]);
-	xil_printf("1: %x \r\n", port[1]);
-	xil_printf("2: %x \r\n", port[2]);
-	xil_printf("3: %x \r\n", port[3]);
-	xil_printf("4: %x \r\n", port[4]);
-	xil_printf("5: %x \r\n", port[5]);
-	xil_printf("6: %x \r\n", port[6]);
-	xil_printf("7: %x \r\n", port[7]);
-	xil_printf("8: %x \r\n", port[8]);
-	xil_printf("9: %x \r\n", port[9]);
+	printf("0: %x \r\n", port[0]);
+	printf("1: %x \r\n", port[1]);
+	printf("2: %x \r\n", port[2]);
+	printf("3: %x \r\n", port[3]);
+	printf("4: %x \r\n", port[4]);
+	printf("5: %x \r\n", port[5]);
+	printf("6: %x \r\n", port[6]);
+	printf("7: %x \r\n", port[7]);
+	printf("8: %x \r\n", port[8]);
+	printf("9: %x \r\n", port[9]);
 
-	xil_printf("\r\n");
+	printf("\r\n");
 }
 
 void wait_for_cmd_read(unsigned int * port) {

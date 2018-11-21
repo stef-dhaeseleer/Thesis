@@ -2,14 +2,12 @@
 #define _HW_H_
 
 #include <stdint.h>
+#include <stdio.h>
 
 //#include "libxil.a"
 
 #include "interface.h"
 #include "math.h"
-
-#include "xil_printf.h"
-#include "sleep.h"
 
 #define CMD_READ_REGION             0
 #define CMD_START                   1

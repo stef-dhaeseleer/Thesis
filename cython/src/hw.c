@@ -20,21 +20,21 @@ void test_hw(unsigned int * port){
     uint32_t nb_tests = 0;
 	uint32_t nb_correct = 0;
 
-    xil_printf("Testing the platform... \r\n");
-    xil_printf("\r\n");
+    printf("Testing the platform... \r\n");
+    printf("\r\n");
 
     // First set the region to be used to all zeros
     uint32_t region = 0x00000000;
     set_region(region, port);
-    xil_printf("Selected region: %08x \r\n", region);
+    printf("Selected region: %08x \r\n", region);
 
     set_cmd(CMD_READ_REGION, port);
-    xil_printf("CMD sent to HW \r\n");
+    printf("CMD sent to HW \r\n");
     wait_for_cmd_read(port);
 
     // Start the DES engine in test mode
     set_cmd(CMD_TEST_MODE, port);
-    xil_printf("Starting test mode... \r\n");
+    printf("Starting test mode... \r\n");
     wait_for_cmd_read(port);
 
     // Wait until the first ciphertext result is ready
@@ -49,11 +49,11 @@ void test_hw(unsigned int * port){
 	nb_tests += 1;
 	nb_correct += compare(test, res, 2);
 
-    xil_printf("Test result: \r\n");
-    xil_printf("Message   : %08x%08x \r\n", region, 0x00000000);
-    xil_printf("Ciphertext: %08x%08x \r\n", res[1], res[0]);
-    xil_printf("Expected  : %08x%08x \r\n", test[1], test[0]);
-    xil_printf("\r\n");
+    printf("Test result: \r\n");
+    printf("Message   : %08x%08x \r\n", region, 0x00000000);
+    printf("Ciphertext: %08x%08x \r\n", res[1], res[0]);
+    printf("Expected  : %08x%08x \r\n", test[1], test[0]);
+    printf("\r\n");
 
     //***********************************************************************
 	advance_test(port);
@@ -68,11 +68,11 @@ void test_hw(unsigned int * port){
 	nb_tests += 1;
 	nb_correct += compare(test, res, 2);
 
-	xil_printf("Test result: \r\n");
-	xil_printf("Message   : %08x%08x \r\n", region, 0x00000001);
-	xil_printf("Ciphertext: %08x%08x \r\n", res[1], res[0]);
-	xil_printf("Expected  : %08x%08x \r\n", test[1], test[0]);
-	xil_printf("\r\n");
+	printf("Test result: \r\n");
+	printf("Message   : %08x%08x \r\n", region, 0x00000001);
+	printf("Ciphertext: %08x%08x \r\n", res[1], res[0]);
+	printf("Expected  : %08x%08x \r\n", test[1], test[0]);
+	printf("\r\n");
 
     //***********************************************************************
     advance_test(port);
@@ -87,11 +87,11 @@ void test_hw(unsigned int * port){
 	nb_tests += 1;
 	nb_correct += compare(test, res, 2);
 
-    xil_printf("Test result: \r\n");
-    xil_printf("Message   : %08x%08x \r\n", region, 0x00000002);
-    xil_printf("Ciphertext: %08x%08x \r\n", res[1], res[0]);
-    xil_printf("Expected  : %08x%08x \r\n", test[1], test[0]);
-    xil_printf("\r\n");
+    printf("Test result: \r\n");
+    printf("Message   : %08x%08x \r\n", region, 0x00000002);
+    printf("Ciphertext: %08x%08x \r\n", res[1], res[0]);
+    printf("Expected  : %08x%08x \r\n", test[1], test[0]);
+    printf("\r\n");
 
     //***********************************************************************
     advance_test(port);
@@ -106,50 +106,50 @@ void test_hw(unsigned int * port){
 	nb_tests += 1;
 	nb_correct += compare(test, res, 2);
 
-    xil_printf("Test result: \r\n");
-    xil_printf("Message   : %08x%08x \r\n", region, 0x00000003);
-    xil_printf("Ciphertext: %08x%08x \r\n", res[1], res[0]);
-    xil_printf("Expected  : %08x%08x \r\n", test[1], test[0]);
-    xil_printf("\r\n");
+    printf("Test result: \r\n");
+    printf("Message   : %08x%08x \r\n", region, 0x00000003);
+    printf("Ciphertext: %08x%08x \r\n", res[1], res[0]);
+    printf("Expected  : %08x%08x \r\n", test[1], test[0]);
+    printf("\r\n");
 
 
 
-    xil_printf("Testing completed! \r\n");
-    xil_printf("Result: %x/%x correct! \r\n", nb_correct, nb_tests);
-    xil_printf("Counter: %08x%08x, expected: %08x%08x \r\n", port[7], port[8], 0, 4);
-    xil_printf("\r\n");
+    printf("Testing completed! \r\n");
+    printf("Result: %x/%x correct! \r\n", nb_correct, nb_tests);
+    printf("Counter: %08x%08x, expected: %08x%08x \r\n", port[7], port[8], 0, 4);
+    printf("\r\n");
 }
 
 void start_hw(uint16_t region, unsigned int * port) {
-    xil_printf("Starting the HW... \r\n");
-    xil_printf("\r\n");
+    printf("Starting the HW... \r\n");
+    printf("\r\n");
 
     // First set the region to be used to all zeros
     set_region(region, port);
     set_cmd(CMD_READ_REGION, port);
     wait_for_cmd_read(port);
 
-    xil_printf("Selected region: %08x \r\n", region);
-    xil_printf("\r\n");
+    printf("Selected region: %08x \r\n", region);
+    printf("\r\n");
 
     // Start the DES engine in test mode
     set_cmd(CMD_START, port);
     wait_for_cmd_read(port);
 
-    xil_printf("HW started! \r\n");
-    xil_printf("\r\n");
+    printf("HW started! \r\n");
+    printf("\r\n");
 
     // Wait for the HW to finish 
     wait_for_done(port);
 
-    xil_printf("Run complete! \r\n");
-    xil_printf("Counter: %08x%08x \r\n", port[7], port[8]);
-    xil_printf("\r\n");
+    printf("Run complete! \r\n");
+    printf("Counter: %08x%08x \r\n", port[7], port[8]);
+    printf("\r\n");
 }
 
 void monitor_hw(unsigned int * port) {
-    xil_printf("Monitoring the HW... \r\n");
-    xil_printf("\r\n");
+    printf("Monitoring the HW... \r\n");
+    printf("\r\n");
 
     uint16_t region = 0;
 
@@ -187,6 +187,6 @@ void restart_hw(unsigned int * port) {
     set_cmd(CMD_RESTART, port);
     wait_for_cmd_read(port);
 
-    xil_printf("HW restarted! \r\n");
-    xil_printf("\r\n");
+    printf("HW restarted! \r\n");
+    printf("\r\n");
 }

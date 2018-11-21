@@ -33,22 +33,22 @@ uint32_t compare(uint32_t *a, uint32_t *b, uint32_t size){
 
 void arrayprint(uint32_t *array, uint32_t size){
 
-    xil_printf("=========================================================\r\n");
-    xil_printf("Result: 0x");
+    printf("=========================================================\r\n");
+    printf("Result: 0x");
     int i = size - 1;
 
     while (array[i] == 0)
         i -= 1;
     if (i >= 0) {
-        xil_printf("%x", array[i]);
+        printf("%x", array[i]);
         i -= 1;
         for ( ; i >= 0; i--){
-            xil_printf("%08x", array[i]);
+            printf("%08x", array[i]);
         }
-        xil_printf("\r\n");
+        printf("\r\n");
     }
     else {
-        xil_printf("%x", 0);
-        xil_printf("\r\n");
+        printf("%x", 0);
+        printf("\r\n");
     }
 }

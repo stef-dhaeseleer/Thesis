@@ -2,6 +2,7 @@
 #define _INTERFACE_H_
 
 #include <stdint.h>
+#include <stdio.h>
 
 //#include "libxil.a"
 
