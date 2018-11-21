@@ -2,7 +2,8 @@
 #define _INTERFACE_H_
 
 #include <stdint.h>
-//#include "sleep.h"
+
+//#include "libxil.a"
 
 unsigned int * axi_port_0;
 unsigned int * axi_port_1;
@@ -17,5 +18,11 @@ void print_reg_contents(unsigned int * port);
 void wait_for_cmd_read(unsigned int * port);
 void wait_for_test_res_ready(unsigned int * port);
 void wait_for_done(unsigned int * port);
+
+uint32_t get_done(unsigned int * port);
+uint32_t get_region(unsigned int * port);
+uint32_t get_counter_lower(unsigned int * port);
+uint32_t get_counter_upper(unsigned int * port);
+
 
 #endif

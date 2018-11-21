@@ -2,13 +2,13 @@ import ctypes
 
 # Set the data for the C shared object library
 
-_hw = ctypes.CDLL('libhw.so')
+#_hw = ctypes.CDLL('./libhw.so')
 
 
-_hw.test_hw.argtypes = (ctypes.POINTER(ctypes.c_uint))
-_hw.restart_hw.argtypes = (ctypes.POINTER(ctypes.c_uint))
-_hw.start_hw.argtypes = (ctypes.c_uint16, ctypes.POINTER(ctypes.c_uint))
-_hw.monitor_hw.argtypes = (ctypes.POINTER(ctypes.c_uint))
+#_hw.test_hw.argtypes = (ctypes.POINTER(ctypes.c_uint))
+#_hw.restart_hw.argtypes = (ctypes.POINTER(ctypes.c_uint))
+#_hw.start_hw.argtypes = (ctypes.c_uint16, ctypes.POINTER(ctypes.c_uint))
+#_hw.monitor_hw.argtypes = (ctypes.POINTER(ctypes.c_uint))
 
 # Set the needed command parameters
 CMD_READ_REGION  = 0

@@ -13,7 +13,7 @@ import hw.py
 
 # Set the data for the C shared object library
 
-_hw = ctypes.CDLL('libhw.so')
+_hw = ctypes.CDLL('./libhw.so')
 
 _hw.interface_init.argtypes = ()
 
@@ -106,7 +106,7 @@ def get_counter(port):
     low = int(_hw.get_counter_lower(ctypes.POINTER(ctypes.c_uint(port))))
     high = int(_hw.get_counter_uppper(ctypes.POINTER(ctypes.c_uint(port))))
 
-    return (((uint64_t) high) << 32) | ((uint64_t) low)
+    return high, low
 
 
 

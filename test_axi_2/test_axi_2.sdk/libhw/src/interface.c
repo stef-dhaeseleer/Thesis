@@ -65,3 +65,19 @@ void wait_for_done(unsigned int * port) {
 
     }
 }
+
+uint32_t get_done(unsigned int * port) {
+    return port[9];
+}
+
+uint32_t get_region(unsigned int * port) {
+    return port[1];
+}
+
+uint32_t get_counter_lower(unsigned int * port) {
+    return port[8];
+}
+
+uint32_t get_counter_upper(unsigned int * port) {
+    return port[7];
+}
