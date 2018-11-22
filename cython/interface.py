@@ -52,25 +52,34 @@ def set_region(region, port):
 
     global _hw
 
+    port_point = ctypes.cast(port, ctypes.POINTER(ctypes.c_uint))
+
     print
     print("Setting the region...")
-
     # Set the region, set the command and wait for command read
-    _hw.set_region(ctypes.c_uint16(region), ctypes.POINTER(ctypes.c_uint(port)))
-    _hw.set_cmd(ctypes.c_uint(CMD_READ_REGION), ctypes.POINTER(ctypes.c_uint(port)))
-    _hw.wait_for_cmd_read(ctypes.POINTER(ctypes.c_uint(port)))
-
+    #_hw.set_region(ctypes.c_uint16(region), ctypes.c_uint(port))
+    _hw.set_region(ctypes.c_uint16(region), port_point)
+    print("1...")
+    #_hw.set_cmd(ctypes.c_uint(CMD_READ_REGION), ctypes.c_uint(port))
+    _hw.set_cmd(ctypes.c_uint(CMD_READ_REGION), port_point)
+    print("2...")
+    #_hw.print_reg_contents(ctypes.c_uint(port))
+    #_hw.wait_for_cmd_read(ctypes.c_uint(port))
+    _hw.print_reg_contents(port_point)
+    _hw.wait_for_cmd_read(port_point)
     print("Region has been set!")
 
 def start_block(port):
 
     global _hw
 
+    port_point = ctypes.cast(port, ctypes.POINTER(ctypes.c_uint))
+
     print
     print("Starting the block...")
 
-    _hw.set_cmd(ctypes.c_uint(CMD_START), ctypes.POINTER(ctypes.c_uint(port)))
-    _hw.wait_for_cmd_read(ctypes.POINTER(ctypes.c_uint(port)))
+    _hw.set_cmd(ctypes.c_uint(CMD_START), ctypes.byref(ctypes.c_uint(port)))
+    _hw.wait_for_cmd_read(ctypes.byref(ctypes.c_uint(port)))
 
     print("Block has been started!")
 
@@ -97,20 +106,20 @@ def get_done(port):
 
     global _hw
 
-    return int(_hw.get_done(ctypes.POINTER(ctypes.c_uint(port))))
+    return int(_hw.get_done(ctypes.byref(ctypes.c_uint(port))))
 
 def get_region(port):
 
     global _hw
 
-    return int(_hw.get_region(ctypes.POINTER(ctypes.c_uint(port))))
+    return int(_hw.get_region(ctypes.byref(ctypes.c_uint(port))))
 
 def get_counter(port):
 
     global _hw
 
-    low = int(_hw.get_counter_lower(ctypes.POINTER(ctypes.c_uint(port))))
-    high = int(_hw.get_counter_uppper(ctypes.POINTER(ctypes.c_uint(port))))
+    low = int(_hw.get_counter_lower(ctypes.byref(ctypes.c_uint(port))))
+    high = int(_hw.get_counter_uppper(ctypes.byref(ctypes.c_uint(port))))
 
     return high, low
 
@@ -119,14 +128,14 @@ def test_hw(port):
     global _hw
 
     # Set the region, set the command and wait for command read
-    _hw.test_hw(ctypes.POINTER(ctypes.c_uint(port)))
+    _hw.test_hw(ctypes.byref(ctypes.c_uint(port)))
 
 def restart_hw(port):
 
     global _hw
 
     # Set the region, set the command and wait for command read
-    _hw.restart_hw(ctypes.POINTER(ctypes.c_uint(port)))
+    _hw.restart_hw(ctypes.byref(ctypes.c_uint(port)))
 
 def start_hw_wait_finish(region, port):
 
@@ -136,7 +145,7 @@ def start_hw_wait_finish(region, port):
     print("Starting the HW...")
 
     # Set the region, set the command and wait for command read
-    _hw.start_hw(ctypes.c_uint16(region), ctypes.POINTER(ctypes.c_uint(port)))
+    _hw.start_hw(ctypes.c_uint16(region), ctypes.byref(ctypes.c_uint(port)))
 
 
 
