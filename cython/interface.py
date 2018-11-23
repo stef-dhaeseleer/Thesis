@@ -9,35 +9,7 @@
 # CMD_RESTART      = 3
 
 import ctypes
-
-# Set the data for the C shared object library
-
-_hw = ctypes.cdll.LoadLibrary('/home/root/cython/libhw.so')
-#_hw = ctypes.CDLL('/home/root/cython/libhw.so')
-#_hw = ctypes.CDLL('./mylib.so')
-
-_hw.interface_init.argtypes = []
-
-_hw.set_cmd.argtypes = [ctypes.c_uint, ctypes.POINTER(ctypes.c_uint)]
-_hw.set_region.argtypes = [ctypes.c_uint16, ctypes.POINTER(ctypes.c_uint)]
-_hw.advance_test.argtypes = [ctypes.POINTER(ctypes.c_uint)]
-
-_hw.print_reg_contents.argtypes = [ctypes.POINTER(ctypes.c_uint)]
-
-_hw.wait_for_cmd_read.argtypes = [ctypes.POINTER(ctypes.c_uint)]
-_hw.wait_for_test_res_ready.argtypes = [ctypes.POINTER(ctypes.c_uint)]
-_hw.wait_for_done.argtypes = [ctypes.POINTER(ctypes.c_uint)]
-
-_hw.get_done.argtypes = [ctypes.POINTER(ctypes.c_uint)]
-_hw.get_region.argtypes = [ctypes.POINTER(ctypes.c_uint)]
-_hw.get_counter_lower.argtypes = [ctypes.POINTER(ctypes.c_uint)]
-_hw.get_counter_upper.argtypes = [ctypes.POINTER(ctypes.c_uint)]
-
-_hw.test_hw.argtypes = [ctypes.POINTER(ctypes.c_uint)]
-_hw.restart_hw.argtypes = [ctypes.POINTER(ctypes.c_uint)]
-_hw.start_hw.argtypes = [ctypes.c_uint16, ctypes.POINTER(ctypes.c_uint)]
-_hw.monitor_hw.argtypes = [ctypes.POINTER(ctypes.c_uint)]
-
+import os
 
 # Set the needed command parameters
 CMD_READ_REGION  = 0
@@ -46,46 +18,85 @@ CMD_TEST_MODE    = 2
 CMD_RESTART      = 3
 
 
-# Now make the python functions to wrap around these c functions
+
+def issue_linux_cmd(cmd):
+
+    resp = os.popen(cmd).read()
+    resp = resp[0:len(resp)-2]
+    res = int(resp, 16)
+
+    return res
+
+def write_cmd(address, value):
+
+    return "devmem " + address + " W " + value
+
+def read_cmd(address):
+
+    return "devmem " + address + " W"
+
+def get_reg_address(port, reg_nb):
+
+    # Reg address = port base + 4*reg_nb
+
+    return str(hex(port + 4*reg_nb))
+
+def wait_for_cmd_read(port):
+
+    ok = 0
+
+    while(ok == 0):
+        cmd = read_cmd(get_reg_address(port, 3))
+        ok = issue_linux_cmd(cmd)
+
+def wait_for_test_res_ready(port):
+
+    ok = 0
+
+    while(ok == 0):
+        cmd = read_cmd(get_reg_address(port, 4))
+        ok = issue_linux_cmd(cmd)
+
+def advance_test(port):
+
+    cmd = write_cmd(get_reg_address(port, 2), 1)
+    issue_linux_cmd(cmd)
 
 def set_region(region, port):
 
-    global _hw
-
-    port_point = ctypes.cast(port, ctypes.POINTER(ctypes.c_uint))
-
     print
     print("Setting the region...")
-    # Set the region, set the command and wait for command read
-    #_hw.set_region(ctypes.c_uint16(region), ctypes.c_uint(port))
-    _hw.set_region(ctypes.c_uint16(region), port_point)
-    print("1...")
-    #_hw.set_cmd(ctypes.c_uint(CMD_READ_REGION), ctypes.c_uint(port))
-    _hw.set_cmd(ctypes.c_uint(CMD_READ_REGION), port_point)
-    print("2...")
-    #_hw.print_reg_contents(ctypes.c_uint(port))
-    #_hw.wait_for_cmd_read(ctypes.c_uint(port))
-    _hw.print_reg_contents(port_point)
-    _hw.wait_for_cmd_read(port_point)
+    cmd = write_cmd(get_reg_address(port, 1), str(hex(region)))
+    issue_linux_cmd(cmd)
+
+    # Write the read region command
+    cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_READ_REGION)))
+    issue_linux_cmd(cmd)
+
+    # Wait untill the HW has read the command
+    wait_for_cmd_read(port)
     print("Region has been set!")
 
+def set_cmd(command, port):
+
+    cmd = write_cmd(get_reg_address(port, 0), str(hex(command)))
+    issue_linux_cmd(cmd)
+
 def start_block(port):
-
-    global _hw
-
-    port_point = ctypes.cast(port, ctypes.POINTER(ctypes.c_uint))
 
     print
     print("Starting the block...")
 
-    _hw.set_cmd(ctypes.c_uint(CMD_START), ctypes.byref(ctypes.c_uint(port)))
-    _hw.wait_for_cmd_read(ctypes.byref(ctypes.c_uint(port)))
+    # Set the command
+    cmd = write_cmd(get_reg_address(str(hex(port), 0)), str(hex(CMD_START)))
+    issue_linux_cmd(cmd)   
+
+    # Wait untill the HW has read the command
+    wait_for_cmd_read(port)
 
     print("Block has been started!")
 
 def restart_block(port):
-
-    global _hw
 
     print
     print("Restarting the HW...")
@@ -94,58 +105,170 @@ def restart_block(port):
 
 def test_block(port):
 
-    global _hw
-
     print
     print("Starting TEST MODE...")
 
     test_hw(port)
 
-
 def get_done(port):
 
-    global _hw
+    cmd = read_cmd(get_reg_address(port, 9))
+    res = issue_linux_cmd(cmd)
 
-    return int(_hw.get_done(ctypes.byref(ctypes.c_uint(port))))
+    return res
 
 def get_region(port):
 
-    global _hw
+    cmd = read_cmd(get_reg_address(port, 1))
+    res = issue_linux_cmd(cmd)
 
-    return int(_hw.get_region(ctypes.byref(ctypes.c_uint(port))))
+    return hex(res)
 
 def get_counter(port):
 
     global _hw
 
-    low = int(_hw.get_counter_lower(ctypes.byref(ctypes.c_uint(port))))
-    high = int(_hw.get_counter_uppper(ctypes.byref(ctypes.c_uint(port))))
+    cmd = read_cmd(get_reg_address(port, 8))
+    low = issue_linux_cmd(cmd)
+    cmd = read_cmd(get_reg_address(port, 7))
+    high = issue_linux_cmd(cmd)
 
-    return high, low
+    return "%.8x" % high + "%.8x" % low
 
 def test_hw(port):
 
-    global _hw
+    test = [0, 0]
+    res = [0, 0]
+    counter = [0, 0]
 
-    # Set the region, set the command and wait for command read
-    _hw.test_hw(ctypes.byref(ctypes.c_uint(port)))
+    nb_tests = 0
+    nb_correct = 0
+
+    print
+    print("Testing the platform...")
+    print
+
+    # First set the region to be used to all zeros
+    region = 0x00000000
+    set_region(region, port)
+    print("Selected region: %08x", region)
+
+    # Start the DES engine in test mode
+    set_cmd(CMD_TEST_MODE, port)
+    print("Starting test mode...")
+    wait_for_cmd_read(port)
+
+    # Wait until the first ciphertext result is ready
+    wait_for_test_res_ready(port)
+
+    test[1] = 0x8ca64de9
+    test[0] = 0xc1b123a7
+
+    cmd = read_cmd(get_reg_address(port, 6))
+    res[0] = issue_linux_cmd(cmd)
+
+    cmd = read_cmd(get_reg_address(port, 5))
+    res[1] = issue_linux_cmd(cmd)
+
+    nb_tests += 1
+    nb_correct += ( test[1] == res[1] && test[0] == res[0] )
+
+    print("Test result:")
+    print("Message   : %08x%08x", region, 0x00000000)
+    print("Ciphertext: %08x%08x", res[1], res[0])
+    print("Expected  : %08x%08x", test[1], test[0])
+    print
+
+    #***********************************************************************
+    advance_test(port)
+    wait_for_test_res_ready(port)
+
+    test[1] = 0x166b40b4
+    test[0] = 0x4aba4bd6
+
+    cmd = read_cmd(get_reg_address(port, 6))
+    res[0] = issue_linux_cmd(cmd)
+
+    cmd = read_cmd(get_reg_address(port, 5))
+    res[1] = issue_linux_cmd(cmd)
+
+    nb_tests += 1
+    nb_correct += ( test[1] == res[1] && test[0] == res[0] )
+
+    print("Test result:")
+    print("Message   : %08x%08x", region, 0x00000001)
+    print("Ciphertext: %08x%08x", res[1], res[0])
+    print("Expected  : %08x%08x", test[1], test[0])
+    print
+
+    #***********************************************************************
+    advance_test(port)
+    wait_for_test_res_ready(port)
+
+    test[1] = 0x06e7ea22
+    test[0] = 0xce92708f
+
+    cmd = read_cmd(get_reg_address(port, 6))
+    res[0] = issue_linux_cmd(cmd)
+
+    cmd = read_cmd(get_reg_address(port, 5))
+    res[1] = issue_linux_cmd(cmd)
+
+    nb_tests += 1
+    nb_correct += ( test[1] == res[1] && test[0] == res[0] )
+
+    print("Test result:")
+    print("Message   : %08x%08x", region, 0x00000002)
+    print("Ciphertext: %08x%08x", res[1], res[0])
+    print("Expected  : %08x%08x", test[1], test[0])
+    print
+
+    #***********************************************************************
+    advance_test(port)
+    wait_for_test_res_ready(port)
+
+    test[1] = 0x4eb190c9
+    test[0] = 0xa2fa169c
+
+    cmd = read_cmd(get_reg_address(port, 6))
+    res[0] = issue_linux_cmd(cmd)
+
+    cmd = read_cmd(get_reg_address(port, 5))
+    res[1] = issue_linux_cmd(cmd)
+
+    nb_tests += 1
+    nb_correct += ( test[1] == res[1] && test[0] == res[0] )
+
+    print("Test result:")
+    print("Message   : %08x%08x", region, 0x00000003)
+    print("Ciphertext: %08x%08x", res[1], res[0])
+    print("Expected  : %08x%08x", test[1], test[0])
+    print
+
+    cmd = read_cmd(get_reg_address(port, 8))
+    counter[0] = issue_linux_cmd(cmd)
+
+    cmd = read_cmd(get_reg_address(port, 7))
+    counter[1] = issue_linux_cmd(cmd)
+
+
+    printf("Testing completed!")
+    printf("Result: %x/%x correct!", nb_correct, nb_tests)
+    printf("Counter: %08x%08x, expected: %08x%08x", counter[1], counter[0], 0, 4)
+    printf
 
 def restart_hw(port):
 
-    global _hw
+    # Write the read region command
+    cmd = write_cmd(get_reg_address(str(hex(port), 0)), str(hex(CMD_RESTART)))
+    issue_linux_cmd(cmd)
 
-    # Set the region, set the command and wait for command read
-    _hw.restart_hw(ctypes.byref(ctypes.c_uint(port)))
+    # Wait untill the HW has read the command
+    wait_for_cmd_read(port)
 
 def start_hw_wait_finish(region, port):
 
-    global _hw
-
-    print
-    print("Starting the HW...")
-
-    # Set the region, set the command and wait for command read
-    _hw.start_hw(ctypes.c_uint16(region), ctypes.byref(ctypes.c_uint(port)))
+    # Don't think I still need this right now...
 
 
 

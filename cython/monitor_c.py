@@ -92,7 +92,6 @@ def get_results_des(block_nb):
             return
 
     # Process the results of the block and write them to the results file
-    # TODO: edit this! (1)
 
     region = interface.get_region(port)
     high, low = interface.get_counter(port)
