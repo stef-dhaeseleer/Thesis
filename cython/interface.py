@@ -22,7 +22,7 @@ CMD_RESTART      = 3
 def issue_linux_cmd(cmd):
 
     resp = os.popen(cmd).read()
-    resp = resp[0:len(resp)-2]
+    resp = resp[0:len(resp)-1]
 
     if(resp != ""):
         res = int(resp, 16)
@@ -62,7 +62,7 @@ def wait_for_test_res_ready(port):
 
 def advance_test(port):
 
-    cmd = write_cmd(get_reg_address(port, 2), 1)
+    cmd = write_cmd(get_reg_address(port, 2), str(hex(1)))
     issue_linux_cmd(cmd)
 
 def set_region(region, port):
@@ -154,7 +154,7 @@ def test_hw(port):
     # First set the region to be used to all zeros
     region = 0x00000000
     set_region(region, port)
-    print("Selected region: %08x", region)
+    print("Selected region: " + '%.8x' % region)
 
     # Start the DES engine in test mode
     set_cmd(CMD_TEST_MODE, port)
@@ -174,12 +174,12 @@ def test_hw(port):
     res[1] = issue_linux_cmd(cmd)
 
     nb_tests += 1
-    nb_correct += ( test[1] == res[1] & test[0] == res[0] )
+    nb_correct += ( (hex(test[1]).rstrip("L") == hex(res[1]).rstrip("L")) & (hex(test[0]).rstrip("L") == hex(res[0]).rstrip("L")) )
 
     print("Test result:")
-    print("Message   : %08x%08x", region, 0x00000000)
-    print("Ciphertext: %08x%08x", res[1], res[0])
-    print("Expected  : %08x%08x", test[1], test[0])
+    print("Message   : " + '%.8x' % region + "00000000")
+    print("Ciphertext: " + '%.8x' % res[1] + '%.8x' % res[0])
+    print("Expected  : " + '%.8x' % test[1]+ '%.8x' % test[0])
     print
 
     #***********************************************************************
@@ -196,12 +196,12 @@ def test_hw(port):
     res[1] = issue_linux_cmd(cmd)
 
     nb_tests += 1
-    nb_correct += ( test[1] == res[1] & test[0] == res[0] )
+    nb_correct += ( (hex(test[1]).rstrip("L") == hex(res[1]).rstrip("L")) & (hex(test[0]).rstrip("L") == hex(res[0]).rstrip("L")) )
 
     print("Test result:")
-    print("Message   : %08x%08x", region, 0x00000001)
-    print("Ciphertext: %08x%08x", res[1], res[0])
-    print("Expected  : %08x%08x", test[1], test[0])
+    print("Message   : " + '%.8x' % region + "00000001")
+    print("Ciphertext: " + '%.8x' % res[1] + '%.8x' % res[0])
+    print("Expected  : " + '%.8x' % test[1]+ '%.8x' % test[0])
     print
 
     #***********************************************************************
@@ -218,12 +218,12 @@ def test_hw(port):
     res[1] = issue_linux_cmd(cmd)
 
     nb_tests += 1
-    nb_correct += ( test[1] == res[1] & test[0] == res[0] )
+    nb_correct += ( (hex(test[1]).rstrip("L") == hex(res[1]).rstrip("L")) & (hex(test[0]).rstrip("L") == hex(res[0]).rstrip("L")) )
 
     print("Test result:")
-    print("Message   : %08x%08x", region, 0x00000002)
-    print("Ciphertext: %08x%08x", res[1], res[0])
-    print("Expected  : %08x%08x", test[1], test[0])
+    print("Message   : " + '%.8x' % region + "00000002")
+    print("Ciphertext: " + '%.8x' % res[1] + '%.8x' % res[0])
+    print("Expected  : " + '%.8x' % test[1]+ '%.8x' % test[0])
     print
 
     #***********************************************************************
@@ -240,12 +240,12 @@ def test_hw(port):
     res[1] = issue_linux_cmd(cmd)
 
     nb_tests += 1
-    nb_correct += ( test[1] == res[1] & test[0] == res[0] )
+    nb_correct += ( (hex(test[1]).rstrip("L") == hex(res[1]).rstrip("L")) & (hex(test[0]).rstrip("L") == hex(res[0]).rstrip("L")) )
 
     print("Test result:")
-    print("Message   : %08x%08x", region, 0x00000003)
-    print("Ciphertext: %08x%08x", res[1], res[0])
-    print("Expected  : %08x%08x", test[1], test[0])
+    print("Message   : " + '%.8x' % region + "00000003")
+    print("Ciphertext: " + '%.8x' % res[1] + '%.8x' % res[0])
+    print("Expected  : " + '%.8x' % test[1]+ '%.8x' % test[0])
     print
 
     cmd = read_cmd(get_reg_address(port, 8))
@@ -255,10 +255,9 @@ def test_hw(port):
     counter[1] = issue_linux_cmd(cmd)
 
 
-    printf("Testing completed!")
-    printf("Result: %x/%x correct!", nb_correct, nb_tests)
-    printf("Counter: %08x%08x, expected: %08x%08x", counter[1], counter[0], 0, 4)
-    printf
+    print("Testing completed!")
+    print("Result: " + '%.8x' % nb_correct + "/"  + '%.8x' % nb_tests + " correct!")
+    print
 
 def restart_hw(port):
 
