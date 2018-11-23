@@ -257,6 +257,7 @@ def test_hw(port):
 
     print("Testing completed!")
     print("Result: " + '%.8x' % nb_correct + "/"  + '%.8x' % nb_tests + " correct!")
+    print("Counter: " + '%.8x' % counter[1] + '%.8x' % counter[0] + ", expected: " + '%.8x' % 0 + '%.8x' % 4)
     print
 
 def restart_hw(port):
