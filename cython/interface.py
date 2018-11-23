@@ -23,9 +23,12 @@ def issue_linux_cmd(cmd):
 
     resp = os.popen(cmd).read()
     resp = resp[0:len(resp)-2]
-    res = int(resp, 16)
 
-    return res
+    if(resp != ""):
+        res = int(resp, 16)
+        return res
+    else:
+        return 0
 
 def write_cmd(address, value):
 
@@ -171,7 +174,7 @@ def test_hw(port):
     res[1] = issue_linux_cmd(cmd)
 
     nb_tests += 1
-    nb_correct += ( test[1] == res[1] && test[0] == res[0] )
+    nb_correct += ( test[1] == res[1] & test[0] == res[0] )
 
     print("Test result:")
     print("Message   : %08x%08x", region, 0x00000000)
@@ -193,7 +196,7 @@ def test_hw(port):
     res[1] = issue_linux_cmd(cmd)
 
     nb_tests += 1
-    nb_correct += ( test[1] == res[1] && test[0] == res[0] )
+    nb_correct += ( test[1] == res[1] & test[0] == res[0] )
 
     print("Test result:")
     print("Message   : %08x%08x", region, 0x00000001)
@@ -215,7 +218,7 @@ def test_hw(port):
     res[1] = issue_linux_cmd(cmd)
 
     nb_tests += 1
-    nb_correct += ( test[1] == res[1] && test[0] == res[0] )
+    nb_correct += ( test[1] == res[1] & test[0] == res[0] )
 
     print("Test result:")
     print("Message   : %08x%08x", region, 0x00000002)
@@ -237,7 +240,7 @@ def test_hw(port):
     res[1] = issue_linux_cmd(cmd)
 
     nb_tests += 1
-    nb_correct += ( test[1] == res[1] && test[0] == res[0] )
+    nb_correct += ( test[1] == res[1] & test[0] == res[0] )
 
     print("Test result:")
     print("Message   : %08x%08x", region, 0x00000003)
@@ -266,7 +269,7 @@ def restart_hw(port):
     # Wait untill the HW has read the command
     wait_for_cmd_read(port)
 
-def start_hw_wait_finish(region, port):
+#def start_hw_wait_finish(region, port):
 
     # Don't think I still need this right now...
 
