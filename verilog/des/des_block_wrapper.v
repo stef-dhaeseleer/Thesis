@@ -2,6 +2,17 @@
 
 //`include "des/des_block.v"
 
+module defparam();
+
+    // TODO: set the parameters here using defparam
+    defparam des_block_wrapper.des_block.message_counter.N = 16;
+    defparam des_block_wrapper.des_block.N = 16;
+    defparam des_block_wrapper.des_block.round_keys = 768'h0;
+    defparam des_block_wrapper.des_block.mask_i = 64'h1;
+    defparam des_block_wrapper.des_block.mask_o = 64'h1;
+
+endmodule
+
 module des_block_wrapper(
     input clk,                  // clock
     input rst_n,                // reset, active low signal
@@ -15,8 +26,6 @@ module des_block_wrapper(
     output [63:0] counter,      // counter output for the CPU
     output [63:0] ciphertext    // ciphertext output for the CPU
     );
-
-    // TODO: should be able to set the key from the CPU: but this will be a lot of bits... (1)
 
     // Nets and regs
     reg [3:0] state, next_state;        // State variables

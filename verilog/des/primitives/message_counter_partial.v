@@ -6,7 +6,7 @@ module message_counter_partial(
     input start,                    // signals the block to start working, valid data is on the input lines
     input pause,
     input reset_counter,
-    input [15:0]  region_select,    // used to set the upper bits for region select (N-1)
+    input [N-1:0]  region_select,    // used to set the upper bits for region select (N-1)
     output [63:0] counter,          // output register containing the current counter values
     output reg valid,               // signals that a valid result is on the output lines
     output reg done                 // signals that all counter values in the current region have been generated
@@ -28,6 +28,8 @@ module message_counter_partial(
     localparam [2:0]    paused      = 3'h3;
     localparam [2:0]    finished    = 3'h4;
 
+    // TODO: can we pass this parameter from the upper level instead of setting it here and there? (1)
+    // NOTE: paramter for region length (1)
     parameter N = 16;   // The amount of bits in the region select
 
     // Functions

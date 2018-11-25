@@ -13,9 +13,9 @@ module des_block(
     input restart_block,            // signal used to reset the counter
     input test_enabled,             // signals to run in test mode
     input test_advance,             // signals to advance one step in the test
-    input [15:0] region_select,     // input value to select the region for the counter to operate in
+    input [N-1:0] region_select,    // input value to select the region for the counter to operate in
     output test_data_valid,         // signals that the output data for test mode is now valid
-    output [47:0] counter,          // output counter to keep track of the amounts of 1's
+    output [63-N:0] counter,        // output counter to keep track of the amounts of 1's
     output [63:0] ciphertext_out,   // ciphertext output for testing
     output reg done                 // signals that the output are valid results
     );
@@ -23,10 +23,8 @@ module des_block(
     // Nets and regs
     reg [2:0] state, next_state;            // State variables
 
-    reg [767:0] round_keys = 768'h0;        // NOTE: Should this be a reg here or an input?
     reg [33:0] mask_i_bit_buffer;           // Used to buffer the mask bits, needed due to the pipeline delay
-    //reg [17:0] mask_i_bit_buffer;           // Used to buffer the mask bits, needed due to the pipeline delay
-    reg [47:0] counter_reg;
+    reg [63-N:0] counter_reg;
 
     reg enable;
     reg counter_enable;
@@ -54,8 +52,13 @@ module des_block(
     localparam [2:0]    test_pause  = 3'h5;
     localparam [2:0]    test_init   = 3'h6;
 
+    // NOTE: paramters for masks, keys and region length (1)
     parameter [63:0] mask_i = 64'h1;
     parameter [63:0] mask_o = 64'h1;
+
+    parameter [767:0] round_keys = 768'h0;
+
+    parameter N = 16;   // The amount of bits in the region select
 
     // Functions
 
@@ -236,20 +239,16 @@ module des_block(
         
         if (rst_n == 1'b0) begin
             mask_i_bit_buffer <= 34'h0;
-            //mask_i_bit_buffer <= 18'h0;
         end
         else if (restart_block == 1'b1) begin
             mask_i_bit_buffer <= 34'h0;
-            //mask_i_bit_buffer <= 18'h0;
         end
         //else if (enable == 1'b1) begin  // Only process output when enabled
             if (message_valid == 1'b1) begin
                 mask_i_bit_buffer <= {mask_i_bit, mask_i_bit_buffer[33:1]};
-                //mask_i_bit_buffer <= {mask_i_bit, mask_i_bit_buffer[17:1]};
             end
             else if (ciphertext_valid == 1'b1) begin
                 mask_i_bit_buffer <= {1'b0, mask_i_bit_buffer[33:1]};   // keep shifting for the last operations in the pipeline, fill register with zeros
-                //mask_i_bit_buffer <= {1'b0, mask_i_bit_buffer[17:1]};   // keep shifting for the last operations in the pipeline, fill register with zeros
             end
         //end
     end
@@ -265,17 +264,17 @@ module des_block(
 
     always @(posedge clk) begin     // Counter
         if (rst_n == 1'b0) begin
-            counter_reg <= 47'h0;
+            counter_reg <= {64-N{1'b0}};
         end
         else if (restart_block == 1'b1) begin
-            counter_reg <= 47'h0;
+            counter_reg <= {64-N{1'b0}};
         end
         else if (mask_result == 1'b1 & counter_enable == 1'b1) begin    // Only count new values when enabled
             counter_reg <= counter_reg + 1;
         end
     end
 
-    assign counter = counter_reg[47:0];
+    assign counter = counter_reg[63-N:0];
     assign ciphertext_out = ciphertext;
     assign test_data_valid = reg_test_data_valid;
     assign mask_result = mask_o_bit ^ mask_i_bit_buffer[0];
