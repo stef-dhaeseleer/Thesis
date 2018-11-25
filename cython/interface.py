@@ -125,7 +125,7 @@ def get_region(port):
     cmd = read_cmd(get_reg_address(port, 1))
     res = issue_linux_cmd(cmd)
 
-    return hex(res)
+    return "%.8x" % res
 
 def get_counter(port):
 
