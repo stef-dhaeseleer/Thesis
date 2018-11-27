@@ -59,11 +59,11 @@ module des_block_wrapper(
     localparam [3:0]    start_init          = 4'ha;
     localparam [3:0]    test_start          = 4'hb;
     
-    defparam des_block.message_counter.N = 16;
-    defparam des_block.N = 16;
+    defparam des_block.message_counter.N = 24;
+    defparam des_block.N = 24;
     defparam des_block.round_keys = 768'h0;
-    defparam des_block.mask_i = 64'h1;
-    defparam des_block.mask_o = 64'h1;
+    defparam des_block.mask_i = 64'h21040008000000000;
+    defparam des_block.mask_o = 64'h00000000210400080;
 
     // DES Linear tests:
     // 8 rounds
