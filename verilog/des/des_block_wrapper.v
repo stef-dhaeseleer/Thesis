@@ -65,6 +65,13 @@ module des_block_wrapper(
     defparam des_block.mask_i = 64'h1;
     defparam des_block.mask_o = 64'h1;
 
+    // DES Linear tests:
+    // 8 rounds
+    //      input   64'h21040008000000000
+    //      output  64'h00000000210400080
+    //      keys    768'h0
+    //      N       24      => 1.5 hour per region
+
     // Functions
 
     //---------------------------FSM---------------------------------------------------------------
