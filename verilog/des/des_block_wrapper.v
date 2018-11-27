@@ -2,17 +2,6 @@
 
 //`include "des/des_block.v"
 
-module defparam();
-
-    // TODO: set the parameters here using defparam
-    defparam des_block_wrapper.des_block.message_counter.N = 16;
-    defparam des_block_wrapper.des_block.N = 16;
-    defparam des_block_wrapper.des_block.round_keys = 768'h0;
-    defparam des_block_wrapper.des_block.mask_i = 64'h1;
-    defparam des_block_wrapper.des_block.mask_o = 64'h1;
-
-endmodule
-
 module des_block_wrapper(
     input clk,                  // clock
     input rst_n,                // reset, active low signal
@@ -69,6 +58,12 @@ module des_block_wrapper(
     localparam [3:0]    advance_test_wait   = 4'h9;
     localparam [3:0]    start_init          = 4'ha;
     localparam [3:0]    test_start          = 4'hb;
+    
+    defparam des_block.message_counter.N = 16;
+    defparam des_block.N = 16;
+    defparam des_block.round_keys = 768'h0;
+    defparam des_block.mask_i = 64'h1;
+    defparam des_block.mask_o = 64'h1;
 
     // Functions
 
