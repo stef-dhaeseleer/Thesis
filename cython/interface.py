@@ -91,7 +91,7 @@ def start_block(port):
     print("Starting the block...")
 
     # Set the command
-    cmd = write_cmd(get_reg_address(str(hex(port), 0)), str(hex(CMD_START)))
+    cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_START)))
     issue_linux_cmd(cmd)   
 
     # Wait untill the HW has read the command
@@ -263,7 +263,7 @@ def test_hw(port):
 def restart_hw(port):
 
     # Write the read region command
-    cmd = write_cmd(get_reg_address(str(hex(port), 0)), str(hex(CMD_RESTART)))
+    cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_RESTART)))
     issue_linux_cmd(cmd)
 
     # Wait untill the HW has read the command

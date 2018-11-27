@@ -31,3 +31,11 @@ cp ../interface.py /run/media/r0583050/cbd2711f-99e9-41c0-8e22-e400aa213a4a/home
 TESTING
 import monitor
 monitor.test_hw_functionality()
+
+SCREEN COMMANDS
+
+make uart to open (linux)
+
+Ctrl+a d (Detach from screen without quiting)
+
+screen -r (resume to detached screen)
