@@ -41,3 +41,12 @@ Ctrl+a d (Detach from screen without quiting)
 screen -r (resume to detached screen)
 
 When detached, cable can be unplugged and replugged without issues
+
+monitor.get_hw_status()
+
+
+
+
+
+
+

@@ -97,6 +97,14 @@ def start_des(block_nb, region):
     print
     print ("Everything updated!")
 
+def start_all(base_region):
+
+    region = base_region
+
+    for nb in range(0, 32):
+	    start_des(nb, region)
+	    region += 1
+
 def restart_des(block_nb):
 
     port = ports[block_nb]
@@ -150,6 +158,11 @@ def get_results_des(block_nb):
     print ("All results processed, the block will now be restarted!")
     
     restart_des(block_nb)
+
+def get_results_all():
+
+    for nb in range(0, 32):
+	    get_results_des(nb)
 
 def print_results():
 
@@ -228,6 +241,12 @@ def help():
     print("    args: block_nb, region")
     print("    output: /")
     print("    Starts the specified core number for the specified region.")
+    
+    print
+    print("start_all()")
+    print("    args: base_region")
+    print("    output: /")
+    print("    Starts all cores for the specified region (incremented with one for every new core).")
 
     print
     print("restart_des()")
@@ -241,6 +260,12 @@ def help():
     print("    output: /")
     print("    Gets the results from the specified core when it has finished.")
     print("    The results are written to the results file.")
+    
+    print
+    print("get_results_all()")
+    print("    args: /")
+    print("    output: /")
+    print("    Gets the results from all cores.")
 
     print
     print("get_last_region()")

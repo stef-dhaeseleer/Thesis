@@ -16,7 +16,7 @@ module message_counter_partial(
     reg [3:0] state, next_state;        // State variables
     
     reg [63-N:0] counter_reg;
-    reg [15:0] region_reg;
+    reg [N-1:0] region_reg;
 
     reg load_seed;
     reg load_counter;

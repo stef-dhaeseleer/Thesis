@@ -29,14 +29,14 @@ module des_block_wrapper(
     reg reg_test_res_ready;
     reg reg_done;
 
-    reg [15:0] region_reg;
+    reg [N-1:0] region_reg;
     reg [63:0] counter_reg;
     reg [63:0] ciphertext_reg;
-
+    
     wire des_finished;
     wire des_test_data_valid;
 
-    wire [47:0] des_counter;
+    wire [63-N:0] des_counter;
     wire [63:0] ciphertext_out;
 
     // Parameters
@@ -59,8 +59,11 @@ module des_block_wrapper(
     localparam [3:0]    start_init          = 4'ha;
     localparam [3:0]    test_start          = 4'hb;
     
-    defparam des_block.message_counter.N = 24;
-    defparam des_block.N = 24;
+    // N should be 32 or lower
+    parameter N = 27;
+    
+    defparam des_block.message_counter.N = 27;
+    defparam des_block.N = 27;
     defparam des_block.round_keys = 768'h0;
     defparam des_block.mask_i = 64'h21040008000000000;
     defparam des_block.mask_o = 64'h00000000210400080;
@@ -271,7 +274,7 @@ module des_block_wrapper(
 
     always @(posedge clk) begin     // Load the region into the register
         if (load_region == 1'b1) begin
-            region_reg <= region[15:0];
+            region_reg <= region[N-1:0];
         end
     end
 
@@ -282,7 +285,9 @@ module des_block_wrapper(
     end
 
     always @(posedge clk) begin     // Load the ciphertext into the register
-        ciphertext_reg <= ciphertext_out;
+    // TODO: change back!
+        //ciphertext_reg <= ciphertext_out;
+        ciphertext_reg <= {{64-N{1'b0}}, region_reg};
     end
      
 endmodule
