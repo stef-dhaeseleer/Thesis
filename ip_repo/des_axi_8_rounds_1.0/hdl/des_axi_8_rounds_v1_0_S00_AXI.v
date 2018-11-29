@@ -236,8 +236,9 @@
 
     reg r_cmd_data_valid;
     reg r_region_data_valid;
-    reg r_des_region;
     reg r_test_advance;
+
+    reg [31:0] r_des_region;
 
     // ***************
 
@@ -267,7 +268,7 @@
 
         // Write the standard values to regs here
         r_test_advance <= 1'b0; // Set to zero when not written to, this way it only stays high one cycle
-        r_region_data_valid <= 1'b0; // Set to zero when not written to, this way it only stays high one cycle
+        //r_region_data_valid <= 1'b0; // Set to zero when not written to, this way it only stays high one cycle
 
         slv_reg4 <= DES_TEST_RESULT_READY;  // Set the test result register for the CPU to read
         //slv_reg3 <= CMD_DATA_READ;          // Set the cmd read register for the CPU to read
@@ -332,6 +333,7 @@
 
                     // slave register is used by the PL to signal to the PS
                     // This register can thus not be set by the AXI slave
+
                   end  
 
               4'h4: // THIS IS THE TEST_RESULT_READY SIGNAL
@@ -420,14 +422,13 @@
           else begin
                 if (CMD_DATA_READ == 1'b1) begin    // Indicates that the wrapper has read the command
                     r_cmd_data_valid <= 1'b0;
+		            r_region_data_valid <= 1'b0;
                     slv_reg3 <= 1'b1;
                 end
                 if (r_region_data_valid == 1'b1) begin
                     r_des_region <= slv_reg1;   // Buffer the region data from the slave reg into another reg
                 end
                 // Test advance taken care of at slv_reg2
-
-
 
                 if (CMD_DATA_VALID == 1'b1) begin
                     slv_reg9 <= 0;  // This is the done signal, set to zero when a command is received

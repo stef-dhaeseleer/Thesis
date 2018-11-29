@@ -66,7 +66,7 @@ module message_counter_partial(
             end
 		    // NOTE: change this and next for full message generation (1)
             else if (counter_reg == {64-N{1'b1}}) begin
-            //else if (counter_reg == 64'h20) begin
+            //else if (counter_reg == 64'h200) begin
                 next_state <= finished;
             end
         end
@@ -108,7 +108,7 @@ module message_counter_partial(
         working: begin
             valid <= 1'b1;
             if (counter_reg == {64-N{1'b1}}) begin
-            //if (counter_reg == 64'h20) begin
+            //if (counter_reg == 64'h200) begin
                 load_counter <= 1'b0;
             end
             else begin

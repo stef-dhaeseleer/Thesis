@@ -236,8 +236,9 @@
 
     reg r_cmd_data_valid;
     reg r_region_data_valid;
-    reg r_des_region;
     reg r_test_advance;
+
+    reg [31:0] r_des_region;
 
     // ***************
 
@@ -420,6 +421,7 @@
           else begin
                 if (CMD_DATA_READ == 1'b1) begin    // Indicates that the wrapper has read the command
                     r_cmd_data_valid <= 1'b0;
+		            r_region_data_valid <= 1'b0;
                     slv_reg3 <= 1'b1;
                 end
                 if (r_region_data_valid == 1'b1) begin

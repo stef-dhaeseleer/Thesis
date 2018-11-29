@@ -42,9 +42,35 @@ screen -r (resume to detached screen)
 
 When detached, cable can be unplugged and replugged without issues
 
+import monitor
+
+monitor.init_platform()
+
 monitor.get_hw_status()
+monitor.start_all(0)
+
+monitor.get_results_all()
+monitor.print_results()
+
+import interface
+
+port = 0x43C00000
+port = 0x43C10000
+port = 0x43C20000
+port = 0x43C30000
+port = 0x43C40000
 
 
+port = 0x43DE0000
+
+cmd = interface.read_cmd(interface.get_reg_address(port, 6))
+interface.issue_linux_cmd(cmd)
+
+cmd = interface.read_cmd(interface.get_reg_address(port, 5))
+interface.issue_linux_cmd(cmd)
+
+=> 0, 1, 0, 1, 0 ...
+=> Issue in passing the region to the DES wrapper
 
 
 

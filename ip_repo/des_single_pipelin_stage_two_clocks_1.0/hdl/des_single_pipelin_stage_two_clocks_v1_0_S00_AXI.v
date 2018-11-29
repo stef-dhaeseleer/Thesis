@@ -236,8 +236,9 @@
 
     reg r_cmd_data_valid;
     reg r_region_data_valid;
-    reg r_des_region;
     reg r_test_advance;
+
+    reg [31:0] r_des_region;
 
     // ***************
 
@@ -348,7 +349,7 @@
               4'h5: // THIS IS THE UPPER CIPHERTEXT REG
                 for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
                   if ( S_AXI_WSTRB[byte_index] == 1 ) begin
-                    // Respective byte enables are asserted as per write strobes 
+                    // Respective byte enableOPT_MEM_ADDR_BITSs are asserted as per write strobes 
                     // Slave register 5
                     //slv_reg5[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
 
@@ -420,6 +421,7 @@
           else begin
                 if (CMD_DATA_READ == 1'b1) begin    // Indicates that the wrapper has read the command
                     r_cmd_data_valid <= 1'b0;
+		            r_region_data_valid <= 1'b0;
                     slv_reg3 <= 1'b1;
                 end
                 if (r_region_data_valid == 1'b1) begin
