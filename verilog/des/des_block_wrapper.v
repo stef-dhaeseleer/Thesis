@@ -291,9 +291,8 @@ module des_block_wrapper(
     end
 
     always @(posedge clk) begin     // Load the ciphertext into the register
-    // TODO: change back!
-        //ciphertext_reg <= ciphertext_out;
-        ciphertext_reg <= {region_test, region_reg};
+        ciphertext_reg <= ciphertext_out;
+        //ciphertext_reg <= {region_test, region_reg};
     end
      
 endmodule
