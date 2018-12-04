@@ -270,7 +270,7 @@ module des_block_wrapper(
         .done           (des_finished ));
 
     assign cmd_read = cmd_read_reg;
-    assign counter = counter_reg;
+    assign counter = {{N{1'b0}}, counter_reg};
     assign ciphertext = ciphertext_reg;
     assign test_res_ready = reg_test_res_ready;
     assign done = reg_done;
@@ -291,9 +291,8 @@ module des_block_wrapper(
     end
 
     always @(posedge clk) begin     // Load the ciphertext into the register
-    // TODO: change back!
-        //ciphertext_reg <= ciphertext_out;
-        ciphertext_reg <= {region_test, region_reg};
+        ciphertext_reg <= ciphertext_out;
+        //ciphertext_reg <= {region_test, region_reg};
     end
      
 endmodule
