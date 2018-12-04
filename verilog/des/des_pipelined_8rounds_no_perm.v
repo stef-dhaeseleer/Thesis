@@ -261,7 +261,7 @@ module des_encryption_pipelined(
     //        .data_o    (permuted_message));
 
     // The inverse IP permutation module NOT ACTIVE HERE
-    assign result_wire = {L_out, R_out};    // Don't swap in the last round, just output
+    assign result_wire = {R_out, L_out};    // Don't swap in the last round, just output
     //ip_inverse_permutation ip_inv(
     //        .data_i    ({R_out, L_out}),
     //        .data_o    (result_wire));
