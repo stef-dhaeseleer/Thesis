@@ -57,32 +57,26 @@ def generate_keys(master_key):
 
 def main():
     
-	master_key = "0001001100110100010101110111100110011011101111001101111111110001"
-	round_keys = generate_keys(master_key)
+    master_key = "0001001100110100010101110111100110011011101111001101111111110001"
+    round_keys = generate_keys(master_key)
 
-	print ()
-	print ("################################################################################")
-	print ()
+    print
+    print ("################################################################################")
+    print
 
-	"""
-	print (master_key)
-	print ()
-
-	for i in range(16):
-		print (round_keys[i])
-
-	print ()
-	"""
-
-	file = open("testfiles/subkey_generator.txt", "w")
+    file = open("testfiles/subkey_generator.txt", "w")
+    file2 = open("testfiles/subkey_verilog.txt", "w")
  
-	file.write(master_key + " " + round_keys[0] + " " + round_keys[1] + " " + round_keys[2] + " " + round_keys[3] + " " + round_keys[4] + " " + round_keys[5] + " " + round_keys[6] + " " + round_keys[7] + " " + round_keys[8] + " " + round_keys[9] + " " + round_keys[10] + " " + round_keys[11] + " " + round_keys[12] + " " + round_keys[13] + " " + round_keys[14] + " " + round_keys[15]) 
-	 
-	file.close()
+    file.write(master_key + " " + round_keys[0] + " " + round_keys[1] + " " + round_keys[2] + " " + round_keys[3] + " " + round_keys[4] + " " + round_keys[5] + " " + round_keys[6] + " " + round_keys[7] + " " + round_keys[8] + " " + round_keys[9] + " " + round_keys[10] + " " + round_keys[11] + " " + round_keys[12] + " " + round_keys[13] + " " + round_keys[14] + " " + round_keys[15]) 
+    file2.write(master_key + "\n")
+    file2.write(round_keys[0] + round_keys[1] + round_keys[2] + round_keys[3] + round_keys[4] + round_keys[5] + round_keys[6] + round_keys[7] + round_keys[8] + round_keys[9] + round_keys[10] + round_keys[11] + round_keys[12] + round_keys[13] + round_keys[14] + round_keys[15]) 
 
-	print ("File generated!")
+    file.close()
+    file2.close()
 
-	print ()
+    print ("File generated!")
+
+    print
 
 if __name__ == '__main__':
     main()
