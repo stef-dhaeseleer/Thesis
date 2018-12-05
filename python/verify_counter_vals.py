@@ -4,52 +4,65 @@ def one_verify():
 
     N = 27                      # Number of region bits
 
-    count = 0x0000000fff996560 # Counter value
-    exp = 2**(64-N)            # Nb of encryptions = 2**(64-N)
+    count = 0xfff996560         # Counter value
+    exp = 2**(64-N)             # Nb of encryptions = 2**(64-N)
 
     bias_expected = 2**(-13.5)      # expected bias for 8 round test
 
-    bias = abs((count/exp) - 0.5)
+    bias = abs((count/float(exp)) - 0.5)
 
     diff = abs(bias - bias_expected)
 
-    print ()
+    print 
     print ("################################################################################")
     print ("Expected bias   : " + str(bias_expected))
     print ("Calculated bias : " + str(bias))
     print ("Difference      : " + str(diff))
-    print ()
 
-    print ()
-    print ()
 
 def all_verify():
 
-    file_input = open("testfiles/report.txt", "r")
+    file = open("testfiles/results.txt", "r")
 
     N = 27                      # Number of region bits
     exp = 2**(64-N)            # Nb of encryptions = 2**(64-N)
     bias_expected = 2**(-13.5)      # expected bias for 8 round test
 
-    count = 0x0000000fff996560 # Counter value
+    total_count = 0
+    total_lines = 0
+    
+    file.readline()   # skip the header file
 
-    bias = abs((count/exp) - 0.5)
+    for line in file:
+        count = line.split()[2]
+        count = int(count, 16)
+        bias = abs((count/float(exp)) - 0.5)
+        diff = abs(bias - bias_expected)
 
+        total_count += count
+        total_lines += 1
+
+        print 
+        print ("################################################################################")
+        print ("Expected bias   : " + str(bias_expected))
+        print ("Calculated bias : " + str(bias))
+        print ("Difference      : " + str(diff))
+
+    # Now process the complete result as well
+
+    bias = abs((total_count/float(exp*total_lines)) - 0.5)
     diff = abs(bias - bias_expected)
 
-    print ()
+    print 
     print ("################################################################################")
+    print ("FINAL RESULT OVER ALL COUNTERS")
     print ("Expected bias   : " + str(bias_expected))
     print ("Calculated bias : " + str(bias))
     print ("Difference      : " + str(diff))
-    print ()
-
-    print ()
-    print ()
 
 def main():
 
-    one_verify()
+    all_verify()
 
 if __name__ == '__main__':
     main()
