@@ -4,6 +4,9 @@
 	module des_axi_8_rounds_v1_0 #
 	(
         // Users to add parameters here
+        
+        parameter region = 32,
+        parameter key_select = 768'h0,
 
         // User parameters ends
         // Do not modify the parameters beyond this line
@@ -101,7 +104,10 @@
 
     // Add user logic here
     
-    des_block_wrapper des_block_wrapper(
+    des_block_wrapper # ( 
+            .N(region),
+            .key(key_select)
+        ) des_block_wrapper(
         .clk (des_clk),
         .rst_n (s00_axi_aresetn),
         .cmd (cmd_data),

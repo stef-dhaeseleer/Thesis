@@ -144,6 +144,6 @@ module message_counter_partial(
         end
     end
     
-    assign counter = {region_reg, counter_reg[63-N:0]};
+    assign counter = {counter_reg[63-N:0], region_reg};
 
 endmodule
