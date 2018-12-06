@@ -2,9 +2,9 @@ import math
 
 def one_verify():
 
-    N = 27                      # Number of region bits
+    N = 32                      # Number of region bits
 
-    count = 0xfff996560         # Counter value
+    count = 0x000000007ffd6b26  # Counter value
     exp = 2**(64-N)             # Nb of encryptions = 2**(64-N)
 
     bias_expected = 2**(-13.5)      # expected bias for 8 round test
@@ -64,7 +64,7 @@ def all_verify():
         file_res.write(str(bias) + "\n")
         file_res.write(str(diff) + "\n")
 
-        file_res.write(keys[i] + "\n")
+        file_res.write(keys[i%32] + "\n")   # Remainder for if multiple runs with the same keys
         file_res.write("\n")
 
         i += 1

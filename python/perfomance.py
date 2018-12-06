@@ -15,6 +15,9 @@ def main():
 	encrypt_per_block_day = clock_freq * 10**6 * seconds_per_day
 	two_exp_block = math.log(encrypt_per_block_day, 2)
 
+	encrypt_per_block_sec = clock_freq * 10**6
+	two_exp_block_sec = math.log(encrypt_per_block_sec, 2)
+
 	encrypt_per_run = 2**(64-N)
 	two_exp_run = math.log(encrypt_per_run, 2)
 
@@ -30,6 +33,8 @@ def main():
 
 	print ("Clock frequency            : " + str(clock_freq))
 	print ("DES cores                  : " + str(nb_blocks))
+	print ("Encryptions per sec (block): " + str(encrypt_per_block_sec))
+	print ("Encryptions 2 exp          : " + str(two_exp_block_sec))
 	print ("Encryptions per day (block): " + str(encrypt_per_block_day))
 	print ("Encryptions 2 exp          : " + str(two_exp_block))
 	print ("Encryptions per run (block): " + str(encrypt_per_run))
