@@ -23,6 +23,14 @@ def one_verify():
 def all_verify():
 
     file = open("testfiles/results.txt", "r")
+    file_key = open("testfiles/result_keys.txt", "r")
+
+    keys  = []
+
+    for line in file_key:
+        keys.append(line)    
+
+    file_res = open("testfiles/bias_results.txt", "aw")
 
     N = 27                      # Number of region bits
     exp = 2**(64-N)            # Nb of encryptions = 2**(64-N)
@@ -33,7 +41,10 @@ def all_verify():
     
     file.readline()   # skip the header file
 
+    i = 0
+
     for line in file:
+        region = line.split()[0]
         count = line.split()[2]
         count = int(count, 16)
         bias = abs((count/float(exp)) - 0.5)
@@ -47,6 +58,16 @@ def all_verify():
         print ("Expected bias   : " + str(bias_expected))
         print ("Calculated bias : " + str(bias))
         print ("Difference      : " + str(diff))
+
+        file_res.write(region + "\n")
+        file_res.write(str(bias_expected) + "\n")
+        file_res.write(str(bias) + "\n")
+        file_res.write(str(diff) + "\n")
+
+        file_res.write(keys[i] + "\n")
+        file_res.write("\n")
+
+        i += 1
 
     # Now process the complete result as well
 
