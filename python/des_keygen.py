@@ -83,13 +83,24 @@ def gen_single_key_file():
 
 def gen_32_key_file():
 
-    file = open("testfiles/32_key_file.txt", "w")
+    file = open("testfiles/key_set.tcl", "w")
+
+    file.write("set count 0 \n")
+    file.write("set name \"des_axi_8_rounds_\" \n")
+    file.write("\n")
 
     for i in range(0, 32):
+        file.write("set a $name$count \n")
+
         master_key = "{0:b}".format(random.getrandbits(128))
         round_keys = generate_keys(master_key)
+
+        key = round_keys[0] + round_keys[1] + round_keys[2] + round_keys[3] + round_keys[4] + round_keys[5] + round_keys[6] + round_keys[7] + round_keys[8] + round_keys[9] + round_keys[10] + round_keys[11] + round_keys[12] + round_keys[13] + round_keys[14] + round_keys[15]
      
-        file.write(round_keys[0] + round_keys[1] + round_keys[2] + round_keys[3] + round_keys[4] + round_keys[5] + round_keys[6] + round_keys[7] + round_keys[8] + round_keys[9] + round_keys[10] + round_keys[11] + round_keys[12] + round_keys[13] + round_keys[14] + round_keys[15]+ "\n") 
+        file.write("set_property -dict [list CONFIG.key_select {\"" + key + "\"}] [get_bd_cells $a] \n") 
+        file.write("set_property -dict [list CONFIG.region {32}] [get_bd_cells  $a] \n")
+        file.write("incr count \n")
+        file.write("\n")
 
     file.close()
 
@@ -97,7 +108,10 @@ def gen_32_key_file():
 
     print ("File generated!")
 
-    print    
+    print  
+
+        
+         
 
 def main():
     
