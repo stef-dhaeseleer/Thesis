@@ -83,7 +83,8 @@ def gen_single_key_file():
 
 def gen_32_key_file():
 
-    file = open("testfiles/key_set.tcl", "w")
+    file = open("../key_set.tcl", "w")
+    file_key = open("testfiles/key_vals.txt", "aw")
 
     file.write("set count 0 \n")
     file.write("set name \"des_axi_8_rounds_\" \n")
@@ -102,11 +103,18 @@ def gen_32_key_file():
         file.write("incr count \n")
         file.write("\n")
 
+        file_key.write(key + "\n")
+    
+    file_key.write("\n")
+
     file.close()
+    file_key.close()
 
     print
 
     print ("File generated!")
+    print ("Run following command to check for duplicate keys: ")
+    print ("sort testfiles/key_vals.txt | uniq -d")
 
     print  
 
