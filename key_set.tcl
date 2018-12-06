@@ -11,8 +11,8 @@ foreach line $data {
         set a $name$count
 
         set test 0xff
+        set_property -dict [list CONFIG.key_select {[eval $test]}] [get_bd_cells $a]
 
-        set_property -dict [list CONFIG.key_select {$test}] [get_bd_cells $a]
         set_property -dict [list CONFIG.region {32}] [get_bd_cells  $a]
         puts stdout "Core $count key set to $line"
 
