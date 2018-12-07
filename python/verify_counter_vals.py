@@ -22,17 +22,17 @@ def one_verify():
 
 def all_verify():
 
-    file = open("testfiles/results.txt", "r")
-    file_key = open("testfiles/result_keys.txt", "r")
+    file = open("counter_results/results.txt", "r")
+    file_key = open("counter_results/result_keys.txt", "r")
 
     keys  = []
 
     for line in file_key:
         keys.append(line)    
 
-    file_res = open("testfiles/bias_results.txt", "aw")
+    file_res = open("counter_results/bias_results.txt", "aw")
 
-    N = 27                      # Number of region bits
+    N = 32                     # Number of region bits
     exp = 2**(64-N)            # Nb of encryptions = 2**(64-N)
     bias_expected = 2**(-13.5)      # expected bias for 8 round test
 
@@ -59,12 +59,12 @@ def all_verify():
         print ("Calculated bias : " + str(bias))
         print ("Difference      : " + str(diff))
 
-        file_res.write(region + "\n")
-        file_res.write(str(bias_expected) + "\n")
-        file_res.write(str(bias) + "\n")
-        file_res.write(str(diff) + "\n")
+        file_res.write("Region          : " + region + "\n")
+        file_res.write("Expected bias   : " + str(bias_expected) + "\n")
+        file_res.write("Calculated bias : " + str(bias) + "\n")
+        file_res.write("Difference      : " + str(diff) + "\n")
 
-        file_res.write(keys[i%32] + "\n")   # Remainder for if multiple runs with the same keys
+        file_res.write("Key             : " + keys[i%32] + "\n")   # Remainder for if multiple runs with the same keys
         file_res.write("\n")
 
         i += 1
