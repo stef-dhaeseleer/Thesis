@@ -422,7 +422,7 @@
           else begin
                 if (CMD_DATA_READ == 1'b1) begin    // Indicates that the wrapper has read the command
                     r_cmd_data_valid <= 1'b0;
-		            r_region_data_valid <= 1'b0;
+		                r_region_data_valid <= 1'b0;
                     slv_reg3 <= 1'b1;
                 end
                 if (r_region_data_valid == 1'b1) begin

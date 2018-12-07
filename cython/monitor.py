@@ -105,7 +105,7 @@ def start_all(base_region):
     for nb in range(0, nb_blocks):
 	    start_des(nb, region)
 	    region += 1
-            time.sleep(0.1)
+        #time.sleep(0.1)
 
 def restart_des(block_nb):
 
@@ -165,7 +165,7 @@ def get_results_all():
 
     for nb in range(0, nb_blocks):
 	    get_results_des(nb)
-            time.sleep(0.1)
+        #time.sleep(0.1)
 
 def print_results():
 

@@ -17,8 +17,7 @@ CMD_READ_REGION  = 0
 CMD_START        = 1
 CMD_TEST_MODE    = 2
 CMD_RESTART      = 3
-
-
+CMD_CLEAR        = 5
 
 def issue_linux_cmd(cmd):
 
@@ -27,10 +26,10 @@ def issue_linux_cmd(cmd):
 
     if(resp != ""):
         res = int(resp, 16)
-        time.sleep(0.2)
+        #time.sleep(0.2)
         return res
     else:
-        time.sleep(0.2)
+        #time.sleep(0.2)
         return 0
 
 def write_cmd(address, value):
@@ -64,6 +63,21 @@ def wait_for_test_res_ready(port):
         cmd = read_cmd(get_reg_address(port, 4))
         ok = issue_linux_cmd(cmd)
 
+def clear_command(port):
+
+    # This function is a dummy command to make sure that the command read is set back to zero
+    # before we write a new command to the AXI
+
+    cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_CLEAR)))
+    issue_linux_cmd(cmd)
+
+    ok = 1  # Init to 1
+
+    # Loop untill this becomes zero and we are thus sure we can write a new command to the AXI
+    while(ok == 1):
+        cmd = read_cmd(get_reg_address(port, 3))
+        ok = issue_linux_cmd(cmd)
+
 def advance_test(port):
 
     cmd = write_cmd(get_reg_address(port, 2), str(hex(1)))
@@ -76,6 +90,9 @@ def set_region(region, port):
     cmd = write_cmd(get_reg_address(port, 1), str(hex(region)))
     issue_linux_cmd(cmd)
 
+    # Clear out before new write command
+    clear_command(port)
+
     # Write the read region command
     cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_READ_REGION)))
     issue_linux_cmd(cmd)
@@ -86,6 +103,9 @@ def set_region(region, port):
 
 def set_cmd(command, port):
 
+    # Clear out before new write command
+    clear_command(port)
+
     cmd = write_cmd(get_reg_address(port, 0), str(hex(command)))
     issue_linux_cmd(cmd)
 
@@ -93,6 +113,9 @@ def start_block(port):
 
     print
     print("Starting the block...")
+
+    # Clear out before new write command
+    clear_command(port)
 
     # Set the command
     cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_START)))
@@ -266,16 +289,15 @@ def test_hw(port):
 
 def restart_hw(port):
 
+    # Clear out before new write command
+    clear_command(port)
+
     # Write the read region command
     cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_RESTART)))
     issue_linux_cmd(cmd)
 
     # Wait untill the HW has read the command
     wait_for_cmd_read(port)
-
-#def start_hw_wait_finish(region, port):
-
-    # Don't think I still need this right now...
 
 
 
