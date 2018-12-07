@@ -10,6 +10,7 @@
 
 import ctypes
 import os
+import time
 
 # Set the needed command parameters
 CMD_READ_REGION  = 0
@@ -26,8 +27,10 @@ def issue_linux_cmd(cmd):
 
     if(resp != ""):
         res = int(resp, 16)
+        time.sleep(0.2)
         return res
     else:
+        time.sleep(0.2)
         return 0
 
 def write_cmd(address, value):

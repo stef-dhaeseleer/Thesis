@@ -1,4 +1,5 @@
 import interface
+import time
 
 # Define all the port addresses for passing to the c code
 ports = [0x43C00000, 0x43C10000, 0x43C20000, 0x43C30000, 0x43C40000, 0x43C50000, 0x43C60000, 0x43C70000, 0x43C80000, 0x43C90000, 0x43CA0000, 0x43CB0000, 0x43CC0000, 0x43CD0000, 0x43CE0000, 0x43CF0000, 0x43D00000, 0x43D10000, 0x43D20000, 0x43D30000, 0x43D40000, 0x43D50000, 0x43D60000, 0x43D70000, 0x43D80000, 0x43D90000, 0x43DA0000, 0x43DB0000, 0x43DC0000, 0x43DD0000, 0x43DE0000, 0x43DF0000]
@@ -104,6 +105,7 @@ def start_all(base_region):
     for nb in range(0, nb_blocks):
 	    start_des(nb, region)
 	    region += 1
+            time.sleep(0.1)
 
 def restart_des(block_nb):
 
@@ -163,6 +165,7 @@ def get_results_all():
 
     for nb in range(0, nb_blocks):
 	    get_results_des(nb)
+            time.sleep(0.1)
 
 def print_results():
 
