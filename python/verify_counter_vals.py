@@ -30,7 +30,7 @@ def all_verify():
     for line in file_key:
         keys.append(line)    
 
-    file_res = open("counter_results/bias_results.txt", "aw")
+    file_res = open("counter_results/bias_results.txt", "a")
 
     N = 32                     # Number of region bits
     exp = 2**(64-N)            # Nb of encryptions = 2**(64-N)
