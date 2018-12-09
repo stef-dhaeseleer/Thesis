@@ -48,7 +48,9 @@ def get_mean_std():
     print 
     print ("################################################################################")
     print ("Mean        : " + str(mean))
+    print ("Mean log 2  : " + str(math.log(mean, 2)))
     print ("STD         : " + str(std))
+    print ("STD  log 2  : " + str(math.log(std, 2)))
     print ("Nb elements : " + str(len(bias)))    
 
 
