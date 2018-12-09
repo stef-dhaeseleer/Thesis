@@ -20,6 +20,38 @@ def one_verify():
     print ("Difference      : " + str(diff))
 
 
+def get_mean_std():
+
+    file_res = open("counter_results/bias_results.txt", "r")
+
+    bias = []
+
+    for line in file_res:
+        if(len(line.split()) != 0):
+            if (line.split()[0] == "Calculated"):
+                bias.append(float(line.split()[3]))
+
+    mean = 0
+    std = 0
+
+    for i in range(0, len(bias)):
+        mean += bias[i]
+
+    mean = mean/len(bias)
+
+    for i in range(0, len(bias)):
+        std += (bias[i] - mean)**2
+
+    std = std/len(bias)
+    std = math.sqrt(std)
+
+    print 
+    print ("################################################################################")
+    print ("Mean        : " + str(mean))
+    print ("STD         : " + str(std))
+    print ("Nb elements : " + str(len(bias)))    
+
+
 def all_verify():
 
     file = open("counter_results/results.txt", "r")
@@ -83,7 +115,7 @@ def all_verify():
 
 def main():
 
-    all_verify()
+    get_mean_std()
 
 if __name__ == '__main__':
     main()

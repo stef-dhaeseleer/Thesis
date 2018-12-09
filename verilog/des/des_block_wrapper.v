@@ -130,9 +130,14 @@ module des_block_wrapper(
         waiting: begin
             next_state <= waiting;
 
-            // TODO: should I add a restart here too? (1)
             if (des_finished == 1'b1) begin
                 next_state <= finishing;
+            end
+
+            if (cmd_valid==1'b1) begin
+                if (cmd == CMD_RESTART) begin
+                    next_state <= restart;
+                end
             end
         end
         finishing: begin
