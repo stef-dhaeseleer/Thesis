@@ -8,6 +8,7 @@ ln -s ../../../verilog/des/primitives/p_permutation.v p_permutation.v
 ln -s ../../../verilog/des/primitives/s_boxes.v s_boxes.v
 ln -s ../../../verilog/des/primitives/message_counter_partial.v message_counter_partial.v
 ln -s ../../../verilog/des/primitives/mask_xor.v mask_xor.v
+ln -s ../../../verilog/des/primitives/lfsr.v lfsr.v
 
 ln -s ../../../verilog/des/des_block_wrapper.v des_block_wrapper.v
 ln -s ../../../verilog/des/des_block_8rounds_no_perm.v des_block_8rounds_no_perm.v
