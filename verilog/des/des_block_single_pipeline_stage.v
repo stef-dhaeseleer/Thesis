@@ -198,16 +198,16 @@ module des_block(
         .output_valid   (ciphertext_valid),
         .result         (ciphertext));
 
-    lfsr lfsr(  // Used to generate the messages for the encryption
-        .clk            (clk),
-        .rst_n          (rst_n),
-        .start          (start_message),        // Start the message generation when this module receives a start signal
-        .pause          (pause_des    ),
-        .reset_counter  (restart_block  ),
-        .message_seed   (region_select),        // Stored in a reg inside this block
-        .lfsr           (message      ),
-        .valid          (message_valid),        // signals when the output of this module contains valid messages every cycle
-        .done           (counter_done ));
+    //lfsr lfsr(  // Used to generate the messages for the encryption
+    //    .clk            (clk),
+    //    .rst_n          (rst_n),
+    //    .start          (start_message),        // Start the message generation when this module receives a start signal
+    //    .pause          (pause_des    ),
+    //    .reset_counter  (restart_block  ),
+    //    .message_seed   (region_select),        // Stored in a reg inside this block
+    //    .lfsr           (message      ),
+    //    .valid          (message_valid),        // signals when the output of this module contains valid messages every cycle
+    //    .done           (counter_done ));
 
     //message_counter message_counter(  // Used to generate the messages for the encryption
     //    .clk            (clk),
@@ -217,16 +217,16 @@ module des_block(
     //    .counter        (message),
     //    .valid          (message_valid));   // signals when the output of this module contains valid messages chaning every cycle
 
-    //message_counter_partial message_counter(    // Used to generate the messages for the encryption
-    //    .clk            (clk          ),
-    //    .rst_n          (rst_n        ),
-    //    .start          (start_message),        // Start the message generation when this module receives a start signal
-    //    .pause          (pause_des    ),
-    //    .reset_counter  (restart_block  ),
-    //    .region_select  (region_select),        // Stored in a reg inside this block
-    //    .counter        (message      ),
-    //    .valid          (message_valid),        // signals when the output of this module contains valid messages every cycle
-    //    .done           (counter_done ));       // Signals when this unit has gone through all the messages
+    message_counter_partial message_counter(    // Used to generate the messages for the encryption
+        .clk            (clk          ),
+        .rst_n          (rst_n        ),
+        .start          (start_message),        // Start the message generation when this module receives a start signal
+        .pause          (pause_des    ),
+        .reset_counter  (restart_block  ),
+        .region_select  (region_select),        // Stored in a reg inside this block
+        .counter        (message      ),
+        .valid          (message_valid),        // signals when the output of this module contains valid messages every cycle
+        .done           (counter_done ));       // Signals when this unit has gone through all the messages
 
     mask_xor input_mask(  // Used to generate bit from mask operation in the message register
         .message        (message),

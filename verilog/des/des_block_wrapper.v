@@ -64,8 +64,8 @@ module des_block_wrapper(
     parameter N = 32;
     parameter key = 768'h0;
     
-    //defparam des_block.message_counter.N = N;
-    defparam des_block.lfsr.N = N;
+    defparam des_block.message_counter.N = N;
+    //defparam des_block.lfsr.N = N;
     // TODO: add a parameter for setting the lfsr polynomial (1)
     defparam des_block.N = N;
     defparam des_block.round_keys = key;
