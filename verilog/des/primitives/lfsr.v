@@ -8,6 +8,9 @@
 // The above links can be used to generate the polynomials needed and set them as parameters from the outside
 // in the second semester
 
+// Currently using an external LFSR
+// Implement an internal one next semester as this allows for higher clock rates
+
 // New system, to remove a counter from the desing we can use an N bit LFSR and 
 // let it run untill it reaches it's initial state again, then we know how many encryptions it did.
 
