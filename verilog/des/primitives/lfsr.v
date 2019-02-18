@@ -37,6 +37,7 @@ module lfsr(
 
     wire lfsr_feedback;
 
+    // NOTE: paramter for region length, value overridden from toplevel wrapper (1)
     parameter N = 32;
 
     // Parameters

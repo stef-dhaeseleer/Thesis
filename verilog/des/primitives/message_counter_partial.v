@@ -28,8 +28,7 @@ module message_counter_partial(
     localparam [2:0]    paused      = 3'h3;
     localparam [2:0]    finished    = 3'h4;
 
-    // TODO: can we pass this parameter from the upper level instead of setting it here and there? (1)
-    // NOTE: paramter for region length (1)
+    // NOTE: paramter for region length, value overridden from toplevel wrapper (1)
     parameter N = 16;   // The amount of bits in the region select
 
     // Functions
