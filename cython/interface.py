@@ -13,10 +13,10 @@ import os
 import time
 
 # Set the needed command parameters
-CMD_READ_REGION  = 0
-CMD_START        = 1
-CMD_TEST_MODE    = 2
-CMD_RESTART      = 3
+CMD_READ_REGION  = 1
+CMD_START        = 2
+CMD_TEST_MODE    = 3
+CMD_RESTART      = 4
 CMD_CLEAR        = 5
 
 def issue_linux_cmd(cmd):
@@ -147,6 +147,19 @@ def get_done(port):
 
     return res
 
+def get_cmd_executed(port):
+
+    cmd = read_cmd(get_reg_address(port, 10))
+    res = issue_linux_cmd(cmd)
+
+    # CMD_READ_REGION  = 1
+    # CMD_START        = 2
+    # CMD_TEST_MODE    = 3
+    # CMD_RESTART      = 4
+    # CMD_CLEAR        = 5
+
+    return res
+    
 def get_region(port):
 
     cmd = read_cmd(get_reg_address(port, 1))

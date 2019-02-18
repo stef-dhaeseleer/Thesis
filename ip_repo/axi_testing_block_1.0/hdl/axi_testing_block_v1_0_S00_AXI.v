@@ -18,9 +18,9 @@
 
 		output wire [31:0] CMD_DATA,
         output wire CMD_DATA_VALID,
-        input wire CMD_DATA_READ,
+        input wire CMD_DATA_READ_IN,
         input wire [31:0] CMD_VALUE_DATA_READ,
-        input wire DES_DONE,
+        input wire DES_DONE_IN,
         input wire [63:0] DES_COUNTER,
         output wire [31:0] DES_REGION,
         output wire TEST_ADVANCE,
@@ -250,6 +250,11 @@
     reg r_test_advance;
 
     reg [31:0] r_des_region;
+
+    reg [31:0] DES_DONE_TMP;	// Registers needed for synchronization
+    reg [31:0] DES_DONE;
+    reg [31:0] CMD_DATA_READ_TMP;
+    reg [31:0] CMD_DATA_READ;
 
     // ***************
 
@@ -707,6 +712,15 @@
     assign CMD_DATA_VALID = r_cmd_data_valid;
     assign DES_REGION = r_des_region;
     assign TEST_ADVANCE = r_test_advance;
+
+    // Synchronization logic for DES_DONE_IN, CMD_DATA_READ_IN
+    always @(posedge S_AXI_ACLK) begin     // Synchronization of incomming values from different clock domain
+        DES_DONE_TMP <= DES_DONE_IN;
+        DES_DONE <= DES_DONE_TMP;
+
+        CMD_DATA_READ_TMP <= CMD_DATA_READ_IN;
+        CMD_DATA_READ <= CMD_DATA_READ_TMP;
+    end
 
 	// User logic ends
 

@@ -107,6 +107,12 @@ def start_all(base_region):
 	    region += 1
         #time.sleep(0.1)
 
+def get_last_cmd_all():
+
+    for nb in range(0, nb_blocks):
+        port = ports[block_nb]
+        get_cmd_executed(port)
+
 def restart_des(block_nb):
 
     port = ports[block_nb]
