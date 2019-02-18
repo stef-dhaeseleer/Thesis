@@ -16,6 +16,17 @@
 	(
 		// Users to add ports here
 
+		output wire [31:0] CMD_DATA,
+        output wire CMD_DATA_VALID,
+        input wire CMD_DATA_READ,
+        input wire [31:0] CMD_VALUE_DATA_READ,
+        input wire DES_DONE,
+        input wire [63:0] DES_COUNTER,
+        output wire [31:0] DES_REGION,
+        output wire TEST_ADVANCE,
+        input wire DES_TEST_RESULT_READY,
+        input wire [63:0] DES_CIPHERTEXT,
+
 		// User ports ends
 		// Do not modify the ports beyond this line
 
@@ -232,6 +243,16 @@
 	// and the slave is ready to accept the write address and write data.
 	assign slv_reg_wren = axi_wready && S_AXI_WVALID && axi_awready && S_AXI_AWVALID;
 
+	// ***************
+
+    reg r_cmd_data_valid;
+    reg r_region_data_valid;
+    reg r_test_advance;
+
+    reg [31:0] r_des_region;
+
+    // ***************
+
 	always @( posedge S_AXI_ACLK )
 	begin
 	  if ( S_AXI_ARESETN == 1'b0 )
@@ -256,18 +277,49 @@
 	      slv_reg17 <= 0;
 	      slv_reg18 <= 0;
 	      slv_reg19 <= 0;
+
+          // **************
+          r_cmd_data_valid <= 1'b0;
+          r_region_data_valid <= 1'b0;
+          r_test_advance <= 1'b0;
+          // **************
+
 	    end 
 	  else begin
+
+	  	// Write the standard values to regs here
+        r_test_advance <= 1'b0; // Set to zero when not written to, this way it only stays high one cycle
+        r_region_data_valid <= 1'b0; // Set to zero when not written to, this way it only stays high one cycle
+
+        slv_reg4 <= DES_TEST_RESULT_READY;  // Set the test result register for the CPU to read
+        //slv_reg3 <= CMD_DATA_READ;          // Set the cmd read register for the CPU to read
+
+        slv_reg5 <= DES_CIPHERTEXT[63:32];  // Set to the upper part of the ciphertext
+        slv_reg6 <= DES_CIPHERTEXT[31:0];   // Set to the lower part of the ciphertext
+        
+        slv_reg7 <= DES_COUNTER[63:32];  // Set to the upper part of the counter
+        slv_reg8 <= DES_COUNTER[31:0];   // Set to the lower part of the counter
+
+        slv_reg10 <= CMD_VALUE_DATA_READ;   // Set to the CMD that PL just executed for the PS to read.
+
 	    if (slv_reg_wren)
 	      begin
 	        case ( axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )
-	          5'h00:
+
+	          5'h00: // THIS IS THE CMD REG
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 0
 	                slv_reg0[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // **************
+                    r_cmd_data_valid <= 1'b1;
+                    slv_reg3 <= 1'b0;
+                    // **************
+
 	              end  
+
 	          5'h01:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
@@ -275,69 +327,110 @@
 	                // Slave register 1
 	                slv_reg1[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
 	              end  
-	          5'h02:
+
+	          5'h02: // THIS IS THE TEST_ADVANCE REGISTER
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 2
 	                slv_reg2[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // **************
+                    r_test_advance <= 1'b1;
+                    // **************
+
 	              end  
-	          5'h03:
+
+              // *****************************************************************************************
+
+	          5'h03: // THIS IS THE CMD_READ RGISTER
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 3
-	                slv_reg3[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	                //slv_reg3[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // slave register is used by the PL to signal to the PS
+                    // This register can thus not be set by the AXI slave
 	              end  
-	          5'h04:
+
+	          5'h04: // THIS IS THE TEST_RESULT_READY SIGNAL
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 4
-	                slv_reg4[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	                //slv_reg4[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // slave register is used by the PL to signal to the PS
+                    // This register can thus not be set by the AXI slave
 	              end  
-	          5'h05:
+
+	          5'h05: // THIS IS THE UPPER CIPHERTEXT REG
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 5
-	                slv_reg5[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	                //slv_reg5[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // slave register is used by the PL to signal to the PS
+                    // This register can thus not be set by the AXI slave
 	              end  
-	          5'h06:
+
+	          5'h06: // THIS IS THE LOWER CIPHERTEXT REG
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 6
-	                slv_reg6[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	                //slv_reg6[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // slave register is used by the PL to signal to the PS
+                    // This register can thus not be set by the AXI slave
 	              end  
-	          5'h07:
+
+	          5'h07: // THIS IS THE UPPER COUNTER REG
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 7
-	                slv_reg7[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	                //slv_reg7[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // slave register is used by the PL to signal to the PS
+                    // This register can thus not be set by the AXI slave
 	              end  
-	          5'h08:
+
+	          5'h08: // THIS IS THE LOWER COUNTER REG
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 8
-	                slv_reg8[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	                //slv_reg8[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // slave register is used by the PL to signal to the PS
+                    // This register can thus not be set by the AXI slave
 	              end  
-	          5'h09:
+
+	          5'h09: // THIS IS THE DONE REGISTER
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 9
-	                slv_reg9[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	                //slv_reg9[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // slave register is used by the PL to signal to the PS
+                    // This register can thus not be set by the AXI slave
 	              end  
-	          5'h0A:
+
+	          5'h0A: // THIS IS THE CMD DATA READ REGISTER
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 10
-	                slv_reg10[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	                //slv_reg10[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // slave register is used by the PL to signal to the PS
+                    // This register can thus not be set by the AXI slave
 	              end  
+
 	          5'h0B:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
@@ -345,6 +438,7 @@
 	                // Slave register 11
 	                slv_reg11[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
 	              end  
+
 	          5'h0C:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
@@ -352,6 +446,7 @@
 	                // Slave register 12
 	                slv_reg12[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
 	              end  
+
 	          5'h0D:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
@@ -359,6 +454,7 @@
 	                // Slave register 13
 	                slv_reg13[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
 	              end  
+
 	          5'h0E:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
@@ -366,13 +462,15 @@
 	                // Slave register 14
 	                slv_reg14[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
 	              end  
+
 	          5'h0F:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 15
 	                slv_reg15[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
-	              end  
+	              end 
+
 	          5'h10:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
@@ -380,6 +478,7 @@
 	                // Slave register 16
 	                slv_reg16[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
 	              end  
+
 	          5'h11:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
@@ -387,6 +486,7 @@
 	                // Slave register 17
 	                slv_reg17[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
 	              end  
+
 	          5'h12:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
@@ -394,6 +494,7 @@
 	                // Slave register 18
 	                slv_reg18[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
 	              end  
+
 	          5'h13:
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
@@ -401,6 +502,7 @@
 	                // Slave register 19
 	                slv_reg19[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
 	              end  
+
 	          default : begin
 	                      slv_reg0 <= slv_reg0;
 	                      slv_reg1 <= slv_reg1;
@@ -425,6 +527,32 @@
 	                    end
 	        endcase
 	      end
+
+	      // ********************
+
+          else begin
+                if (CMD_DATA_READ == 1'b1) begin    // Indicates that the wrapper has read the command
+                    r_cmd_data_valid <= 1'b0;
+		            r_region_data_valid <= 1'b0;
+                    slv_reg3 <= 1'b1;
+                end
+                if (r_region_data_valid == 1'b1) begin
+                    r_des_region <= slv_reg1;   // Buffer the region data from the slave reg into another reg
+                end
+                // Test advance taken care of at slv_reg2
+
+
+
+                if (CMD_DATA_VALID == 1'b1) begin
+                    slv_reg9 <= 0;  // This is the done signal, set to zero when a command is received
+                end
+                if (DES_DONE == 1'b1) begin
+                    slv_reg9 <= 1;  // This is the done signal, set to one here
+                end
+          end
+
+          // ********************
+
 	  end
 	end    
 
@@ -574,6 +702,11 @@
 	end    
 
 	// Add user logic here
+
+    assign CMD_DATA = slv_reg0;
+    assign CMD_DATA_VALID = r_cmd_data_valid;
+    assign DES_REGION = r_des_region;
+    assign TEST_ADVANCE = r_test_advance;
 
 	// User logic ends
 

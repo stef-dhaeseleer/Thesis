@@ -9,7 +9,8 @@ module des_block_wrapper(
     input cmd_valid_in,                 // input command valid, synchronized in another reg
     input advance_test_cmd_in,          // synchronized in another reg
     input [31:0] region,                // input data to set the region of the DES block
-    output cmd_read,                    // signals that the input command has been read, input data also read
+    output cmd_read,                    // signals that the input command has been read
+    output [31:0] cmd_read_data,        // the value of the CMD that was just executed
     output test_res_ready,      
     output done,                        // signals that the operations are done, output data also valid
     output [63:0] counter,              // counter output for the CPU
@@ -34,6 +35,7 @@ module des_block_wrapper(
 
     reg [N-1:0] region_reg;
 
+    reg [31:0] cmd_read_data_reg;
     reg [63:0] counter_reg;
     reg [63:0] ciphertext_reg;
     
@@ -45,10 +47,10 @@ module des_block_wrapper(
 
     // Parameters
 
-    localparam CMD_READ_REGION  = 4'h0;     // Possible input commands
-    localparam CMD_START        = 4'h1;
-    localparam CMD_TEST_MODE    = 4'h2;
-    localparam CMD_RESTART      = 4'h3;
+    localparam CMD_READ_REGION  = 4'h1;     // Possible input commands
+    localparam CMD_START        = 4'h2;
+    localparam CMD_TEST_MODE    = 4'h3;
+    localparam CMD_RESTART      = 4'h4;
 
     localparam [3:0]    init                = 4'h0;     // Possible states
     localparam [3:0]    set_region          = 4'h1;
@@ -212,16 +214,20 @@ module des_block_wrapper(
         test_advance <= 1'b0;
         reg_test_res_ready <= 1'b0;
 
+        cmd_read_data_reg <= cmd_read_data_reg; // Not really initialised...
+
         case (state)
         init: begin
-
+            cmd_read_data_reg <= 1'b0;
         end
         set_region: begin
             load_region <= 1'b1;
             cmd_read_reg <= 1'b1;
+            cmd_read_data_reg <= CMD_READ_REGION;
         end
         start_init: begin
             cmd_read_reg <= 1'b1;
+            cmd_read_data_reg <= CMD_START;
         end
         start: begin
             start_des <= 1'b1;
@@ -235,6 +241,7 @@ module des_block_wrapper(
         end
         test_init: begin
             cmd_read_reg <= 1'b1;
+            cmd_read_data_reg <= CMD_TEST_MODE;
         end
         test_start: begin
             test_enabled <= 1'b1;
@@ -257,6 +264,7 @@ module des_block_wrapper(
         end
         restart: begin
             cmd_read_reg <= 1'b1;
+            cmd_read_data_reg <= CMD_RESTART;
             restart_block <= 1'b1;
         end
         endcase
@@ -283,11 +291,11 @@ module des_block_wrapper(
     assign ciphertext = ciphertext_reg;
     assign test_res_ready = reg_test_res_ready;
     assign done = reg_done;
+    assign cmd_read_data = cmd_read_data_reg;
 
     always @(posedge clk) begin     // Load the region into the register
         if (load_region == 1'b1) begin
             region_reg <= region[N-1:0];
-
         end
     end
 
