@@ -216,20 +216,16 @@ module des_block_wrapper(
         test_advance <= 1'b0;
         reg_test_res_ready <= 1'b0;
 
-        cmd_read_data_reg <= cmd_read_data_reg; // Not really initialised...
-
         case (state)
         init: begin
-            cmd_read_data_reg <= 1'b0;
+
         end
         set_region: begin
             load_region <= 1'b1;
             cmd_read_reg <= 1'b1;
-            cmd_read_data_reg <= CMD_READ_REGION;
         end
         start_init: begin
             cmd_read_reg <= 1'b1;
-            cmd_read_data_reg <= CMD_START;
         end
         start: begin
             start_des <= 1'b1;
@@ -243,7 +239,6 @@ module des_block_wrapper(
         end
         test_init: begin
             cmd_read_reg <= 1'b1;
-            cmd_read_data_reg <= CMD_TEST_MODE;
         end
         test_start: begin
             test_enabled <= 1'b1;
@@ -266,7 +261,6 @@ module des_block_wrapper(
         end
         restart: begin
             cmd_read_reg <= 1'b1;
-            cmd_read_data_reg <= CMD_RESTART;
             restart_block <= 1'b1;
         end
         endcase
@@ -310,6 +304,33 @@ module des_block_wrapper(
     always @(posedge clk) begin     // Load the ciphertext into the register
         ciphertext_reg <= ciphertext_out;
     end
+
+    // Register for the output, last executed command
+    always @(posedge clk) begin
+        if (rst_n == 1'b0) begin   // Synchronous reset
+            cmd_read_data_reg <= 32'h0;
+        end
+        else begin
+            case (state)
+            set_region: begin
+                cmd_read_data_reg <= CMD_READ_REGION;
+            end
+            start_init: begin
+                cmd_read_data_reg <= CMD_START;
+            end
+            test_init: begin
+                cmd_read_data_reg <= CMD_TEST_MODE;
+            end
+            restart: begin
+                cmd_read_data_reg <= CMD_RESTART;
+            end
+            default: begin
+                cmd_read_data_reg <= cmd_read_data_reg;
+            end
+            endcase
+        end
+    end
+
     
     // Synchronization logic for cmd_valid, advance_test_cmd
     always @(posedge clk) begin     // Synchronization of incomming values from different clock domain
