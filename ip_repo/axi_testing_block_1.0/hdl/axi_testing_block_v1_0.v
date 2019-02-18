@@ -112,7 +112,7 @@
         .region (region_data),
         // **********************************
         .cmd_read (cmd_data_read),
-        .cmd_value_read (cmd_value_data_read),
+        .cmd_read_data (cmd_value_data_read),
         .test_res_ready (des_test_result_ready),
         .done (des_done),
         .counter (des_counter),
