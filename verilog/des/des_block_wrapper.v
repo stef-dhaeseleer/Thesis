@@ -3,17 +3,17 @@
 //`include "des/des_block.v"
 
 module des_block_wrapper(
-    input clk,                  // clock
-    input rst_n,                // reset, active low signal
-    input [31:0] cmd,                  // input command
-    input cmd_valid_in,            // input command valid
-    input advance_test_cmd_in,
-    input [31:0] region,       // input data to set the region of the DES block
-    output cmd_read,            // signals that the input command has been read, input data also read
+    input clk,                          // clock
+    input rst_n,                        // reset, active low signal
+    input [31:0] cmd,                   // input command
+    input cmd_valid_in,                 // input command valid, synchronized in another reg
+    input advance_test_cmd_in,          // synchronized in another reg
+    input [31:0] region,                // input data to set the region of the DES block
+    output cmd_read,                    // signals that the input command has been read, input data also read
     output test_res_ready,      
-    output done,            // signals that the operations are done, output data also valid
-    output [63:0] counter,      // counter output for the CPU
-    output [63:0] ciphertext    // ciphertext output for the CPU
+    output done,                        // signals that the operations are done, output data also valid
+    output [63:0] counter,              // counter output for the CPU
+    output [63:0] ciphertext            // ciphertext output for the CPU
     );
 
     // Nets and regs
