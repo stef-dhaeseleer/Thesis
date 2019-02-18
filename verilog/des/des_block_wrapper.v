@@ -6,8 +6,8 @@ module des_block_wrapper(
     input clk,                          // clock
     input rst_n,                        // reset, active low signal
     input [31:0] cmd,                   // input command
-    input cmd_valid_in,                 // input command valid, synchronized in another reg
-    input advance_test_cmd_in,          // synchronized in another reg
+    input cmd_valid,                 // input command valid, synchronized in another reg
+    input advance_test_cmd,          // synchronized in another reg
     input [31:0] region,                // input data to set the region of the DES block
     output cmd_read,                    // signals that the input command has been read
     output [31:0] cmd_read_data,        // the value of the CMD that was just executed
@@ -30,8 +30,10 @@ module des_block_wrapper(
     reg reg_test_res_ready;
     reg reg_done;
 
-    reg cmd_valid;          // 2nd synchro register
-    reg advance_test_cmd;   // 2nd synchro register
+    reg cmd_valid_reg;
+    reg cmd_valid_tmp;
+    reg advance_test_cmd_reg;
+    reg advance_test_cmd_tmp;
 
     reg [N-1:0] region_reg;
 
@@ -100,7 +102,7 @@ module des_block_wrapper(
     always @(*) begin   // Next state logic
         case (state)
         init: begin
-            if (cmd_valid==1'b1) begin
+            if (cmd_valid_reg==1'b1) begin
                 //Decode the command received on Port1
                 case (cmd)
                     CMD_READ_REGION:
@@ -121,13 +123,13 @@ module des_block_wrapper(
         end
         set_region: begin   // Sets the signal to load the region into a register, than listen for commands again
             next_state <= set_region;
-            if (cmd_valid == 1'b0) begin
+            if (cmd_valid_reg == 1'b0) begin
                 next_state <= init;
             end
         end
         start_init: begin
             next_state <= start_init;
-            if (cmd_valid == 1'b0) begin
+            if (cmd_valid_reg == 1'b0) begin
                 next_state <= start;
             end
         end
@@ -141,7 +143,7 @@ module des_block_wrapper(
                 next_state <= finishing;
             end
 
-            if (cmd_valid==1'b1) begin
+            if (cmd_valid_reg==1'b1) begin
                 if (cmd == CMD_RESTART) begin
                     next_state <= restart;
                 end
@@ -150,7 +152,7 @@ module des_block_wrapper(
         finishing: begin
             next_state <= finishing;
 
-            if (cmd_valid==1'b1) begin
+            if (cmd_valid_reg==1'b1) begin
                 if (cmd == CMD_RESTART) begin
                     next_state <= restart;
                 end
@@ -158,7 +160,7 @@ module des_block_wrapper(
         end
         test_init: begin
             next_state <= test_init;
-            if (cmd_valid == 1'b0) begin
+            if (cmd_valid_reg == 1'b0) begin
                 next_state <= test_start;
             end
         end
@@ -168,13 +170,13 @@ module des_block_wrapper(
         test_mode: begin
             next_state <= test_mode;
 
-            if (cmd_valid==1'b1) begin
+            if (cmd_valid_reg==1'b1) begin
                 if (cmd == CMD_RESTART) begin
                     next_state <= restart;
                 end
             end 
 
-            if (advance_test_cmd == 1'b1) begin
+            if (advance_test_cmd_reg == 1'b1) begin
                 next_state <= advance_test;
             end
         end
@@ -184,13 +186,13 @@ module des_block_wrapper(
         advance_test_wait: begin
             next_state <= advance_test_wait;
             
-            if (advance_test_cmd == 1'b0) begin
+            if (advance_test_cmd_reg == 1'b0) begin
                 next_state <= test_mode;
             end
         end
         restart: begin
             next_state <= restart;
-            if (cmd_valid == 1'b0) begin
+            if (cmd_valid_reg == 1'b0) begin
                 next_state <= init;
             end
         end
@@ -308,10 +310,14 @@ module des_block_wrapper(
     always @(posedge clk) begin     // Load the ciphertext into the register
         ciphertext_reg <= ciphertext_out;
     end
-
+    
+    // Synchronization logic for cmd_valid, advance_test_cmd
     always @(posedge clk) begin     // Synchronization of incomming values from different clock domain
-        cmd_valid <= cmd_valid_in;
-        advance_test_cmd <= advance_test_cmd_in;
+        cmd_valid_tmp <= cmd_valid;
+        cmd_valid_reg <= cmd_valid_tmp;
+
+        advance_test_cmd_tmp <= advance_test_cmd;
+        advance_test_cmd_reg <= advance_test_cmd_tmp;
     end
      
 endmodule
