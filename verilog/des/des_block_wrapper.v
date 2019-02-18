@@ -6,8 +6,8 @@ module des_block_wrapper(
     input clk,                  // clock
     input rst_n,                // reset, active low signal
     input [31:0] cmd,                  // input command
-    input cmd_valid,            // input command valid
-    input advance_test_cmd,
+    input cmd_valid_in,            // input command valid
+    input advance_test_cmd_in,
     input [31:0] region,       // input data to set the region of the DES block
     output cmd_read,            // signals that the input command has been read, input data also read
     output test_res_ready,      
@@ -28,6 +28,9 @@ module des_block_wrapper(
     reg test_advance;
     reg reg_test_res_ready;
     reg reg_done;
+
+    reg cmd_valid;          // 2nd synchro register
+    reg advance_test_cmd;   // 2nd synchro register
 
     reg [N-1:0] region_reg;
 
@@ -296,6 +299,11 @@ module des_block_wrapper(
 
     always @(posedge clk) begin     // Load the ciphertext into the register
         ciphertext_reg <= ciphertext_out;
+    end
+
+    always @(posedge clk) begin     // Synchronization of incomming values from different clock domain
+        cmd_valid <= cmd_valid_in;
+        advance_test_cmd <= advance_test_cmd_in;
     end
      
 endmodule
