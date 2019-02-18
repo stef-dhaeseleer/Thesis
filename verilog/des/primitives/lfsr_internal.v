@@ -42,7 +42,7 @@ module lfsr_internal(
     wire lfsr_feedback;
 
     // NOTE: paramter for region length, value overridden from toplevel wrapper (1)
-    parameter N = 32;
+    parameter N = 64;
 
     // Parameters
     localparam [2:0]    init     = 3'h0;    // Possible states
