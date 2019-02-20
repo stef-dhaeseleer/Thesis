@@ -2,25 +2,36 @@
 # Copies needed files to the SD card
 
 cd
+cd peta_build/avnet-digilent-zedboard-2017.1
 
-cd BuildZynq/
-cp linux-xlnx/arch/arm/boot/uImage .
-cp linux-xlnx/arch/arm/boot/dts/zynq-zed.dtb .
+# Needed for petalinux build
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
 
-cd
+# Build the files
+petalinux-build
+petalinux-package --boot --force --fsbl images/linux/zynq_fsbl.elf --fpga ./../design_1_wrapper.bit --u-boot
 
-cd Thesis/des_fsbl/des_fsbl.sdk/des_fsbl/bootimage/
-rm BOOT.bin
-bootgen -image output.bif -o BOOT.bin -w on
+# Unzip the rootfs
+rm -f images/linux/rootfs.cpio
+gzip -d -f images/linux/rootfs.cpio.gz
 
-cd
+# Copy to SD
+cp -f images/linux/BOOT.BIN /run/media/r0583050/78AD-4DD0/
+cp -f images/linux/image.ub /run/media/r0583050/78AD-4DD0/
+cp -f images/linux/rootfs.cpio /run/media/r0583050/cbd2711f-99e9-41c0-8e22-e400aa213a4a/
 
-cd BuildZynq/
-cp ../Thesis/des_fsbl/des_fsbl.sdk/des_fsbl/bootimage/BOOT.bin .
+cd /run/media/r0583050/cbd2711f-99e9-41c0-8e22-e400aa213a4a/
 
-mv zynq-zed.dtb devicetree.dtb
+#Updqck the rootfs
+pax -r -c -f rootfs.cpio
 
-cp devicetree.dtb /run/media/r0583050/78AD-4DD0/
-cp uImage /run/media/r0583050/78AD-4DD0/
-cp uramdisk.image.gz /run/media/r0583050/78AD-4DD0/
-cp BOOT.bin /run/media/r0583050/78AD-4DD0/
+cd home/root
+
+# Copy code to the filesystem
+mkdir cython
+mkdir reports
+cd cython
+cp /users/start2015/r0583050/Thesis/cython/interface.py .
+cp /users/start2015/r0583050/Thesis/cython/monitor.py .
