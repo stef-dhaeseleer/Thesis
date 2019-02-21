@@ -111,8 +111,8 @@ def start_all(base_region):
 def get_last_cmd_all():
 
     for nb in range(0, nb_blocks):
-        port = ports[block_nb]
-        get_cmd_executed(port)
+        port = ports[nb]
+        print ("Block " + str(nb) + ": " + str(interface.get_cmd_executed(port)))
 
 def restart_des(block_nb):
 
