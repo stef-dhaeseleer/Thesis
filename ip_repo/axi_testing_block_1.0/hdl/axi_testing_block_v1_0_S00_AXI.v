@@ -715,11 +715,20 @@
 
     // Synchronization logic for DES_DONE, CMD_DATA_READ
     always @(posedge S_AXI_ACLK) begin     // Synchronization of incomming values from different clock domain
-        DES_DONE_TMP <= DES_DONE;
-        DES_DONE_REG <= DES_DONE_TMP;
 
-        CMD_DATA_READ_TMP <= CMD_DATA_READ;
-        CMD_DATA_READ_REG <= CMD_DATA_READ_TMP;
+    	if ( S_AXI_ARESETN == 1'b0 ) begin // Reset the regs to zero
+    		DES_DONE_TMP <= 0;
+    		DES_DONE_REG <= 0;
+    		CMD_DATA_READ_TMP <= 0;
+    		CMD_DATA_READ_REG <= 0;
+    	end
+    	else begin
+	        DES_DONE_TMP <= DES_DONE;
+	        DES_DONE_REG <= DES_DONE_TMP;
+
+	        CMD_DATA_READ_TMP <= CMD_DATA_READ;
+	        CMD_DATA_READ_REG <= CMD_DATA_READ_TMP;
+	    end
     end
 
 	// User logic ends
