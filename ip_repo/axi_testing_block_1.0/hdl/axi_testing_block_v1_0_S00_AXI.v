@@ -325,12 +325,17 @@
 
 	              end  
 
-	          5'h01:
+	          5'h01: // THIS IS THE REGION REG
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 1
 	                slv_reg1[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+                    // **************
+                    r_region_data_valid <= 1'b1;
+                    // **************
+
 	              end  
 
 	          5'h02: // THIS IS THE TEST_ADVANCE REGISTER
