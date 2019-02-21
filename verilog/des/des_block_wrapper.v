@@ -334,6 +334,14 @@ module des_block_wrapper(
     
     // Synchronization logic for cmd_valid, advance_test_cmd
     always @(posedge clk) begin     // Synchronization of incomming values from different clock domain
+        
+        if (rst_n == 1'b0) begin   // Reset
+            cmd_valid_tmp <= 0;
+            cmd_valid_reg <= 0;
+            advance_test_cmd_tmp <= 0;
+            advance_test_cmd_reg <= 0;
+        end
+
         cmd_valid_tmp <= cmd_valid;
         cmd_valid_reg <= cmd_valid_tmp;
 
