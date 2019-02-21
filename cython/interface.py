@@ -34,7 +34,7 @@ def issue_linux_cmd(cmd):
 
 def write_cmd(address, value):
     
-    print("devmem " + address + " W " + value)
+    #print("devmem " + address + " W " + value)
     return "devmem " + address + " W " + value
 
 def read_cmd(address):
