@@ -251,10 +251,10 @@
 
     reg [31:0] r_des_region;
 
-    reg [31:0] DES_DONE_TMP;	// Registers needed for synchronization
-    reg [31:0] DES_DONE_REG;
-    reg [31:0] CMD_DATA_READ_TMP;
-    reg [31:0] CMD_DATA_READ_REG;
+    reg DES_DONE_TMP;	// Registers needed for synchronization
+    reg DES_DONE_REG;
+    reg CMD_DATA_READ_TMP;
+    reg CMD_DATA_READ_REG;
 
     // ***************
 
@@ -546,16 +546,15 @@
 		            r_region_data_valid <= 1'b0;
                     slv_reg3 <= 1'b1;
                 end
+
                 if (r_region_data_valid == 1'b1) begin
                     r_des_region <= slv_reg1;   // Buffer the region data from the slave reg into another reg
                 end
-                // Test advance taken care of at slv_reg2
-
-
 
                 if (CMD_DATA_VALID == 1'b1) begin
                     slv_reg9 <= 0;  // This is the done signal, set to zero when a command is received
                 end
+
                 if (DES_DONE_REG == 1'b1) begin
                     slv_reg9 <= 1;  // This is the done signal, set to one here
                 end
