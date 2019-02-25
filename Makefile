@@ -17,6 +17,10 @@ axi:
 	#vivado test_axi_2/test_axi_2.xpr -tempDir /tmp &
 	vivado -mode batch -source tcl/open_axi.tcl &
 
+minimal:
+	#vivado test_axi_2/test_axi_2.xpr -tempDir /tmp &
+	vivado -mode batch -source tcl/open_minimal.tcl &
+
 fsbl:
 	vivado des_fsbl/des_fsbl.xpr -tempDir /tmp &
 

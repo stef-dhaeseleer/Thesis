@@ -103,11 +103,11 @@
         .cmd (cmd_data),
         .cmd_valid (cmd_data_valid),
         // **********************************
-        .data_upper (des_data_upper)
-        .data_lower (des_data_lower)
+        .data_upper (des_data_upper),
+        .data_lower (des_data_lower),
         .cmd_read (cmd_data_read),
         .done (des_done),
-        .counter (des_counter),
+        .counter (des_counter)
         );
 
 	// User logic ends
