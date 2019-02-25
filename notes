@@ -14,3 +14,22 @@ ln -s ../../../verilog/des/des_block_wrapper.v des_block_wrapper.v
 ln -s ../../../verilog/des/des_block_8rounds_no_perm.v des_block_8rounds_no_perm.v
 ln -s ../../../verilog/des/des_pipelined_8rounds_no_perm.v des_pipelined_8rounds_no_perm.v 
 ln -s ../../../verilog/des/des_roundfunction_pipelined.v des_roundfunction_pipelined.v
+
+
+
+
+DES_NEW full des version
+
+ln -s ../../../verilog/des_new/primitives/ip_permutation.v ip_permutation.v
+ln -s ../../../verilog/des_new/primitives/ip_inverse_permutation.v ip_inverse_permutation.v
+
+ln -s ../../../verilog/des_new/primitives/e_expansion.v e_expansion.v 
+ln -s ../../../verilog/des_new/primitives/p_permutation.v p_permutation.v
+ln -s ../../../verilog/des_new/primitives/s_boxes.v s_boxes.v
+ln -s ../../../verilog/des_new/primitives/mask_xor.v mask_xor.v
+ln -s ../../../verilog/des_new/primitives/lfsr_internal.v lfsr_internal.v
+
+ln -s ../../../verilog/des_new/des_block_wrapper.v des_block_wrapper.v
+ln -s ../../../verilog/des_new/des_block_single_pipeline_stage.v des_block_single_pipeline_stage.v
+ln -s ../../../verilog/des_new/des_pipelined_single_pipeline_stage.v des_pipelined_single_pipeline_stage.v 
+ln -s ../../../verilog/des_new/des_roundfunction_pipelined.v des_roundfunction_pipelined.v
