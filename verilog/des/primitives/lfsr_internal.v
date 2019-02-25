@@ -34,6 +34,8 @@ module lfsr_internal(
     reg [N-1:0] seed_reg;
     reg [N-1:0] polynomial_reg;
 
+    reg [N_counter-1:0] counter_reg;
+
     reg [N-1:0] i;    // Loop variable
 
     reg load_seed_poly;  // Loads both the input seed and input polynomial for this LFSR
@@ -42,6 +44,7 @@ module lfsr_internal(
     wire lfsr_feedback;
 
     // NOTE: paramter for region length, value overridden from toplevel wrapper (1)
+    parameter N_counter = 32;
     parameter N = 64;
 
     // Parameters
@@ -83,7 +86,7 @@ module lfsr_internal(
             else if (reset_counter == 1'b1) begin
                 next_state <= init;
             end
-            else if (lfsr_reg == seed_reg) begin
+            else if (counter_reg == {N_counter{1'b1}}) begin
                 next_state <= finished;
             end
         end
@@ -124,7 +127,7 @@ module lfsr_internal(
         end
         working: begin
             valid <= 1'b1;  // Already valid here to allow the DES unit to also process the all zero message of the counter
-            if (lfsr_reg == seed_reg) begin
+            if (counter_reg == {N_counter{1'b1}}) begin
                 load_lfsr <= 1'b0;
             end
             else begin
@@ -167,6 +170,19 @@ module lfsr_internal(
 
         end
     end
+
+    always @(posedge clk) begin     // Buffer the input message seed into the LFSR or load the LFSR feedback
+        if (reset_counter == 1'b1) begin
+            counter_reg <= {N_counter{1'b0}};
+        end
+        else if (load_seed_poly == 1'b1) begin    
+            counter_reg <= {N_counter{1'b0}};  // Load the initial settings
+        end
+        else if (load_lfsr == 1'b1) begin    
+            counter_reg <= counter_reg + 1;
+        end
+    end
+
 
     always @(posedge clk) begin
         if (load_seed_poly == 1'b1) begin

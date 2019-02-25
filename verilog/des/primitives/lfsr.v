@@ -14,6 +14,10 @@
 // New system, to remove a counter from the desing we can use an N bit LFSR and 
 // let it run untill it reaches it's initial state again, then we know how many encryptions it did.
 
+////////////// NOTE
+// Some functionality changes in the internal version have not been ported to here!
+// More specifically: counter not added.
+
 module lfsr(
     input clk,                  // clock
     input rst_n,                // reset, active low signal
