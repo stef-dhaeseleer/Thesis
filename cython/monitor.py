@@ -72,12 +72,12 @@ def get_hw_status():
         else:
             status = interface.get_done(ports[i])
             
-            region = interface.get_region(ports[i]) # Returns a string
+            seed = seeds[i]
 
             if (status == 0):
-                print("BLOCK " + str(i) + ": WORKING on seed 0x" + region)
+                print("BLOCK " + str(i) + ": WORKING on seed 0x" + seed)
             else:
-                print("BLOCK " + str(i) + ": DONE on region 0x" + region)
+                print("BLOCK " + str(i) + ": DONE on seed 0x" + seed)
 
 def start_des(block_nb, seed):
 
@@ -93,11 +93,11 @@ def start_des(block_nb, seed):
     port = ports[block_nb]
     polynomial = polynomials[block_nb]
     
-    # Start a new block given the block_nb and the region to operate on 
+    # Start a new block given the block_nb and the seed to operate on 
     interface.set_params(seed, polynomial, port)
     interface.start_block(port)
 
-    # Update the last_region and blocks_status
+    # Update the last_seed and blocks_status
     blocks_status[block_nb] = 1 
     last_seed = seed
 
@@ -119,10 +119,10 @@ def restart_des(block_nb):
 
     port = ports[block_nb]
     
-    # Start a new block given the block_nb and the region to operate on 
+    # Start a new block given the block_nb and the seed to operate on 
     interface.restart_block(port)
 
-    # Update the last_region and blocks_status
+    # Update the last_seed and blocks_status
     blocks_status = read_status()
     blocks_status[block_nb] = 0
     write_status(blocks_status)
@@ -195,8 +195,8 @@ def print_results():
 
 def get_last_seed():
 
-    # Print the current value of the last_region variable
-    # But also print the latest region used region in the results file
+    # Print the current value of the last_seed variable
+    # But also print the latest used seed in the results file
 
     f = open(res_file_path, 'r')
 
@@ -204,7 +204,7 @@ def get_last_seed():
     lines = f.read().splitlines()
     if(len(lines) != 0):
         last_line = lines[-1]   # This gives us the last line in the file
-        res_seed = last_line.split()[0]   # The first part is the region
+        res_seed = last_line.split()[1]   # The second part is the seed
     else:
         res_seed = "/"
 
