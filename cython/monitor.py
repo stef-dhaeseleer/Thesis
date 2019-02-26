@@ -3,9 +3,12 @@ import time
 
 # Define all the port addresses for passing to the c code
 #ports = [0x43C00000, 0x43C10000, 0x43C20000, 0x43C30000, 0x43C40000, 0x43C50000, 0x43C60000, 0x43C70000, 0x43C80000, 0x43C90000, 0x43CA0000, 0x43CB0000, 0x43CC0000, 0x43CD0000, 0x43CE0000, 0x43CF0000, 0x43D00000, 0x43D10000, 0x43D20000, 0x43D30000, 0x43D40000, 0x43D50000, 0x43D60000, 0x43D70000, 0x43D80000, 0x43D90000, 0x43DA0000, 0x43DB0000, 0x43DC0000, 0x43DD0000, 0x43DE0000, 0x43DF0000]
-ports = [0x43C00000, 0x43C10000, 0x43C20000, 0x43C30000, 0x43C40000, 0x43C50000, 0x43C60000, 0x43C70000, 0x43C80000, 0x43C90000, 0x43CA0000, 0x43CB0000, 0x43CC0000, 0x43CD0000, 0x43CE0000, 0x43CF0000]
-#ports = [0x43C00000, 0x43C10000]
+#ports = [0x43C00000, 0x43C10000, 0x43C20000, 0x43C30000, 0x43C40000, 0x43C50000, 0x43C60000, 0x43C70000, 0x43C80000, 0x43C90000, 0x43CA0000, 0x43CB0000, 0x43CC0000, 0x43CD0000, 0x43CE0000, 0x43CF0000]
+ports = [0x43C00000, 0x43C10000]
 nb_blocks = len(ports)
+
+# Reference: https://users.ece.cmu.edu/~koopman/lfsr/index.html
+polynomials = [int('800000000000000D', 16), int('800000000000000E', 16), int('800000000000007A', 16), int('80000000000000BA', 16), int('80000000000000D0', 16), int('80000000000000EF', 16), int('8000000000000128', 16), int('8000000000000165', 16), int('80000000000001A3', 16), int('80000000000001E4', 16), int('80000000000001E7', 16), int('80000000000001F9', 16), int('8000000000000212', 16), int('8000000000000299', 16), int('80000000000003BC', 16), int('80000000000003BF', 16), int('8000000000000403', 16), int('8000000000000472', 16), int('800000000000049C', 16), int('80000000000004C9', 16), int('8000000000000508', 16), int('800000000000056B', 16), int('800000000000057C', 16), int('8000000000000645', 16), int('8000000000000658', 16), int('8000000000000703', 16), int('8000000000000711', 16), int('8000000000000784', 16), int('80000000000007B4', 16), int('80000000000007C9', 16), int('80000000000007F5', 16), int('8000000000000841', 16)]
 
 res_file_path = "/home/root/reports/results.txt"
 status_file_path = "/home/root/reports/status.txt"
@@ -14,8 +17,9 @@ status_file_path = "/home/root/reports/status.txt"
 # Value in list set to '1' when a block is activated
 # Value in list set to '0' when a block is restarted
 blocks_status = [0] * nb_blocks
+seeds = [0] * nb_blocks
 
-last_region = 0x00000000
+last_seed = 0x00000000
 
 def read_status():
 
@@ -39,7 +43,7 @@ def init_platform():
     print("Initializing the plaform...")
     
     f_res = open(res_file_path, 'w+')
-    f_res.write("REGION : COUNTER RESULT" +"\n")
+    f_res.write("POLYNOMIAL : SEED : COUNTER RESULT" +"\n")
     
     f = open(status_file_path, 'w+')
     
@@ -71,13 +75,15 @@ def get_hw_status():
             region = interface.get_region(ports[i]) # Returns a string
 
             if (status == 0):
-                print("BLOCK " + str(i) + ": WORKING on region 0x" + region)
+                print("BLOCK " + str(i) + ": WORKING on seed 0x" + region)
             else:
                 print("BLOCK " + str(i) + ": DONE on region 0x" + region)
 
-def start_des(block_nb, region):
+def start_des(block_nb, seed):
 
     blocks_status = read_status()
+
+    seeds[block_nb] = seed
     
     # First check if block is not currently active!
     if (blocks_status[block_nb] == 1):
@@ -85,34 +91,29 @@ def start_des(block_nb, region):
         return
 
     port = ports[block_nb]
+    polynomial = polynomials[block_nb]
     
     # Start a new block given the block_nb and the region to operate on 
-    interface.set_region(region, port)
+    interface.set_params(seed, polynomial, port)
     interface.start_block(port)
 
     # Update the last_region and blocks_status
     blocks_status[block_nb] = 1 
-    last_region = region
+    last_seed = seed
 
     write_status(blocks_status)
 
     print
     print ("Everything updated!")
 
-def start_all(base_region):
+def start_all(base_seed):
 
-    region = base_region
+    seed = base_seed
 
     for nb in range(0, nb_blocks):
-	    start_des(nb, region)
-	    region += 1
+	    start_des(nb, seed)
+	    seed += 1
         #time.sleep(0.1)
-
-def get_last_cmd_all():
-
-    for nb in range(0, nb_blocks):
-        port = ports[nb]
-        print ("Block " + str(nb) + ": " + str(interface.get_cmd_executed(port)))
 
 def restart_des(block_nb):
 
@@ -131,9 +132,11 @@ def restart_des(block_nb):
     
 def test_hw_functionality():
 
+    # TODO: make a new test for the HW (1)
+
     # Perform standard test on HW by testing the first block
     # All information for functionality verfication will be printed to the terminal
-    interface.test_block(ports[0])
+    # interface.test_block(ports[0])
     
     restart_des(0)
 
@@ -142,6 +145,9 @@ def get_results_des(block_nb):
     blocks_status = read_status()
 
     port = ports[block_nb]
+
+    polynomial = str(polynomials[block_nb])
+    seed = str(seeds[block_nb])
 
     # First check if block is currently active!
     if (blocks_status[block_nb] == 0):
@@ -156,11 +162,10 @@ def get_results_des(block_nb):
 
     # Process the results of the block and write them to the results file
 
-    region = interface.get_region(port) # Returns a string
     res = interface.get_counter(port)   # Returns a string
 
     file = open(res_file_path, 'aw')    # Append and write to the file
-    file.write(region + " : " + res +"\n") 
+    file.write(polynomial + " : " + seed + " : " + res +"\n") 
     file.close() 
 
     print
@@ -188,7 +193,7 @@ def print_results():
     for line in lines:
         print(line)
 
-def get_last_region():
+def get_last_seed():
 
     # Print the current value of the last_region variable
     # But also print the latest region used region in the results file
@@ -199,13 +204,13 @@ def get_last_region():
     lines = f.read().splitlines()
     if(len(lines) != 0):
         last_line = lines[-1]   # This gives us the last line in the file
-        res_region = last_line.split()[0]   # The first part is the region
+        res_seed = last_line.split()[0]   # The first part is the region
     else:
-        res_region = "/"
+        res_seed = "/"
 
     # Now print the results to the terminal
     print
-    print("Last region in results file: 0x" + res_region)
+    print("Last seed in results file: 0x" + res_seed)
 
 def reset_system():
 
@@ -248,15 +253,15 @@ def help():
 
     print
     print("start_des()")
-    print("    args: block_nb, region")
+    print("    args: block_nb, seed")
     print("    output: /")
-    print("    Starts the specified core number for the specified region.")
+    print("    Starts the specified core number for the specified seed with the preset LFSR polynomial.")
     
     print
     print("start_all()")
-    print("    args: base_region")
+    print("    args: base_seed")
     print("    output: /")
-    print("    Starts all cores for the specified region (incremented with one for every new core).")
+    print("    Starts all cores for the specified seed (incremented with one for every new core).")
 
     print
     print("restart_des()")
@@ -278,10 +283,10 @@ def help():
     print("    Gets the results from all cores.")
 
     print
-    print("get_last_region()")
+    print("get_last_seed()")
     print("    args: /")
     print("    output: /")
-    print("    Prints the last_region variable of the code and gets the last region used in the results file.")
+    print("    Gets the last seed used in the results file.")
 
     print
     print("reset_system()")
