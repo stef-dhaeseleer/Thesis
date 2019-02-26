@@ -260,9 +260,6 @@ module des_block_wrapper(
             start_init: begin
                 cmd_read_data_reg <= CMD_START;
             end
-            test_init: begin
-                cmd_read_data_reg <= CMD_TEST_MODE;
-            end
             restart: begin
                 cmd_read_data_reg <= CMD_RESTART;
             end
