@@ -37,7 +37,7 @@ def issue_linux_cmd(cmd):
 def write_cmd(address, value):
     
     #print("devmem " + address + " W " + value)
-    return "devmem " + address + " W " + value
+    return "devmem " + address + " W " + value.strip('L')
 
 def read_cmd(address):
 
@@ -177,7 +177,7 @@ def get_counter(port):
 
     return "%.8x" % high + "%.8x" % low
 
-def test_hw(port):
+#def test_hw(port):
 
     # TODO: Should make a new test (1)
 

@@ -72,7 +72,7 @@ def get_hw_status():
         else:
             status = interface.get_done(ports[i])
             
-            seed = seeds[i]
+            seed = str(seeds[i])
 
             if (status == 0):
                 print("BLOCK " + str(i) + ": WORKING on seed 0x" + seed)
@@ -88,6 +88,11 @@ def start_des(block_nb, seed):
     # First check if block is not currently active!
     if (blocks_status[block_nb] == 1):
         print ("Block " + str(block_nb) + " is currently active, let it finish before starting it again or restart it!")
+        return
+    
+    # Check if the seed is not zero (bad for LFSR)
+    if (seed == 0):
+        print ("Input seed cannot be zero as this will yield only zero outputs from the LFSR!")
         return
 
     port = ports[block_nb]
