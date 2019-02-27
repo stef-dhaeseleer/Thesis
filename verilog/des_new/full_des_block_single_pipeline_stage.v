@@ -15,6 +15,7 @@ module des_block(
     input [63:0] polynomial,        // input value for the LFSR polynomial
     input [63:0] mask_i,            // input value for the input mask
     input [63:0] mask_o,            // input value for the output mask
+    input [63:0] counter_limit,     // input value for the counter limit
     output [63-N:0] counter,        // output counter to keep track of the amounts of 1's
     output reg done                 // signals that the output are valid results
     );
@@ -23,7 +24,7 @@ module des_block(
     reg [STATE_BITS-1:0] state, next_state;            // State variables
 
     reg [17:0] mask_i_bit_buffer;           // Used to buffer the mask bits, needed due to the pipeline delay
-    reg [63-N:0] counter_reg;
+    reg [63:0] counter_reg;
 
     reg enable;
     reg counter_enable;
@@ -55,7 +56,7 @@ module des_block(
 
     parameter [767:0] round_keys = 768'h0;
 
-    parameter N = 32;   // The amount of bits in the region select
+    //parameter N = 32;   // The amount of bits in the region select
 
     // Functions
 
@@ -83,11 +84,9 @@ module des_block(
         end
         working: begin
             next_state <= working;
-
             if (counter_done == 1'b1) begin
                 next_state <= finishing;
             end
-
         end
         finishing: begin    // First let the pipeline go empty then stop
             next_state <= finishing;
@@ -155,6 +154,7 @@ module des_block(
         .reset_counter  (restart_block),
         .seed           (seed         ),        // Stored in a reg inside this block
         .polynomial     (polynomial   ),        // Stored in a reg inside this block
+        .counter_limit  (counter_limit),
         .lfsr           (message      ),
         .valid          (message_valid),        // signals when the output of this module contains valid messages every cycle
         .done           (counter_done ));
@@ -198,17 +198,17 @@ module des_block(
 
     always @(posedge clk) begin     // Counter
         if (rst_n == 1'b0) begin
-            counter_reg <= {64-N{1'b0}};
+            counter_reg <= 64'b0;
         end
         else if (restart_block == 1'b1) begin
-            counter_reg <= {64-N{1'b0}};
+            counter_reg <= 64'b0;
         end
         else if (mask_result == 1'b1 & counter_enable == 1'b1) begin    // Only count new values when enabled
             counter_reg <= counter_reg + 1;
         end
     end
 
-    assign counter = counter_reg[63-N:0];
+    assign counter = counter_reg[63:0];
     assign mask_result = mask_o_bit ^ mask_i_bit_buffer[0];
      
 endmodule
