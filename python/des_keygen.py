@@ -127,7 +127,7 @@ def gen_key_file_from_hex():
     file_key = open("key_files/keys_1_1.txt", "r")
 
     file.write("set count 0 \n")
-    file.write("set name \"des_axi_8_rounds_\" \n")
+    file.write("set name \"minimal_des_axi_\" \n")
     file.write("\n")
 
     print (file_key.readline())
@@ -146,7 +146,7 @@ def gen_key_file_from_hex():
             x = int(round_key, 16)
             round_key = format(x, '0>48b')
             
-            round_keys[i] = round_key
+            round_keys[j] = round_key
 
         key = round_keys[0] + round_keys[1] + round_keys[2] + round_keys[3] + round_keys[4] + round_keys[5] + round_keys[6] + round_keys[7] + round_keys[8] + round_keys[9] + round_keys[10] + round_keys[11] + round_keys[12] + round_keys[13] + round_keys[14] + round_keys[15]
      
@@ -155,18 +155,12 @@ def gen_key_file_from_hex():
         file.write("incr count \n")
         file.write("\n")
 
-        file_key.write(key + "\n")
-    
-    file_key.write("\n")
-
     file.close()
     file_key.close()
 
     print
 
     print ("File generated!")
-    print ("Run following command to check for duplicate keys: ")
-    print ("sort testfiles/key_vals.txt | uniq -d")
 
     print  
          
