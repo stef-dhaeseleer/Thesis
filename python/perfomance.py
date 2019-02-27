@@ -5,7 +5,7 @@ def main():
 	clock_freq = 200	# Clock frequency in MHz
 	nb_blocks = 32		# Number of DES calculation blocks
 
-	N = 32
+	N = 13
 
 	seconds_per_day = 24*60*60
 	

@@ -96,6 +96,8 @@ def gen_32_key_file():
         master_key = "{0:b}".format(random.getrandbits(128))
         round_keys = generate_keys(master_key)
 
+        print master_key
+
         key = round_keys[0] + round_keys[1] + round_keys[2] + round_keys[3] + round_keys[4] + round_keys[5] + round_keys[6] + round_keys[7] + round_keys[8] + round_keys[9] + round_keys[10] + round_keys[11] + round_keys[12] + round_keys[13] + round_keys[14] + round_keys[15]
      
         file.write("set_property -dict [list CONFIG.key_select {\"" + key + "\"}] [get_bd_cells $a] \n") 
@@ -119,11 +121,59 @@ def gen_32_key_file():
     print  
 
         
+def gen_key_file_from_hex():
+
+    file = open("../key_set.tcl", "w")
+    file_key = open("key_files/keys_1_1.txt", "r")
+
+    file.write("set count 0 \n")
+    file.write("set name \"des_axi_8_rounds_\" \n")
+    file.write("\n")
+
+    print (file_key.readline())
+    print (file_key.readline())
+    print (file_key.readline())
+
+    round_keys = [0] * 16
+
+    for i in range(0, 32):
+        file.write("set a $name$count \n")
+
+        file_key.readline()
+
+        for j in range(0,16):
+            round_key = file_key.readline()[0]
+            x = int(round_key, 16)
+            round_key = format(x, '0>48b')
+            
+            round_keys[i] = round_key
+
+        key = round_keys[0] + round_keys[1] + round_keys[2] + round_keys[3] + round_keys[4] + round_keys[5] + round_keys[6] + round_keys[7] + round_keys[8] + round_keys[9] + round_keys[10] + round_keys[11] + round_keys[12] + round_keys[13] + round_keys[14] + round_keys[15]
+     
+        file.write("set_property -dict [list CONFIG.key_select {\"" + key + "\"}] [get_bd_cells $a] \n") 
+        file.write("set_property -dict [list CONFIG.region {32}] [get_bd_cells  $a] \n")
+        file.write("incr count \n")
+        file.write("\n")
+
+        file_key.write(key + "\n")
+    
+    file_key.write("\n")
+
+    file.close()
+    file_key.close()
+
+    print
+
+    print ("File generated!")
+    print ("Run following command to check for duplicate keys: ")
+    print ("sort testfiles/key_vals.txt | uniq -d")
+
+    print  
          
 
 def main():
     
-    gen_32_key_file()
+    gen_key_file_from_hex()
 
 if __name__ == '__main__':
     main()
