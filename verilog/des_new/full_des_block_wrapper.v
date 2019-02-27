@@ -30,8 +30,10 @@ module des_block_wrapper(
 
     reg [63:0] seed_reg;
     reg [63:0] poly_reg;
+    reg [63:0] input_mask_reg;
+    reg [63:0] output_mask_reg;
 
-    reg [31:0] cmd_read_data_reg;
+    //reg [31:0] cmd_read_data_reg;
     reg [63:0] counter_reg;
     
     wire des_finished;
@@ -40,12 +42,14 @@ module des_block_wrapper(
 
     // Parameters
 
-    localparam STATE_BITS = 4;
+    localparam STATE_BITS = 6;
 
-    localparam CMD_READ_SEED    = 4'h1;     // Possible input commands
-    localparam CMD_READ_POLY    = 4'h2;
-    localparam CMD_START        = 4'h3;
-    localparam CMD_RESTART      = 4'h5;
+    localparam CMD_READ_SEED        = 6'h1;     // Possible input commands
+    localparam CMD_READ_POLY        = 6'h2;
+    localparam CMD_READ_INPUT_MASK  = 6'h3;
+    localparam CMD_READ_OUTPUT_MASK = 6'h4;
+    localparam CMD_START            = 6'h5;
+    localparam CMD_RESTART          = 6'h6;
 
     localparam [STATE_BITS-1:0]    init                = 4'h0;     // Possible states
     localparam [STATE_BITS-1:0]    set_seed            = 4'h1;
@@ -55,6 +59,8 @@ module des_block_wrapper(
     localparam [STATE_BITS-1:0]    finishing           = 4'h5;
     localparam [STATE_BITS-1:0]    restart             = 4'h6;
     localparam [STATE_BITS-1:0]    start_init          = 4'h7;
+    localparam [STATE_BITS-1:0]    set_input_mask      = 4'h7;
+    localparam [STATE_BITS-1:0]    set_output_mask     = 4'h7;
     
     // N should be 32 or lower
     parameter N = 32;
@@ -64,8 +70,8 @@ module des_block_wrapper(
     defparam des_block.lfsr.N = N;
     defparam des_block.N = N;
     defparam des_block.round_keys = key;
-    defparam des_block.mask_i = 64'h2104008000000000;
-    defparam des_block.mask_o = 64'h0000000021040080;
+    //defparam des_block.mask_i = 64'h2104008000000000;
+    //defparam des_block.mask_o = 64'h0000000021040080;
 
     // DES Linear tests:
     // 8 rounds
@@ -97,6 +103,10 @@ module des_block_wrapper(
                         next_state <= set_seed;
                     CMD_READ_POLY:
                         next_state <= set_poly;
+                    CMD_READ_INPUT_MASK:
+                        next_state <= set_input_mask;
+                    CMD_READ_OUTPUT_MASK:
+                        next_state <= set_output_mask;
                     CMD_START:                            
                         next_state <= start_init;
                     CMD_RESTART:
@@ -117,6 +127,18 @@ module des_block_wrapper(
         end
         set_poly: begin   // Sets the signal to load the polynomial into a register, then listen for commands again
             next_state <= set_poly;
+            if (cmd_valid_reg == 1'b0) begin
+                next_state <= init;
+            end
+        end
+        set_input_mask: begin   // Sets the signal to load the input mask into a register, then listen for commands again
+            next_state <= set_input_mask;
+            if (cmd_valid_reg == 1'b0) begin
+                next_state <= init;
+            end
+        end
+        set_output_mask: begin   // Sets the signal to load the output mask into a register, then listen for commands again
+            next_state <= set_output_mask;
             if (cmd_valid_reg == 1'b0) begin
                 next_state <= init;
             end
@@ -167,12 +189,14 @@ module des_block_wrapper(
 
     always @(*) begin   // Output logic
 
-        load_seed <= 1'b0;
-        load_poly <= 1'b0;
-        load_counter <= 1'b0;
-        cmd_read_reg <= 1'b0;
-        start_des <= 1'b0;
-        reg_done <= 1'b0;
+        load_seed           <= 1'b0;
+        load_poly           <= 1'b0;
+        load_input_mask     <= 1'b0;
+        load_output_mask    <= 1'b0;
+        load_counter        <= 1'b0;
+        cmd_read_reg        <= 1'b0;
+        start_des           <= 1'b0;
+        reg_done            <= 1'b0;
 
         restart_block <= 1'b0;
 
@@ -186,6 +210,14 @@ module des_block_wrapper(
         end
         set_poly: begin
             load_poly <= 1'b1;
+            cmd_read_reg <= 1'b1;
+        end
+        set_input_mask: begin
+            load_input_mask <= 1'b1;
+            cmd_read_reg <= 1'b1;
+        end
+        set_output_mask: begin
+            load_output_mask <= 1'b1;
             cmd_read_reg <= 1'b1;
         end
         start_init: begin
@@ -212,14 +244,16 @@ module des_block_wrapper(
     //---------------------------DATAPATH----------------------------------------------------------   
 
     des_block des_block (
-        .clk            (clk          ),
-        .rst_n          (rst_n        ),
-        .start          (start_des    ),
-        .restart_block  (restart_block),
-        .seed           (seed_reg     ),
-        .polynomial     (poly_reg     ),
-        .counter        (des_counter  ),
-        .done           (des_finished ));
+        .clk            (clk            ),
+        .rst_n          (rst_n          ),
+        .start          (start_des      ),
+        .restart_block  (restart_block  ),
+        .seed           (seed_reg       ),
+        .polynomial     (poly_reg       ),
+        .mask_i         (input_mask_reg ),
+        .mask_o         (input_mask_reg ),
+        .counter        (des_counter    ),
+        .done           (des_finished   ));
 
     assign cmd_read = cmd_read_reg;
     assign counter = {{N{1'b0}}, counter_reg};
@@ -238,6 +272,18 @@ module des_block_wrapper(
         end
     end
 
+    always @(posedge clk) begin     // Load the input mask into the register
+        if (load_input_mask == 1'b1) begin
+            input_mask_reg <= {data_upper, data_lower};
+        end
+    end
+
+    always @(posedge clk) begin     // Load the output mask into the register
+        if (load_output_mask == 1'b1) begin
+            output_mask_reg <= {data_upper, data_lower};
+        end
+    end
+
     always @(posedge clk) begin     // Load the counter into the register
         if (load_counter == 1'b1) begin
             counter_reg <= des_counter;
@@ -245,30 +291,30 @@ module des_block_wrapper(
     end
 
     // Register for the output, last executed command
-    always @(posedge clk) begin
-        if (rst_n == 1'b0) begin   // Synchronous reset
-            cmd_read_data_reg <= 32'h0;
-        end
-        else begin
-            case (state)
-            set_seed: begin
-                cmd_read_data_reg <= CMD_READ_SEED;
-            end
-            set_poly: begin
-                cmd_read_data_reg <= CMD_READ_POLY;
-            end
-            start_init: begin
-                cmd_read_data_reg <= CMD_START;
-            end
-            restart: begin
-                cmd_read_data_reg <= CMD_RESTART;
-            end
-            default: begin
-                cmd_read_data_reg <= cmd_read_data_reg;
-            end
-            endcase
-        end
-    end
+    //always @(posedge clk) begin
+    //    if (rst_n == 1'b0) begin   // Synchronous reset
+    //        cmd_read_data_reg <= 32'h0;
+    //    end
+    //    else begin
+    //        case (state)
+    //        set_seed: begin
+    //            cmd_read_data_reg <= CMD_READ_SEED;
+    //        end
+    //        set_poly: begin
+    //            cmd_read_data_reg <= CMD_READ_POLY;
+    //        end
+    //        start_init: begin
+    //            cmd_read_data_reg <= CMD_START;
+    //        end
+    //        restart: begin
+    //            cmd_read_data_reg <= CMD_RESTART;
+    //        end
+    //        default: begin
+    //            cmd_read_data_reg <= cmd_read_data_reg;
+    //        end
+    //        endcase
+    //    end
+    //end
 
     
     // Synchronization logic for cmd_valid
