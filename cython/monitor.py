@@ -1,5 +1,6 @@
 import interface
 import time
+import os.path
 
 # Define all the port addresses for passing to the c code
 #ports = [0x43C00000, 0x43C10000, 0x43C20000, 0x43C30000, 0x43C40000, 0x43C50000, 0x43C60000, 0x43C70000, 0x43C80000, 0x43C90000, 0x43CA0000, 0x43CB0000, 0x43CC0000, 0x43CD0000, 0x43CE0000, 0x43CF0000, 0x43D00000, 0x43D10000, 0x43D20000, 0x43D30000, 0x43D40000, 0x43D50000, 0x43D60000, 0x43D70000, 0x43D80000, 0x43D90000, 0x43DA0000, 0x43DB0000, 0x43DC0000, 0x43DD0000, 0x43DE0000, 0x43DF0000]
@@ -12,6 +13,8 @@ polynomials = [int('800000000000000D', 16), int('800000000000000E', 16), int('80
 
 res_file_path = "/home/root/reports/results.txt"
 status_file_path = "/home/root/reports/status.txt"
+param_file_path = "/home/root/reports/param.txt"
+key_file_path = "/home/root/reports/key.txt"
 
 # This list is written to the status file and read from there
 # Value in list set to '1' when a block is activated
@@ -51,6 +54,27 @@ def init_platform():
         f.write(str(0) +"\n")
         
     print("Platform initialized!")
+
+    print
+    print("Do not forget to use set_parameters() if no parameters file is present already!")
+
+def set_parameters():
+    print
+    print("Will prompt for parameters now...")
+
+    input_mask = input('Input mask (hex): ')
+    output_mask = input('Ouput mask (hex): ')
+    nb_encryptions = input('Number of encryptions needed (hex): ')
+
+    file = open(param_file_path, 'w')
+
+    file.write(input_mask + "\n")
+    file.write(output_mask + "\n")
+    file.write(nb_encryptions + "\n")
+
+    file.close()
+
+    print("Parameter file generated!")
     
 def get_hw_status():
 
@@ -82,8 +106,6 @@ def get_hw_status():
 def start_des(block_nb, seed):
 
     blocks_status = read_status()
-
-    seeds[block_nb] = seed
     
     # First check if block is not currently active!
     if (blocks_status[block_nb] == 1):
@@ -95,11 +117,35 @@ def start_des(block_nb, seed):
         print ("Input seed cannot be zero as this will yield only zero outputs from the LFSR!")
         return
 
+    if (os.path.isfile(param_file_path) == 0):
+        print ("Parameter file is empty, you can create one with set_parameters()!")
+        return
+
+    if (os.path.isfile(key_file_path) == 0):
+        print ("Key file is empty, you should upload one first before attempting to start!")
+        return
+
+    file = open(param_file_path, 'r')
+    key_file = open(key_file_path, 'r')
+
     port = ports[block_nb]
+    seeds[block_nb] = seed
     polynomial = polynomials[block_nb]
+    input_mask = int(file.readline(), 16)
+    output_mask = int(file.readline(), 16)
+    nb_encryptions = int(file.readline(), 16)
+
+    keys = [0] * 16
+
+    for i in range(0, block_nb*17):
+        key_file.readline()
+
+    for i in range(0, 17):
+        keys[i] = int(key_file.readline(), 16)
     
     # Start a new block given the block_nb and the seed to operate on 
-    interface.set_params(seed, polynomial, port)
+    interface.set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port)
+    interface.set_keys(keys, port)
     interface.start_block(port)
 
     # Update the last_seed and blocks_status
