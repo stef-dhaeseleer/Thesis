@@ -16,6 +16,14 @@
 	(
 		// Users to add ports here
 
+		output wire [31:0] CMD_DATA,
+        output wire CMD_DATA_VALID,
+        input wire CMD_DATA_READ,
+        input wire DES_DONE,
+        input wire [63:0] DES_COUNTER,
+        output wire [31:0] DATA_UPPER,
+        output wire [31:0] DATA_LOWER,
+
 		// User ports ends
 		// Do not modify the ports beyond this line
 
@@ -219,6 +227,22 @@
 	// and the slave is ready to accept the write address and write data.
 	assign slv_reg_wren = axi_wready && S_AXI_WVALID && axi_awready && S_AXI_AWVALID;
 
+	// ***************
+
+    reg r_cmd_data_valid;
+    reg r_data_upper_valid;
+    reg r_data_lower_valid;
+
+    reg [31:0] r_data_upper;
+    reg [31:0] r_data_lower;
+
+    reg DES_DONE_TMP;	// Registers needed for synchronization
+    reg DES_DONE_REG;
+    reg CMD_DATA_READ_TMP;
+    reg CMD_DATA_READ_REG;
+
+    // ***************
+
 	always @( posedge S_AXI_ACLK )
 	begin
 	  if ( S_AXI_ARESETN == 1'b0 )
@@ -230,60 +254,112 @@
 	      slv_reg4 <= 0;
 	      slv_reg5 <= 0;
 	      slv_reg6 <= 0;
+
+	      // **************
+          r_cmd_data_valid <= 1'b0;
+          r_data_upper_valid <= 1'b0;
+          r_data_lower_valid <= 1'b0;
+          // **************
+
 	    end 
 	  else begin
+
+	  	r_data_upper_valid <= 1'b0;	// Set to zero when not written to, this way it only stays high one cycle
+        r_data_lower_valid <= 1'b0; // Set to zero when not written to, this way it only stays high one cycle
+
+        slv_reg4 <= DES_COUNTER[63:32];  // Set to the upper part of the counter
+        slv_reg5 <= DES_COUNTER[31:0];   // Set to the lower part of the counter
+
 	    if (slv_reg_wren)
 	      begin
 	        case ( axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )
-	          3'h0:
+
+	          3'h0: // THIS IS THE CMD REG
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 0
 	                slv_reg0[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // **************
+                    r_cmd_data_valid <= 1'b1;
+                    slv_reg3 <= 1'b0;
+                    // **************
+
 	              end  
-	          3'h1:
+
+	          3'h1: // THIS IS THE DATA_UPPER REG
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 1
 	                slv_reg1[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+					
+					// **************
+                    r_data_upper_valid <= 1'b1;
+                    // **************
+
 	              end  
-	          3'h2:
+
+	          3'h2: // THIS IS THE DATA_LOWER REG
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 2
 	                slv_reg2[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // **************
+                    r_data_lower_valid <= 1'b1;
+                    // **************
+
 	              end  
-	          3'h3:
+
+	          // *****************************************************************************************
+
+	          3'h3: // THIS IS THE CMD_READ RGISTER
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 3
-	                slv_reg3[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
-	              end  
-	          3'h4:
+	                //slv_reg3[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // slave register is used by the PL to signal to the PS
+                    // This register can thus not be set by the AXI slave
+	              end 
+
+	          3'h4: // THIS IS THE UPPER COUNTER REG
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 4
-	                slv_reg4[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	                //slv_reg4[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // slave register is used by the PL to signal to the PS
+                    // This register can thus not be set by the AXI slave
 	              end  
-	          3'h5:
+
+	          3'h5: // THIS IS THE LOWER COUNTER REG
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 5
-	                slv_reg5[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	                //slv_reg5[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // slave register is used by the PL to signal to the PS
+                    // This register can thus not be set by the AXI slave
 	              end  
-	          3'h6:
+
+	          3'h6:  // THIS IS THE DONE REGISTER
 	            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
 	              if ( S_AXI_WSTRB[byte_index] == 1 ) begin
 	                // Respective byte enables are asserted as per write strobes 
 	                // Slave register 6
-	                slv_reg6[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+	                //slv_reg6[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+
+	                // slave register is used by the PL to signal to the PS
+                    // This register can thus not be set by the AXI slave
 	              end  
+
 	          default : begin
 	                      slv_reg0 <= slv_reg0;
 	                      slv_reg1 <= slv_reg1;
@@ -295,6 +371,35 @@
 	                    end
 	        endcase
 	      end
+
+	      // ********************
+
+          else begin
+                if (CMD_DATA_READ_REG == 1'b1) begin    // Indicates that the wrapper has read the command
+                    r_cmd_data_valid <= 1'b0;
+                    r_data_upper_valid <= 1'b0;
+          			r_data_lower_valid <= 1'b0;
+                    slv_reg3 <= 1'b1;
+                end
+
+                if (CMD_DATA_VALID == 1'b1) begin
+                    slv_reg6 <= 0;  // This is the done signal, set to zero when a command is received
+                end
+
+                if (r_data_upper_valid == 1'b1) begin
+                   r_data_upper <= slv_reg1;   // Buffer the region data from the slave reg into another reg
+                end
+
+                if (r_data_lower_valid == 1'b1) begin
+                    r_data_lower <= slv_reg2;   // Buffer the region data from the slave reg into another reg
+                end
+
+                if (DES_DONE_REG == 1'b1) begin
+                    slv_reg6 <= 1;  // This is the done signal, set to one here
+                end
+          end
+
+          // ********************
 	  end
 	end    
 
@@ -432,6 +537,30 @@
 
 	// Add user logic here
 
+    assign CMD_DATA = slv_reg0;
+    assign CMD_DATA_VALID = r_cmd_data_valid;
+    assign DATA_UPPER = r_data_upper;
+    assign DATA_LOWER = r_data_lower;
+
+    // Synchronization logic for DES_DONE, CMD_DATA_READ
+    always @(posedge S_AXI_ACLK) begin     // Synchronization of incomming values from different clock domain
+
+    	if ( S_AXI_ARESETN == 1'b0 ) begin // Reset the regs to zero
+    		DES_DONE_TMP <= 0;
+    		DES_DONE_REG <= 0;
+    		CMD_DATA_READ_TMP <= 0;
+    		CMD_DATA_READ_REG <= 0;
+    	end
+    	else begin
+	        DES_DONE_TMP <= DES_DONE;
+	        DES_DONE_REG <= DES_DONE_TMP;
+
+	        CMD_DATA_READ_TMP <= CMD_DATA_READ;
+	        CMD_DATA_READ_REG <= CMD_DATA_READ_TMP;
+	    end
+    end
+
 	// User logic ends
 
 	endmodule
+	

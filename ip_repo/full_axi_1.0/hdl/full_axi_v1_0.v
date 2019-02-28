@@ -16,6 +16,8 @@
 	(
 		// Users to add ports here
 
+		input wire des_clk,
+
 		// User ports ends
 		// Do not modify the ports beyond this line
 
@@ -43,6 +45,20 @@
 		output wire  s00_axi_rvalid,
 		input wire  s00_axi_rready
 	);
+
+	// ********************
+
+	wire [63:0] des_counter;
+	wire [31:0] cmd_data;
+	wire [31:0] des_data_upper;
+    wire [31:0] des_data_lower;
+
+ 	wire cmd_data_valid;
+    wire cmd_data_read;
+    wire des_done;
+
+	// ********************
+
 // Instantiation of Axi Bus Interface S00_AXI
 	full_axi_v1_0_S00_AXI # ( 
 		.C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
@@ -68,10 +84,31 @@
 		.S_AXI_RDATA(s00_axi_rdata),
 		.S_AXI_RRESP(s00_axi_rresp),
 		.S_AXI_RVALID(s00_axi_rvalid),
-		.S_AXI_RREADY(s00_axi_rready)
+		.S_AXI_RREADY(s00_axi_rready),
+		// **************************************
+		.CMD_DATA(cmd_data),
+		.CMD_DATA_VALID(cmd_data_valid),
+		.CMD_DATA_READ(cmd_data_read),
+		.DES_DONE(des_done),
+		.DES_COUNTER(des_counter),
+		.DATA_UPPER(des_data_upper),
+		.DATA_LOWER(des_data_lower)
 	);
 
 	// Add user logic here
+
+	des_block_wrapper des_block_wrapper(
+        .clk (des_clk),
+        .rst_n (s00_axi_aresetn),
+        .cmd (cmd_data),
+        .cmd_valid (cmd_data_valid),
+        // **********************************
+        .data_upper (des_data_upper),
+        .data_lower (des_data_lower),
+        .cmd_read (cmd_data_read),
+        .done (des_done),
+        .counter (des_counter)
+        );
 
 	// User logic ends
 
