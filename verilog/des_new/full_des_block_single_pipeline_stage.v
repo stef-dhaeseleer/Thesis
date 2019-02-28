@@ -16,6 +16,7 @@ module des_block(
     input [63:0] mask_i,            // input value for the input mask
     input [63:0] mask_o,            // input value for the output mask
     input [63:0] counter_limit,     // input value for the counter limit
+    input [767:0] round_keys,       // input value for the round keys concatenated
     output [63-N:0] counter,        // output counter to keep track of the amounts of 1's
     output reg done                 // signals that the output are valid results
     );
@@ -49,14 +50,6 @@ module des_block(
     localparam [STATE_BITS-1:0]    working     = 3'h1;    
     localparam [STATE_BITS-1:0]    finishing   = 3'h2;
     localparam [STATE_BITS-1:0]    finished    = 3'h3;
-
-    // NOTE: paramters for masks, keys and region length, value overridden from toplevel wrapper (1)
-    //parameter [63:0] mask_i = 64'h1;
-    //parameter [63:0] mask_o = 64'h1;
-
-    parameter [767:0] round_keys = 768'h0;
-
-    //parameter N = 32;   // The amount of bits in the region select
 
     // Functions
 

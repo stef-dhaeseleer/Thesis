@@ -41,6 +41,25 @@ module des_block_wrapper(
 
     wire [63-N:0] des_counter;
 
+    reg [1:48] round_key1;
+    reg [1:48] round_key2; 
+    reg [1:48] round_key3; 
+    reg [1:48] round_key4;
+    reg [1:48] round_key5;
+    reg [1:48] round_key6; 
+    reg [1:48] round_key7; 
+    reg [1:48] round_key8;
+    reg [1:48] round_key9;
+    reg [1:48] round_key10;    
+    reg [1:48] round_key11;    
+    reg [1:48] round_key12;
+    reg [1:48] round_key13;
+    reg [1:48] round_key14;    
+    reg [1:48] round_key15;    
+    reg [1:48] round_key16;
+
+    wire [767:0] round_keys;
+
     // Parameters
 
     localparam STATE_BITS = 6;
@@ -50,8 +69,9 @@ module des_block_wrapper(
     localparam CMD_READ_INPUT_MASK      = 6'h3;
     localparam CMD_READ_OUTPUT_MASK     = 6'h4;
     localparam CMD_READ_COUNTER_LIMIT   = 6'h5;
-    localparam CMD_START                = 6'h6;
-    localparam CMD_RESTART              = 6'h7;
+    localparam CMD_READ_ROUNDKEY        = 6'h6;
+    localparam CMD_START                = 6'h7;
+    localparam CMD_RESTART              = 6'h8;
 
     localparam [STATE_BITS-1:0]    init                = 6'h0;     // Possible states
     localparam [STATE_BITS-1:0]    set_seed            = 6'h1;
@@ -64,18 +84,9 @@ module des_block_wrapper(
     localparam [STATE_BITS-1:0]    set_input_mask      = 6'h8;
     localparam [STATE_BITS-1:0]    set_output_mask     = 6'h9;
     localparam [STATE_BITS-1:0]    set_counter_limit   = 6'hA;
+    localparam [STATE_BITS-1:0]    set_roundkey_init   = 6'hB;
+    localparam [STATE_BITS-1:0]    set_roundkey_done   = 6'hC;
     
-    // N should be 32 or lower
-    //parameter N = 32;
-    parameter key = 768'h0;
-    
-    //defparam des_block.message_counter.N = N;
-    //defparam des_block.lfsr.N = N;
-    //defparam des_block.N = N;
-    defparam des_block.round_keys = key;
-    //defparam des_block.mask_i = 64'h2104008000000000;
-    //defparam des_block.mask_o = 64'h0000000021040080;
-
     // Functions
 
     //---------------------------FSM---------------------------------------------------------------
@@ -105,6 +116,8 @@ module des_block_wrapper(
                         next_state <= set_output_mask;
                     CMD_READ_COUNTER_LIMIT:
                         next_state <= set_counter_limit;
+                    CMD_READ_ROUNDKEY:
+                        next_state <= set_roundkey_init;
                     CMD_START:                            
                         next_state <= start_init;
                     CMD_RESTART:
@@ -143,6 +156,15 @@ module des_block_wrapper(
         end
         set_counter_limit: begin   // Sets the signal to load the counter limit into a register, then listen for commands again
             next_state <= set_counter_limit;
+            if (cmd_valid_reg == 1'b0) begin
+                next_state <= init;
+            end
+        end
+        set_roundkey_init: begin   // Sets the signal to load the round key into a register and shift the keys around, do this only one cycle
+            next_state <= set_roundkey_done;
+        end
+        set_roundkey_done: begin   // Output cmd_read here and wait untill acked
+            next_state <= set_roundkey_done;
             if (cmd_valid_reg == 1'b0) begin
                 next_state <= init;
             end
@@ -198,6 +220,7 @@ module des_block_wrapper(
         load_input_mask     <= 1'b0;
         load_output_mask    <= 1'b0;
         load_counter_limit  <= 1'b0;
+        load_roundkey       <= 1'b0;
         load_counter        <= 1'b0;
         cmd_read_reg        <= 1'b0;
         start_des           <= 1'b0;
@@ -227,6 +250,12 @@ module des_block_wrapper(
         end
         set_counter_limit: begin
             load_counter_limit <= 1'b1;
+            cmd_read_reg <= 1'b1;
+        end
+        set_roundkey_init: begin    // Load only for one cycle
+            load_roundkey <= 1'b1;
+        end
+        set_roundkey_done: begin    // Then output done for the rest
             cmd_read_reg <= 1'b1;
         end
         start_init: begin
@@ -262,6 +291,7 @@ module des_block_wrapper(
         .mask_i         (input_mask_reg    ),
         .mask_o         (input_mask_reg    ),
         .counter_limit  (counter_limit_reg ),
+        .round_keys     (round_keys        ),
         .counter        (des_counter       ),
         .done           (des_finished      ));
 
@@ -269,6 +299,7 @@ module des_block_wrapper(
     assign counter = {{N{1'b0}}, counter_reg};
     assign done = reg_done;
     assign cmd_read_data = cmd_read_data_reg;
+    assign round_keys = {round_key1, round_key2, round_key3, round_key4, round_key5, round_key6, round_key7, round_key8, round_key9, round_key10, round_key11, round_key12, round_key13, round_key14, round_key15, round_key16};
 
     always @(posedge clk) begin     // Load the seed into the register
         if (load_seed == 1'b1) begin
@@ -306,32 +337,43 @@ module des_block_wrapper(
         end
     end
 
-    // Register for the output, last executed command
-    //always @(posedge clk) begin
-    //    if (rst_n == 1'b0) begin   // Synchronous reset
-    //        cmd_read_data_reg <= 32'h0;
-    //    end
-    //    else begin
-    //        case (state)
-    //        set_seed: begin
-    //            cmd_read_data_reg <= CMD_READ_SEED;
-    //        end
-    //        set_poly: begin
-    //            cmd_read_data_reg <= CMD_READ_POLY;
-    //        end
-    //        start_init: begin
-    //            cmd_read_data_reg <= CMD_START;
-    //        end
-    //        restart: begin
-    //            cmd_read_data_reg <= CMD_RESTART;
-    //        end
-    //        default: begin
-    //            cmd_read_data_reg <= cmd_read_data_reg;
-    //        end
-    //        endcase
-    //    end
-    //end
+    always @(posedge clk) begin     // Load the counter limit into the register
+        if (load_roundkey == 1'b1) begin
+            //round_key1 <= {data_upper[15:0], data_lower}; // This loads key16 first
+            //round_key2 <= round_key1;
+            //round_key3 <= round_key2;
+            //round_key4 <= round_key3;
+            //round_key5 <= round_key4;
+            //round_key6 <= round_key5;
+            //round_key7 <= round_key6;
+            //round_key8 <= round_key7;
+            //round_key9 <= round_key8;
+            //round_key10 <= round_key9;
+            //round_key11 <= round_key10;
+            //round_key12 <= round_key11;
+            //round_key13 <= round_key12;
+            //round_key14 <= round_key13;
+            //round_key15 <= round_key14;
+            //round_key16 <= round_key15;
 
+            round_key16 <= {data_upper[15:0], data_lower};  // This loads key1 first (more logical order)
+            round_key15 <= round_key16;
+            round_key14 <= round_key15;
+            round_key13 <= round_key14;
+            round_key12 <= round_key13;
+            round_key11 <= round_key12;
+            round_key10 <= round_key11;
+            round_key9 <= round_key10;
+            round_key8 <= round_key9;
+            round_key7 <= round_key8;
+            round_key6 <= round_key7;
+            round_key5 <= round_key6;
+            round_key4 <= round_key5;
+            round_key3 <= round_key4;
+            round_key2 <= round_key3;
+            round_key1 <= round_key2;
+        end
+    end
     
     // Synchronization logic for cmd_valid
     always @(posedge clk) begin     // Synchronization of incomming values from different clock domain
