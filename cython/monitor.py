@@ -137,10 +137,12 @@ def start_des(block_nb, seed):
 
     keys = [0] * 16
 
+    # Skip 16 keys and one empty line (previous block_nb keys)
     for i in range(0, block_nb*17):
         key_file.readline()
 
-    for i in range(0, 17):
+    # Read 16 keys
+    for i in range(0, 16):
         keys[i] = int(key_file.readline(), 16)
     
     # Start a new block given the block_nb and the seed to operate on 

@@ -108,7 +108,7 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port):
     print
     print("Setting the parameters...")
 
-    ####### SEED
+    ####### SEED #######
     cmd = write_cmd(get_reg_address(port, 1), str(hex(seed_high)))
     issue_linux_cmd(cmd)
 
@@ -118,7 +118,7 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port):
     # Clear out before new write command
     clear_command(port)
 
-    # Write the read region command
+    # Write the read seed command
     cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_READ_SEED)))
     issue_linux_cmd(cmd)
 
@@ -126,7 +126,7 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port):
     wait_for_cmd_read(port)
     print("Seed has been set!")
 
-    ####### POLYNOMIAL
+    ####### POLYNOMIAL #######
     cmd = write_cmd(get_reg_address(port, 1), str(hex(polynomial_high)))
     issue_linux_cmd(cmd)
 
@@ -136,11 +136,11 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port):
     # Clear out before new write command
     clear_command(port)
 
-    # Write the read region command
+    # Write the read polynomial command
     cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_READ_POLY)))
     issue_linux_cmd(cmd)
 
-    ####### INPUT MASK
+    ####### INPUT MASK #######
     cmd = write_cmd(get_reg_address(port, 1), str(hex(input_mask_high)))
     issue_linux_cmd(cmd)
 
@@ -150,11 +150,11 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port):
     # Clear out before new write command
     clear_command(port)
 
-    # Write the read region command
+    # Write the read input mask command
     cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_READ_INPUT_MASK)))
     issue_linux_cmd(cmd)
 
-    ####### OUTPUT MASK
+    ####### OUTPUT MASK #######
     cmd = write_cmd(get_reg_address(port, 1), str(hex(output_mask_high)))
     issue_linux_cmd(cmd)
 
@@ -164,11 +164,11 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port):
     # Clear out before new write command
     clear_command(port)
 
-    # Write the read region command
+    # Write the read output mask command
     cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_READ_OUTPUT_MASK)))
     issue_linux_cmd(cmd)
 
-    ####### NB ENCRYPTIONS
+    ####### NB ENCRYPTIONS #######
     cmd = write_cmd(get_reg_address(port, 1), str(hex(nb_encryptions_high)))
     issue_linux_cmd(cmd)
 
@@ -178,7 +178,7 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port):
     # Clear out before new write command
     clear_command(port)
 
-    # Write the read region command
+    # Write the read counter limit command
     cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_READ_COUNTER_LIMIT)))
     issue_linux_cmd(cmd)
 
