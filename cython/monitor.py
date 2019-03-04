@@ -75,6 +75,48 @@ def set_parameters():
     file.close()
 
     print("Parameter file generated!")
+
+def set_nb_encryptions():
+    print
+    print("Will prompt for number of encryptions now...")
+
+    if (os.path.isfile(param_file_path) == 0):
+        print ("Parameter file is empty, you can create one with set_parameters()!")
+        return
+
+    nb_encryptions = input('Number of encryptions needed (hex): ')
+
+    file = open(param_file_path, 'r')
+
+    input_mask = file.readline()
+    output_mask = file.readline()
+    
+    file.close()
+    file = open(param_file_path, 'w')
+
+    file.write(input_mask)
+    file.write(output_mask)
+    file.write(nb_encryptions + "\n")
+
+    file.close()
+
+    print("Parameter file generated!")
+
+def print_parameters():
+    print
+    print("Will print the parameters now...")
+    
+    file = open(param_file_path, 'r')
+
+    input_mask = file.readline()
+    output_mask = file.readline()
+    nb_encryptions = file.readline() 
+
+    print("Input mask        : 0x" + str(hex(input_mask)))
+    print("Output mask       : 0x" + str(hex(output_mask)))
+    print("Nb of encryptions : 0x" + str(hex(nb_encryptions)))
+
+    file.close()
     
 def get_hw_status():
 
@@ -351,6 +393,21 @@ def help():
     print("init_platform()")
     print("    args: /")
     print("    Initializes the platform and creates all the necessary files.")
+    
+    print
+    print("set_parameters()")
+    print("    args: /")
+    print("    Initializes the parameter file, will prompt the user to input the hex values.")
+    
+    print
+    print("print_parameters()")
+    print("    args: /")
+    print("    Prints the values for the parameters currently set in the parameters file.")
+    
+    print
+    print("set_nb_encryptions()")
+    print("    args: /")
+    print("    Change the value for the number of encryptions to be performed in the parameter file.")
 
     # print
     # print("name")
