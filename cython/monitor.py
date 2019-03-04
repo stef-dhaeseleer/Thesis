@@ -68,9 +68,9 @@ def set_parameters():
 
     file = open(param_file_path, 'w')
 
-    file.write(input_mask + "\n")
-    file.write(output_mask + "\n")
-    file.write(nb_encryptions + "\n")
+    file.write(str(input_mask) + "\n")
+    file.write(str(output_mask) + "\n")
+    file.write(str(nb_encryptions) + "\n")
 
     file.close()
 
@@ -96,7 +96,7 @@ def set_nb_encryptions():
 
     file.write(input_mask)
     file.write(output_mask)
-    file.write(nb_encryptions + "\n")
+    file.write(str(nb_encryptions) + "\n")
 
     file.close()
 
@@ -106,15 +106,19 @@ def print_parameters():
     print
     print("Will print the parameters now...")
     
+    if (os.path.isfile(param_file_path) == 0):
+        print ("Parameter file is empty, you can create one with set_parameters()!")
+        return
+    
     file = open(param_file_path, 'r')
 
     input_mask = file.readline()
     output_mask = file.readline()
     nb_encryptions = file.readline() 
 
-    print("Input mask        : 0x" + str(hex(input_mask)))
-    print("Output mask       : 0x" + str(hex(output_mask)))
-    print("Nb of encryptions : 0x" + str(hex(nb_encryptions)))
+    print("Input mask        : 0x" + str(input_mask))
+    print("Output mask       : 0x" + str(output_mask))
+    print("Nb of encryptions : 0x" + str(nb_encryptions))
 
     file.close()
     
@@ -198,17 +202,25 @@ def start_des(block_nb, seed):
 
     write_status(blocks_status)
 
-    print
-    print ("Everything updated!")
+    print ("Core started!")
 
 def start_all(base_seed):
 
     seed = base_seed
+    
+    if (seed == 0):
+        print ("Input seed cannot be zero as this will yield only zero outputs from the LFSR!")
+        return
 
     for nb in range(0, nb_blocks):
+        print
+        print("Starting core " + str(nb+1) + "/" + str(nb_blocks) + "...")
 	    start_des(nb, seed)
 	    seed += 1
         #time.sleep(0.1)
+    
+    print
+    print ("All cores started!")
 
 def restart_des(block_nb):
 

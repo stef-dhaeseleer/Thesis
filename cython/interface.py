@@ -105,7 +105,6 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port):
     nb_encryptions_low = nb_encryptions & 0xFFFFFFFF
     nb_encryptions_high = nb_encryptions >> 32
 
-    print
     print("Setting the parameters...")
 
     ####### SEED #######
@@ -124,7 +123,6 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port):
 
     # Wait untill the HW has read the command
     wait_for_cmd_read(port)
-    print("Seed has been set!")
 
     ####### POLYNOMIAL #######
     cmd = write_cmd(get_reg_address(port, 1), str(hex(polynomial_high)))
@@ -184,14 +182,12 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port):
 
     # Wait untill the HW has read the command
     wait_for_cmd_read(port)
-    print("Polynomial has been set!")
 
 def set_keys(keys, port):
 
     # Keys is a list containing all 16 round keys, form key1 to key16
     # The HW accepts key1 first and key16 last in order
 
-    print
     print("Setting the roundkeys...")
 
     for key in keys:
@@ -212,12 +208,8 @@ def set_keys(keys, port):
         issue_linux_cmd(cmd)
 
 
-    print("Roundkeys have been set!")
-
-
 def start_block(port):
 
-    print
     print("Starting the block...")
 
     # Clear out before new write command
@@ -234,14 +226,12 @@ def start_block(port):
 
 def restart_block(port):
 
-    print
     print("Restarting the HW...")
 
     restart_hw(port)
 
 def test_block(port):
 
-    print
     print("Starting TEST MODE...")
 
     # TODO: Should make a new test (1)
