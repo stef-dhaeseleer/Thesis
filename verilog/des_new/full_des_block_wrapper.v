@@ -18,7 +18,11 @@ module des_block_wrapper(
     reg [STATE_BITS-1:0] state, next_state;        // State variables
 
     reg load_seed;
-    reg load_poly;      
+    reg load_poly;   
+    reg load_input_mask;
+    reg load_output_mask;
+    reg load_counter_limit;
+    reg load_roundkey;   
     reg cmd_read_reg;
     reg start_des;
     reg load_counter;
@@ -34,12 +38,11 @@ module des_block_wrapper(
     reg [63:0] output_mask_reg;
     reg [63:0] counter_limit_reg;
 
-    //reg [31:0] cmd_read_data_reg;
     reg [63:0] counter_reg;
     
     wire des_finished;
 
-    wire [63-N:0] des_counter;
+    wire [63:0] des_counter;
 
     reg [1:48] round_key1;
     reg [1:48] round_key2; 
@@ -296,9 +299,8 @@ module des_block_wrapper(
         .done           (des_finished      ));
 
     assign cmd_read = cmd_read_reg;
-    assign counter = {{N{1'b0}}, counter_reg};
+    assign counter = counter_reg;
     assign done = reg_done;
-    assign cmd_read_data = cmd_read_data_reg;
     assign round_keys = {round_key1, round_key2, round_key3, round_key4, round_key5, round_key6, round_key7, round_key8, round_key9, round_key10, round_key11, round_key12, round_key13, round_key14, round_key15, round_key16};
 
     always @(posedge clk) begin     // Load the seed into the register
