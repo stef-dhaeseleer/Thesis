@@ -2,10 +2,10 @@ import math
 
 def main():
     
-	clock_freq = 200	# Clock frequency in MHz
-	nb_blocks = 32		# Number of DES calculation blocks
+	clock_freq = 100	# Clock frequency in MHz
+	nb_blocks = 196		# Number of DES calculation blocks
 
-	N = 32
+	N = 13
 
 	seconds_per_day = 24*60*60
 	
@@ -26,6 +26,7 @@ def main():
 	seconds_per_block = encryptions_per_block / float(clock_freq * 10**6)
 
 	hours_per_block = seconds_per_block / float(60*60)
+	hours_for_board = hours_per_block / float(nb_blocks)
 
 	print 
 	print ("################################################################################")
@@ -44,6 +45,7 @@ def main():
 	print
 
 	print ("Time for core complete     : " + str(hours_per_block) + " hours for " + str(N) + " bit region")
+	print ("Time for board complete    : " + str(hours_for_board) + " hours for " + str(N) + " bit region")
 if __name__ == '__main__':
     main()
 
