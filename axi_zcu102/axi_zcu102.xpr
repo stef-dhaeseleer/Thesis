@@ -19,6 +19,7 @@
     <Option Name="BoardPart" Val="xilinx.com:zcu102:part0:3.0"/>
     <Option Name="ActiveSimSet" Val="sim_1"/>
     <Option Name="DefaultLib" Val="xil_defaultlib"/>
+    <Option Name="IPRepoPath" Val="$PPRDIR/../ip_repo/test_1.0"/>
     <Option Name="IPRepoPath" Val="$PPRDIR/../ip_repo/full_axi_four_cores_zcu102_1.0"/>
     <Option Name="IPRepoPath" Val="$PPRDIR/../ip_repo/full_axi_zcu102_1.0"/>
     <Option Name="IPRepoPath" Val="$PPRDIR/../ip_repo"/>
@@ -126,7 +127,7 @@
       <ReportStrategy/>
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
     </Run>
-    <Run Id="impl_1" Type="Ft2:EntireDesign" Part="xczu9eg-ffvb1156-2-i" ConstrsSet="constrs_1" Description="Default settings for Implementation." State="current" Dir="$PRUNDIR/impl_1" SynthRun="synth_1" IncludeInArchive="true">
+    <Run Id="impl_1" Type="Ft2:EntireDesign" Part="xczu9eg-ffvb1156-2-i" ConstrsSet="constrs_1" Description="Default settings for Implementation." State="current" SynthRun="synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2017">
           <Desc>Default settings for Implementation.</Desc>
@@ -141,7 +142,6 @@
         <Step Id="post_route_phys_opt_design"/>
         <Step Id="write_bitstream"/>
       </Strategy>
-      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
       <ReportStrategy/>
       <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
     </Run>
