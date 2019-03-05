@@ -119,6 +119,7 @@
         reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg4;
         reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg5;
         reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg6;
+        reg [C_S_AXI_DATA_WIDTH-1:0]    slv_reg7;
         wire     slv_reg_rden;
         wire     slv_reg_wren;
         reg [C_S_AXI_DATA_WIDTH-1:0]     reg_data_out;
@@ -254,6 +255,7 @@
               slv_reg4 <= 0;
               slv_reg5 <= 0;
               slv_reg6 <= 0;
+              slv_reg7 <= 0;
     
               // **************
               r_cmd_data_valid <= 1'b0;
@@ -358,6 +360,14 @@
     
                         // slave register is used by the PL to signal to the PS
                         // This register can thus not be set by the AXI slave
+                      end
+
+                  3'h7:
+                    for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
+                      if ( S_AXI_WSTRB[byte_index] == 1 ) begin
+                        // Respective byte enables are asserted as per write strobes 
+                        // Slave register 7
+                        slv_reg7[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
                       end  
     
                   default : begin
@@ -368,6 +378,7 @@
                               slv_reg4 <= slv_reg4;
                               slv_reg5 <= slv_reg5;
                               slv_reg6 <= slv_reg6;
+                              slv_reg7 <= slv_reg7;
                             end
                 endcase
               end
@@ -512,6 +523,7 @@
                 3'h4   : reg_data_out <= slv_reg4;
                 3'h5   : reg_data_out <= slv_reg5;
                 3'h6   : reg_data_out <= slv_reg6;
+                3'h7   : reg_data_out <= slv_reg7;
                 default : reg_data_out <= 0;
               endcase
         end
