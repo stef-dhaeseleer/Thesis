@@ -88,7 +88,7 @@ def set_cmd(command, port):
     cmd = write_cmd(get_reg_address(port, 0), str(hex(command)))
     issue_linux_cmd(cmd)
 
-def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port, core_nb):
+def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port):
 
     seed_low = seed & 0xFFFFFFFF
     seed_high = seed >> 32
@@ -106,8 +106,6 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port, 
     nb_encryptions_high = nb_encryptions >> 32
 
     print("Setting the parameters...")
-
-    set_core_nb(port, core_nb)
 
     ####### SEED #######
     cmd = write_cmd(get_reg_address(port, 1), str(hex(seed_high)))
@@ -140,9 +138,6 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port, 
     cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_READ_POLY)))
     issue_linux_cmd(cmd)
 
-    # Wait untill the HW has read the command
-    wait_for_cmd_read(port)
-
     ####### INPUT MASK #######
     cmd = write_cmd(get_reg_address(port, 1), str(hex(input_mask_high)))
     issue_linux_cmd(cmd)
@@ -157,9 +152,6 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port, 
     cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_READ_INPUT_MASK)))
     issue_linux_cmd(cmd)
 
-    # Wait untill the HW has read the command
-    wait_for_cmd_read(port)
-
     ####### OUTPUT MASK #######
     cmd = write_cmd(get_reg_address(port, 1), str(hex(output_mask_high)))
     issue_linux_cmd(cmd)
@@ -173,9 +165,6 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port, 
     # Write the read output mask command
     cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_READ_OUTPUT_MASK)))
     issue_linux_cmd(cmd)
-
-    # Wait untill the HW has read the command
-    wait_for_cmd_read(port)
 
     ####### NB ENCRYPTIONS #######
     cmd = write_cmd(get_reg_address(port, 1), str(hex(nb_encryptions_high)))
@@ -194,14 +183,12 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port, 
     # Wait untill the HW has read the command
     wait_for_cmd_read(port)
 
-def set_keys(keys, port, core_nb):
+def set_keys(keys, port):
 
     # Keys is a list containing all 16 round keys, form key1 to key16
     # The HW accepts key1 first and key16 last in order
 
     print("Setting the roundkeys...")
-
-    set_core_nb(port, core_nb)
 
     for key in keys:
         key_low = key & 0xFFFFFFFF
@@ -220,15 +207,10 @@ def set_keys(keys, port, core_nb):
         cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_READ_ROUNDKEY)))
         issue_linux_cmd(cmd)
 
-        # Wait untill the HW has read the command
-        wait_for_cmd_read(port)
 
-
-def start_block(port, core_nb):
+def start_block(port):
 
     print("Starting the block...")
-
-    set_core_nb(port, core_nb)
 
     # Clear out before new write command
     clear_command(port)
@@ -242,33 +224,29 @@ def start_block(port, core_nb):
 
     print("Block has been started!")
 
-def restart_block(port, core_nb):
+def restart_block(port):
 
     print("Restarting the HW...")
 
-    set_core_nb(port, core_nb)
-
     restart_hw(port)
 
-def test_block(port, core_nb):
+def test_block(port):
 
     print("Starting TEST MODE...")
 
     # TODO: Should make a new test (1)
     #test_hw(port)
 
-def get_done(port, core_nb):
-
-    set_core_nb(port, core_nb)
+def get_done(port):
 
     cmd = read_cmd(get_reg_address(port, 6))
     res = issue_linux_cmd(cmd)
 
     return res
 
-def get_counter(port, core_nb):
+def get_counter(port):
 
-    set_core_nb(port, core_nb)
+    global _hw
 
     cmd = read_cmd(get_reg_address(port, 5))
     low = issue_linux_cmd(cmd)
@@ -276,16 +254,6 @@ def get_counter(port, core_nb):
     high = issue_linux_cmd(cmd)
 
     return "%.8x" % high + "%.8x" % low
-
-def set_core_nb(port, core_nb):
-
-    # This function is a dummy command to make sure that the command read is set back to zero
-    # before we write a new command to the AXI
-
-    cmd = write_cmd(get_reg_address(port, 7), str(hex(core_nb)))
-    issue_linux_cmd(cmd)
-
-    clear_command(port)
 
 #def test_hw(port):
 

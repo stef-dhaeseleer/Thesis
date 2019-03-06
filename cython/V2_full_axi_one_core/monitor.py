@@ -4,14 +4,12 @@ import os.path
 
 # Define all the port addresses for passing to the c code
 #ports = [0x43C00000, 0x43C10000, 0x43C20000, 0x43C30000, 0x43C40000, 0x43C50000, 0x43C60000, 0x43C70000, 0x43C80000, 0x43C90000, 0x43CA0000, 0x43CB0000, 0x43CC0000, 0x43CD0000, 0x43CE0000, 0x43CF0000, 0x43D00000, 0x43D10000, 0x43D20000, 0x43D30000, 0x43D40000, 0x43D50000, 0x43D60000, 0x43D70000, 0x43D80000, 0x43D90000, 0x43DA0000, 0x43DB0000, 0x43DC0000, 0x43DD0000, 0x43DE0000, 0x43DF0000]
-#ports = [0x43C00000, 0x43C10000, 0x43C20000, 0x43C30000, 0x43C40000, 0x43C50000, 0x43C60000, 0x43C70000, 0x43C80000, 0x43C90000, 0x43CA0000, 0x43CB0000, 0x43CC0000, 0x43CD0000, 0x43CE0000, 0x43CF0000]
-ports = [0x43C00000, 0x43C10000, 0x43C20000, 0x43C30000]
+ports = [0x43C00000, 0x43C10000, 0x43C20000, 0x43C30000, 0x43C40000, 0x43C50000, 0x43C60000, 0x43C70000, 0x43C80000, 0x43C90000, 0x43CA0000, 0x43CB0000, 0x43CC0000, 0x43CD0000, 0x43CE0000, 0x43CF0000]
 #ports = [0x43C00000, 0x43C10000]
-nb_cores_per_port = 4
-nb_blocks = len(ports)*nb_cores_per_port
+nb_blocks = len(ports)
 
 # Reference: https://users.ece.cmu.edu/~koopman/lfsr/index.html
-polynomials = [int('800000000000000D', 16), int('800000000000000E', 16), int('800000000000007A', 16), int('80000000000000BA', 16), int('80000000000000D0', 16), int('80000000000000EF', 16), int('8000000000000128', 16), int('8000000000000165', 16), int('80000000000001A3', 16), int('80000000000001E4', 16), int('80000000000001E7', 16), int('80000000000001F9', 16), int('8000000000000212', 16), int('8000000000000299', 16), int('80000000000003BC', 16), int('80000000000003BF', 16), int('8000000000000403', 16), int('8000000000000472', 16), int('800000000000049C', 16), int('80000000000004C9', 16), int('8000000000000508', 16), int('800000000000056B', 16), int('800000000000057C', 16), int('8000000000000645', 16), int('8000000000000658', 16), int('8000000000000703', 16), int('8000000000000711', 16), int('8000000000000784', 16), int('80000000000007B4', 16), int('80000000000007C9', 16), int('80000000000007F5', 16), int('8000000000000841', 16), int('8000000000000869', 16), int('800000000000089C', 16), int('80000000000008F6', 16), int('8000000000000940', 16), int('8000000000000952', 16), int('8000000000000957', 16), int('800000000000096D', 16), int('8000000000000B22', 16), int('8000000000000B24', 16), int('8000000000000B2D', 16), int('8000000000000B44', 16), int('8000000000000B84', 16), int('8000000000000BA3', 16), int('8000000000000BAF', 16), int('8000000000000BC3', 16), int('8000000000000CBC', 16), int('8000000000000D0F', 16), int('8000000000000D18', 16), int('8000000000000D27', 16), int('8000000000000D71', 16), int('8000000000000DAA', 16), int('8000000000000DDD', 16), int('8000000000000E2E', 16), int('8000000000000E5C', 16), int('8000000000000E82', 16), int('8000000000000EB7', 16), int('8000000000000EC3', 16), int('8000000000000EFA', 16), int('8000000000000FC1', 16), int('8000000000000FE3', 16), int('800000000000101B', 16), int('800000000000102B', 16), int('8000000000001036', 16), int('80000000000010CA', 16), int('80000000000010F0', 16), int('800000000000114C', 16), int('800000000000115E', 16), int('800000000000117F', 16), int('80000000000011D5', 16), int('80000000000011E5', 16), int('8000000000001237', 16), int('8000000000001238', 16), int('800000000000125E', 16), int('80000000000012DF', 16), int('8000000000001324', 16), int('8000000000001335', 16), int('8000000000001395', 16), int('8000000000001410', 16), int('800000000000143D', 16), int('800000000000147C', 16), int('80000000000014C1', 16), int('80000000000014F8', 16), int('800000000000155C', 16), int('80000000000015B7', 16), int('80000000000015D1', 16), int('8000000000001618', 16), int('8000000000001713', 16), int('8000000000001797', 16), int('80000000000017AE', 16), int('8000000000001858', 16), int('8000000000001868', 16), int('80000000000018F8', 16), int('8000000000001933', 16), int('800000000000193A', 16), int('800000000000196C', 16), int('800000000000198B', 16), int('80000000000019A9', 16), int('80000000000019E2', 16)]
+polynomials = [int('800000000000000D', 16), int('800000000000000E', 16), int('800000000000007A', 16), int('80000000000000BA', 16), int('80000000000000D0', 16), int('80000000000000EF', 16), int('8000000000000128', 16), int('8000000000000165', 16), int('80000000000001A3', 16), int('80000000000001E4', 16), int('80000000000001E7', 16), int('80000000000001F9', 16), int('8000000000000212', 16), int('8000000000000299', 16), int('80000000000003BC', 16), int('80000000000003BF', 16), int('8000000000000403', 16), int('8000000000000472', 16), int('800000000000049C', 16), int('80000000000004C9', 16), int('8000000000000508', 16), int('800000000000056B', 16), int('800000000000057C', 16), int('8000000000000645', 16), int('8000000000000658', 16), int('8000000000000703', 16), int('8000000000000711', 16), int('8000000000000784', 16), int('80000000000007B4', 16), int('80000000000007C9', 16), int('80000000000007F5', 16), int('8000000000000841', 16)]
 
 res_file_path = "/home/root/reports/results.txt"
 status_file_path = "/home/root/reports/status.txt"
@@ -138,12 +136,11 @@ def get_hw_status():
     for i in range(0, nb_blocks):
 
         status = 0
-        core_nb = i%nb_cores_per_port   # The core number is the result of modulo nb_cores_per_port
 
         if (blocks_status[i] == 0):
             print ("BLOCK " + str(i) + ": IDLE")
         else:
-            status = interface.get_done(get_port(i), core_nb)
+            status = interface.get_done(ports[i])
             
             seed = str(seeds[i])
 
@@ -177,9 +174,7 @@ def start_des(block_nb, seed):
     file = open(param_file_path, 'r')
     key_file = open(key_file_path, 'r')
 
-    port = get_port(block_nb)
-    core_nb = block_nb%nb_cores_per_port
-
+    port = ports[block_nb]
     seeds[block_nb] = seed
     polynomial = polynomials[block_nb]
     input_mask = int(file.readline(), 16)
@@ -197,9 +192,9 @@ def start_des(block_nb, seed):
         keys[i] = int(key_file.readline(), 16)
     
     # Start a new block given the block_nb and the seed to operate on 
-    interface.set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port, core_nb)
-    interface.set_keys(keys, port, core_nb)
-    interface.start_block(port, core_nb)
+    interface.set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port)
+    interface.set_keys(keys, port)
+    interface.start_block(port)
 
     # Update the last_seed and blocks_status
     blocks_status[block_nb] = 1 
@@ -229,11 +224,10 @@ def start_all(base_seed):
 
 def restart_des(block_nb):
 
-    port = get_port(block_nb)
-    core_nb = block_nb%nb_cores_per_port
+    port = ports[block_nb]
     
     # Start a new block given the block_nb and the seed to operate on 
-    interface.restart_block(port, core_nb)
+    interface.restart_block(port)
 
     # Update the last_seed and blocks_status
     blocks_status = read_status()
@@ -257,8 +251,7 @@ def get_results_des(block_nb):
 
     blocks_status = read_status()
 
-    port = get_port(block_nb)
-    core_nb = block_nb%nb_cores_per_port
+    port = ports[block_nb]
 
     polynomial = str(polynomials[block_nb])
     seed = str(seeds[block_nb])
@@ -268,7 +261,7 @@ def get_results_des(block_nb):
         print ("Block " + str(block_nb) + " is currently inactive! Cannot get results")
         return
     else:
-        status = interface.get_done(port, core_nb)
+        status = interface.get_done(port)
 
         if (status == 0):
             print("Block " + str(block_nb) + " is not done yet! Cannot get results")
@@ -276,7 +269,7 @@ def get_results_des(block_nb):
 
     # Process the results of the block and write them to the results file
 
-    res = interface.get_counter(port, core_nb)   # Returns a string
+    res = interface.get_counter(port)   # Returns a string
 
     file = open(res_file_path, 'aw')    # Append and write to the file
     file.write(polynomial + " : " + seed + " : " + res +"\n") 
@@ -325,17 +318,6 @@ def get_last_seed():
     # Now print the results to the terminal
     print
     print("Last seed in results file: 0x" + res_seed)
-
-def get_port(block_nb):
-
-    # Cores are clustered per nb_cores_per_port on each core address
-    # So devision by four gives the port address
-    # Modulo four then gives the core number within that address
-
-    index = block_nb//nb_cores_per_port
-    port = ports[index]
-
-    return port
 
 def reset_system():
 
