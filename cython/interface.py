@@ -240,8 +240,6 @@ def start_block(port, core_nb):
     # Wait untill the HW has read the command
     wait_for_cmd_read(port)
 
-    print("Block has been started!")
-
 def restart_block(port, core_nb):
 
     print("Restarting the HW...")
