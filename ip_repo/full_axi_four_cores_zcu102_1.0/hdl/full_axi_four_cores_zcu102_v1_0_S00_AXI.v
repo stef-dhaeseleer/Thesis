@@ -18,11 +18,24 @@
     
             output wire [31:0] CMD_DATA,
             output wire CMD_DATA_VALID,
-            input wire CMD_DATA_READ,
-            input wire DES_DONE,
-            input wire [63:0] DES_COUNTER,
+            input wire CMD_DATA_READ_0,
+            input wire DES_DONE_0,
+            input wire CMD_DATA_READ_1,
+            input wire DES_DONE_1,
+            input wire CMD_DATA_READ_2,
+            input wire DES_DONE_2,
+            input wire CMD_DATA_READ_3,
+            input wire DES_DONE_3,
+            input wire [63:0] DES_COUNTER_0,
+            input wire [63:0] DES_COUNTER_1,
+            input wire [63:0] DES_COUNTER_2,
+            input wire [63:0] DES_COUNTER_3,
             output wire [31:0] DATA_UPPER,
             output wire [31:0] DATA_LOWER,
+            output wire ACTIVE_CORE_0,
+            output wire ACTIVE_CORE_1,
+            output wire ACTIVE_CORE_2,
+            output wire ACTIVE_CORE_3,
     
             // User ports ends
             // Do not modify the ports beyond this line
@@ -237,10 +250,31 @@
         reg [31:0] r_data_upper;
         reg [31:0] r_data_lower;
     
-        reg DES_DONE_TMP;    // Registers needed for synchronization
-        reg DES_DONE_REG;
-        reg CMD_DATA_READ_TMP;
+        reg DES_DONE_REG;   // Registers needed for synchronization
         reg CMD_DATA_READ_REG;
+        reg DES_DONE_TMP_0;
+        reg DES_DONE_REG_0;
+        reg CMD_DATA_READ_TMP_0;
+        reg CMD_DATA_READ_REG_0;
+        reg DES_DONE_TMP_1;
+        reg DES_DONE_REG_1;
+        reg CMD_DATA_READ_TMP_1;
+        reg CMD_DATA_READ_REG_1;
+        reg DES_DONE_TMP_2;
+        reg DES_DONE_REG_2;
+        reg CMD_DATA_READ_TMP_2;
+        reg CMD_DATA_READ_REG_2;
+        reg DES_DONE_TMP_3;
+        reg DES_DONE_REG_3;
+        reg CMD_DATA_READ_TMP_3;
+        reg CMD_DATA_READ_REG_3;
+
+        reg ACTIVE_CORE_0_REG;
+        reg ACTIVE_CORE_1_REG;
+        reg ACTIVE_CORE_2_REG;
+        reg ACTIVE_CORE_3_REG;
+
+        reg [63:0] DES_COUNTER_REG;
     
         // ***************
     
@@ -266,11 +300,11 @@
             end 
           else begin
     
-              r_data_upper_valid <= 1'b0;    // Set to zero when not written to, this way it only stays high one cycle
+            r_data_upper_valid <= 1'b0; // Set to zero when not written to, this way it only stays high one cycle
             r_data_lower_valid <= 1'b0; // Set to zero when not written to, this way it only stays high one cycle
     
-            slv_reg4 <= DES_COUNTER[63:32];  // Set to the upper part of the counter
-            slv_reg5 <= DES_COUNTER[31:0];   // Set to the lower part of the counter
+            slv_reg4 <= DES_COUNTER_REG[63:32];  // Set to the upper part of the counter
+            slv_reg5 <= DES_COUNTER_REG[31:0];   // Set to the lower part of the counter
     
             if (slv_reg_wren)
               begin
@@ -362,7 +396,7 @@
                         // This register can thus not be set by the AXI slave
                       end
 
-                  3'h7:
+                  3'h7: // THIS IS THE CORE SELECT REGISTER
                     for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
                       if ( S_AXI_WSTRB[byte_index] == 1 ) begin
                         // Respective byte enables are asserted as per write strobes 
@@ -553,23 +587,89 @@
         assign CMD_DATA_VALID = r_cmd_data_valid;
         assign DATA_UPPER = r_data_upper;
         assign DATA_LOWER = r_data_lower;
+
+        assign ACTIVE_CORE_0 = ACTIVE_CORE_0_REG;
+        assign ACTIVE_CORE_1 = ACTIVE_CORE_1_REG;
+        assign ACTIVE_CORE_2 = ACTIVE_CORE_2_REG;
+        assign ACTIVE_CORE_3 = ACTIVE_CORE_3_REG;
     
         // Synchronization logic for DES_DONE, CMD_DATA_READ
         always @(posedge S_AXI_ACLK) begin     // Synchronization of incomming values from different clock domain
     
             if ( S_AXI_ARESETN == 1'b0 ) begin // Reset the regs to zero
-                DES_DONE_TMP <= 0;
-                DES_DONE_REG <= 0;
-                CMD_DATA_READ_TMP <= 0;
-                CMD_DATA_READ_REG <= 0;
+                DES_DONE_TMP_0 <= 0;
+                DES_DONE_REG_0 <= 0;
+                CMD_DATA_READ_TMP_0 <= 0;
+                CMD_DATA_READ_REG_0 <= 0;
+                DES_DONE_TMP_1 <= 0;
+                DES_DONE_REG_1 <= 0;
+                CMD_DATA_READ_TMP_1 <= 0;
+                CMD_DATA_READ_REG_1 <= 0;
+                DES_DONE_TMP_2 <= 0;
+                DES_DONE_REG_2 <= 0;
+                CMD_DATA_READ_TMP_2 <= 0;
+                CMD_DATA_READ_REG_2 <= 0;
+                DES_DONE_TMP_3 <= 0;
+                DES_DONE_REG_3 <= 0;
+                CMD_DATA_READ_TMP_3 <= 0;
+                CMD_DATA_READ_REG_3 <= 0;
             end
             else begin
-                DES_DONE_TMP <= DES_DONE;
-                DES_DONE_REG <= DES_DONE_TMP;
-    
-                CMD_DATA_READ_TMP <= CMD_DATA_READ;
-                CMD_DATA_READ_REG <= CMD_DATA_READ_TMP;
+                DES_DONE_TMP_0 <= DES_DONE_0;
+                DES_DONE_REG_0 <= DES_DONE_TMP_0;
+                CMD_DATA_READ_TMP_0 <= CMD_DATA_READ_0;
+                CMD_DATA_READ_REG_0 <= CMD_DATA_READ_TMP_0;
+                DES_DONE_TMP_1 <= DES_DONE_1;
+                DES_DONE_REG_1 <= DES_DONE_TMP_1;
+                CMD_DATA_READ_TMP_1 <= CMD_DATA_READ_1;
+                CMD_DATA_READ_REG_1 <= CMD_DATA_READ_TMP_1;
+                DES_DONE_TMP_2 <= DES_DONE_2;
+                DES_DONE_REG_2 <= DES_DONE_TMP_2;
+                CMD_DATA_READ_TMP_2 <= CMD_DATA_READ_2;
+                CMD_DATA_READ_REG_2 <= CMD_DATA_READ_TMP_2;
+                DES_DONE_TMP_3 <= DES_DONE_3;
+                DES_DONE_REG_3 <= DES_DONE_TMP_3;
+                CMD_DATA_READ_TMP_3 <= CMD_DATA_READ_3;
+                CMD_DATA_READ_REG_3 <= CMD_DATA_READ_TMP_3;
             end
+        end
+
+        // Core select output logic
+        always @(posedge S_AXI_ACLK) begin     // Synchronization of incomming values from different clock domain
+
+            ACTIVE_CORE_0_REG <= 1'b0;
+            ACTIVE_CORE_1_REG <= 1'b0;
+            ACTIVE_CORE_2_REG <= 1'b0;
+            ACTIVE_CORE_3_REG <= 1'b0;
+    
+            if ( slv_reg7 == 32'h0 ) begin // Reset the regs to zero
+                ACTIVE_CORE_0_REG <= 1'b1;
+                DES_COUNTER_REG <= DES_COUNTER_0;
+                DES_DONE_REG <= DES_DONE_REG_0;
+                CMD_DATA_READ_REG <= CMD_DATA_READ_REG_0;
+            end
+
+            if ( slv_reg7 == 32'h1 ) begin // Reset the regs to zero
+                ACTIVE_CORE_1_REG <= 1'b1;
+                DES_COUNTER_REG <= DES_COUNTER_1;
+                DES_DONE_REG <= DES_DONE_REG_1;
+                CMD_DATA_READ_REG <= CMD_DATA_READ_REG_1;
+            end
+
+            if ( slv_reg7 == 32'h2 ) begin // Reset the regs to zero
+                ACTIVE_CORE_2_REG <= 1'b1;
+                DES_COUNTER_REG <= DES_COUNTER_2;
+                DES_DONE_REG <= DES_DONE_REG_2;
+                CMD_DATA_READ_REG <= CMD_DATA_READ_REG_2;
+            end
+
+            if ( slv_reg7 == 32'h3 ) begin // Reset the regs to zero
+                ACTIVE_CORE_3_REG <= 1'b1;
+                DES_COUNTER_REG <= DES_COUNTER_3;
+                DES_DONE_REG <= DES_DONE_REG_3;
+                CMD_DATA_READ_REG <= CMD_DATA_READ_REG_3;
+            end
+             
         end
     
         // User logic ends
