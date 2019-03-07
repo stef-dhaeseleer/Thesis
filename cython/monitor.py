@@ -294,8 +294,8 @@ def start_all(base_seed):
     for nb in range(0, nb_blocks):
         print
         print("Starting core " + str(nb+1) + "/" + str(nb_blocks) + "...")
-	    start_des(nb, seed)
-	    seed += 1
+        start_des(nb, seed)
+        seed += 1
         #time.sleep(0.1)
     
     print
@@ -316,9 +316,6 @@ def restart_des(block_nb):
     blocks_status = read_status()
     blocks_status[block_nb] = 0
     write_status(blocks_status)
-    
-    print
-    print ("Everything updated!")
 
 # Function that verifies if the HW functions correctly with sanity checks.
 # Currently this function is not used anymore (testing removed from HW design to save space). 
@@ -362,9 +359,6 @@ def get_results_des(block_nb):
     file = open(res_file_path, 'aw')    # Append and write to the file
     file.write(polynomial + " : " + seed + " : " + res +"\n") 
     file.close() 
-
-    print
-    print ("All results processed, the block will now be restarted!")
     
     restart_des(block_nb)
 
@@ -373,6 +367,8 @@ def get_results_des(block_nb):
 def get_results_all():
 
     for nb in range(0, nb_blocks):
+        print
+        print("Getting results of core " + str(nb+1) + "/" + str(nb_blocks) + "...")
 	    get_results_des(nb)
         #time.sleep(0.1)
 
