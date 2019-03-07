@@ -9,7 +9,7 @@ set_property -dict [list CONFIG.PCW_FPGA1_PERIPHERAL_FREQMHZ {200} CONFIG.PCW_EN
 set_property -dict [list CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {50.000000}] [get_bd_cells processing_system7_0]
 endgroup
 
-for {set count 0} {$count < 4} {incr count} {
+for {set count 0} {$count < 6} {incr count} {
     set a $name$count
     startgroup
     create_bd_cell -type ip -vlnv user.org:user:$type:1.0 $a
