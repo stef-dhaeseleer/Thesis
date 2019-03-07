@@ -1,0 +1,72 @@
+##########################################################################################
+params.txt
+	This file start without new lines at the top
+	Only one value per line
+	Order: input mask, output mask, number of encryptions
+	All values are in hexadecimal.
+
+e.g.
+
+2104008000008000
+0001100000CB8080
+42
+
+
+
+##########################################################################################
+key.txt
+	This files starts without new lines at the top.
+	All values are in hexadecimal.
+	A new round key can be found on every line.
+	So the round keys for the first block can be found on the first 16 lines
+	The round keys for different blocks are separated by a newline.
+	So the round keys for block number nb can be found on lines:
+		17*nb untill 17*nb + 16
+
+e.g.
+
+6c7748564719
+6731b4b49c96
+9e84f14d06f7
+df423a1fe8c9
+ae938c22d555
+1a1a4f8ba5a6
+297878ec4f81
+846dec5a425f
+1685d6e08d76
+7e48270dae9e
+aba12c7d54d1
+8806bf0bc06f
+f51a3886fd84
+86bae0a807f5
+9a7e56dbca83
+254e1721ab6e
+
+6c7748564719
+6731b4b49c96
+9e84f14d06f7
+df423a1fe8c9
+ae938c22d555
+1a1a4f8ba5a6
+297878ec4f81
+846dec5a425f
+1685d6e08d76
+7e48270dae9e
+aba12c7d54d1
+8806bf0bc06f
+f51a3886fd84
+86bae0a807f5
+9a7e56dbca83
+254e1721ab6e
+
+...
+
+
+
+
+
+
+
+
+
+
