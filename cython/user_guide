@@ -1,0 +1,81 @@
+HOW TO CONNECT TO DEVICE
+
+After preparing the SD card and putting it in the FPGA, connect the FPGA via USB to
+to the UART port.
+
+Open a terminal window on the PC.
+Turn on the FPGA (it will now begin booting)
+For Linux device: use the 'make uart' command (found in the make file) to connect.
+
+username: root
+password: noot
+
+USING THE PLATFORM WHEN CONNECTED
+
+Start location directory tree:
+
+root
+|-- cython
+|	|
+|	| python files
+|
+|-- reports
+	|
+	| key, param, status, results files
+
+To set the parameters, edit (or create) the 'param.txt' file according to the template.
+
+First cd to the cython directory
+	cd cython
+
+Then open Python and import the monitor file
+	python
+	import monitor
+
+Now you can use all the functions form the monitor file to control the HW.
+
+'monitor.help()' gives an overview of what all the functions do.
+
+Normal workflow looks like this:
+	
+	monitor.init_platform()	
+	monitor.performance_stats()
+
+	monitor.get_hw_status()
+	monitor.start_all(1)
+
+	...
+	
+	monitor.get_hw_status()
+
+	monitor.get_results_all()
+	monitor.print_results()
+	
+
+Explanation:
+init_platform(): Initialises the platform (creates the status and results file).
+		 If the params file is present, it will list the current parameters.
+		 Else the user will be prompted to input the parameters.
+
+performance_stats(): Prints the performance stats for the current setup. This way we 
+		     know how long the run will take to complete once we start it.
+
+get_hw_status(): Prints the status of the blocks (first to check if all are IDLE).
+
+start_all(1): Starts all blocks with base seed 1 (seed increments for following blocks)
+
+... : Let time pass for HW to finish (see performance stats for duration).
+
+get_hw_status(): Prints the status of the blocks to check if all are DONE. 
+
+get_results_all(): Collects the counter results from all blocks that are done and writes
+		   them into the results file.
+
+print_results(): Prints the results file to the terminal so the user can see the results.
+
+After this, the cycle can be repeated if needed (new seeds, new masks, new keys...).
+
+
+
+
+
