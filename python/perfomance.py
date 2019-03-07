@@ -46,6 +46,7 @@ def main():
 
 	print ("Time for core complete     : " + str(hours_per_block) + " hours for " + str(N) + " bit region")
 	print ("Time for board complete    : " + str(hours_for_board) + " hours for " + str(N) + " bit region")
+	
 if __name__ == '__main__':
     main()
 

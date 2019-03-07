@@ -3,9 +3,8 @@ import time
 import os.path
 
 # TODO:
-# Add the performance fucntionality here to check this on platform.
 # Add specifications on what the given files should look like for correct functionality.
-# Make a sample for operation.
+# Make a sample for correct operation.
 
 # Define all the port addresses for passing to the c code
 # These are the addresses the CPU writes to to pass data to the DES cores.
@@ -99,11 +98,12 @@ def init_platform():
 def set_parameters():
     print
     print("Will prompt for parameters now...")
+    print("For all " + str(nb_blocks) + " cores:")
 
     # Prompt user for input
     input_mask = input('Input mask (hex): ')
     output_mask = input('Ouput mask (hex): ')
-    nb_encryptions = input('Number of encryptions needed (hex): ')
+    nb_encryptions = input('Number of encryptions needed per core (hex): ')
 
     file = open(param_file_path, 'w')
 
@@ -438,6 +438,58 @@ def reset_system():
 
     write_status(blocks_status)
 
+# This function prints stats on how long the operations on the board will taks for the current settings.
+def performance_stats():
+    
+    clock_freq = 100    # Clock frequency in MHz
+    seconds_per_day = 24*60*60
+
+    # First check if the parameter file exists
+    if (os.path.isfile(param_file_path) == 0):
+        print ("Parameter file is empty, you can create one with set_parameters()!")
+        return
+
+    # Now that we know the file is present, open it.
+    file = open(param_file_path, 'r')
+
+    # Get the number of encryptions to be done from the file.
+    file.readline()
+    file.readline()
+
+    # Stats per core
+    nb_encryptions_core = int(file.readline(), 16)
+    two_exp_nb_encryptions_core = math.log(nb_encryptions, 2)
+
+    # Stats for all cores on the board together
+    nb_encryptions_total = int(file.readline(), 16) * nb_blocks
+    two_exp_nb_encryptions_total = math.log(nb_encryptions, 2)
+
+    # Total encryptions done on the board in one day.
+    encrypt_per_day = nb_blocks * clock_freq * 10**6 * seconds_per_day
+    two_exp = math.log(encrypt_per_day, 2)
+
+    # Time to complete the operations for the entire board in both hours and days.
+    days_for_board = nb_encryptions_total / float(encrypt_per_day)
+    hours_for_board = days_for_board * float(24)
+
+    print 
+    print ("################################################################################")
+    print 
+
+    print ("Clock frequency                : " + str(clock_freq))
+    print ("DES cores                      : " + str(nb_blocks))
+    print ("Encryptions to be done (core)  : " + str(nb_encryptions_core))
+    print ("    2 exponent                 : " + str(two_exp_nb_encryptions_core))
+    print ("Encryptions to be done (board) : " + str(nb_encryptions_total))
+    print ("    2 exponent                 : " + str(two_exp_nb_encryptions_total))
+    print ("Encryptions per day (board)    : " + str(encrypt_per_day))
+    print ("    2 exponent                 : " + str(two_exp))
+    print
+
+    print ("Time for board complete        : ")
+    print ("    days                       : " + str(days_for_board))
+    print ("    hours                      : " + str(hours_for_board))
+
 # This function prints an overview of all functions present that the user can use.
 # This can used as a quick reference while using the platform.
 def help():
@@ -527,6 +579,11 @@ def help():
     print("set_nb_encryptions()")
     print("    args: /")
     print("    Change the value for the number of encryptions to be performed in the parameter file.")
+
+    print
+    print("performance_stats()")
+    print("    args: /")
+    print("    This functions print stats on how long the operations will take to complete for the current settings.")
 
     # print
     # print("name")
