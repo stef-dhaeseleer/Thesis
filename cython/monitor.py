@@ -3,7 +3,6 @@ import time
 import os.path
 
 # TODO:
-# Add specifications on what the given files should look like for correct functionality.
 # Make a sample for correct operation.
 
 # Define all the port addresses for passing to the c code
@@ -14,6 +13,7 @@ import os.path
 
 #ports = [0x43C00000, 0x43C10000, 0x43C20000, 0x43C30000, 0x43C40000, 0x43C50000, 0x43C60000, 0x43C70000, 0x43C80000, 0x43C90000, 0x43CA0000, 0x43CB0000, 0x43CC0000, 0x43CD0000, 0x43CE0000, 0x43CF0000, 0x43D00000, 0x43D10000, 0x43D20000, 0x43D30000, 0x43D40000, 0x43D50000, 0x43D60000, 0x43D70000, 0x43D80000, 0x43D90000, 0x43DA0000, 0x43DB0000, 0x43DC0000, 0x43DD0000, 0x43DE0000, 0x43DF0000]
 #ports = [0x43C00000, 0x43C10000, 0x43C20000, 0x43C30000, 0x43C40000, 0x43C50000, 0x43C60000, 0x43C70000, 0x43C80000, 0x43C90000, 0x43CA0000, 0x43CB0000, 0x43CC0000, 0x43CD0000, 0x43CE0000, 0x43CF0000]
+#ports = [0x43C00000, 0x43C10000, 0x43C20000, 0x43C30000, 0x43C40000, 0x43C50000, 0x43C60000, 0x43C70000]
 ports = [0x43C00000, 0x43C10000, 0x43C20000, 0x43C30000]
 #ports = [0x43C00000, 0x43C10000]
 
@@ -84,12 +84,15 @@ def init_platform():
         f.write(str(0) +"\n")
 
     if (os.path.isfile(param_file_path) == 0):
-        print ("Parameter file is empty, will create the file now and ask for input!")
+        print ("No parameters file found, will create the file now and ask for input!")
         set_parameters()
     else:
         print("A parameter file was found on the system, will print the current parameters...")
         print_parameters()
         print("If these are not correct, change the file or use set_parameters() or set_nb_encryptions()!")
+
+    if (os.path.isfile(key_file_path) == 0):
+        print ("No key file found! Make one before continuing !!!")
         
     print("Platform initialized!")    
 
@@ -123,7 +126,7 @@ def set_nb_encryptions():
     print("Will prompt for number of encryptions now...")
 
     if (os.path.isfile(param_file_path) == 0):
-        print ("Parameter file is empty, you can create one with set_parameters()!")
+        print ("No parameters file found, you can create one with set_parameters()!")
         return
 
     # Prompt user for input
@@ -152,7 +155,7 @@ def print_parameters():
     print
     
     if (os.path.isfile(param_file_path) == 0):
-        print ("Parameter file is empty, you can create one with set_parameters()!")
+        print ("No parameters file found, you can create one with set_parameters()!")
         return
     
     file = open(param_file_path, 'r')
@@ -228,12 +231,12 @@ def start_des(block_nb, seed):
 
     # Abort if no parameter file is present.
     if (os.path.isfile(param_file_path) == 0):
-        print ("Parameter file is empty, you can create one with set_parameters()!")
+        print ("No parameters file found, you can create one with set_parameters()!")
         return
 
     # Abort if no key file is present.
     if (os.path.isfile(key_file_path) == 0):
-        print ("Key file is empty, you should upload one first before attempting to start!")
+        print ("No key file found, you should upload one first before attempting to start!")
         return
 
     # Now that we know the files are present, open them.

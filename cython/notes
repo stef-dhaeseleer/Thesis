@@ -1,22 +1,5 @@
-TO BUILD LIB:
-cd src
-arm-linux-gnueabihf-gcc -fPIC -shared -Ixil -lxil -o libhw.so hw.c interface.c math.c; cp libhw.so ..
 
-arm-linux-gnueabihf-gcc -fPIC -shared -o libhw.so hw.c interface.c math.c -L. -lxil
-arm-linux-gnueabihf-gcc -fPIC -shared -o libhw.so hw.c interface.c math.c -L/users/start2015/r0583050/Thesis/cython/src -lxil
-
-arm-linux-gnueabihf-gcc -fPIC -shared -Ixil -o libhw.so hw.c interface.c math.c -L/users/start2015/r0583050/Thesis/cython/src -lxil
-
-arm-linux-gnueabihf-gcc -fPIC -c -Ixil hw.c interface.c math.c
-arm-linux-gnueabihf-gcc -fPIC -o libtest.so hw.o interface.o math.o -L/users/start2015/r0583050/Thesis/cython/src -lxil
-
-NO XIL FUNC
-
-arm-linux-gnueabihf-gcc -fPIC -shared -o libhw.so hw.c interface.c math.c; cp libhw.so ..;
-cp ../libhw.so /run/media/r0583050/cbd2711f-99e9-41c0-8e22-e400aa213a4a/home/root/cython; cp ../interface.py /run/media/r0583050/cbd2711f-99e9-41c0-8e22-e400aa213a4a/home/root/cython; cp ../monitor.py /run/media/r0583050/cbd2711f-99e9-41c0-8e22-e400aa213a4a/home/root/cython;
-
-
-CALLING COMMANDS FROM PYTHON
+CALLING LINUX COMMANDS FROM PYTHON
 
 devmem ADRR W (VALUE TO WRITE)
 
@@ -27,10 +10,6 @@ res = int(resp, 16)
 
 cp ../interface.py /run/media/r0583050/cbd2711f-99e9-41c0-8e22-e400aa213a4a/home/root/cython; cp ../monitor.py /run/media/r0583050/cbd2711f-99e9-41c0-8e22-e400aa213a4a/home/root/cython;
 
-
-TESTING
-import monitor
-monitor.test_hw_functionality()
 
 SCREEN COMMANDS
 
