@@ -2,8 +2,8 @@ import math
 
 def main():
     
-	clock_freq = 100	# Clock frequency in MHz
-	nb_blocks = 196		# Number of DES calculation blocks
+	clock_freq = 150	# Clock frequency in MHz
+	nb_blocks = 128		# Number of DES calculation blocks
 
 	N = 13
 
@@ -11,7 +11,7 @@ def main():
 	
 	encrypt_per_day = nb_blocks * clock_freq * 10**6 * seconds_per_day
 	two_exp = math.log(encrypt_per_day, 2)
-
+    
 	encrypt_per_block_day = clock_freq * 10**6 * seconds_per_day
 	two_exp_block = math.log(encrypt_per_block_day, 2)
 
