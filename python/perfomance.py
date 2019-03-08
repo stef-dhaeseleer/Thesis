@@ -2,7 +2,7 @@ import math
 
 def main():
     
-	clock_freq = 200	# Clock frequency in MHz
+	clock_freq = 250	# Clock frequency in MHz
 	nb_blocks = 128		# Number of DES calculation blocks
 
 	N = 13
