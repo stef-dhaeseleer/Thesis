@@ -47,5 +47,5 @@ lscript.ld
 test_axi_3
 axi_test_old
 
-
+.nsr.skip
 
