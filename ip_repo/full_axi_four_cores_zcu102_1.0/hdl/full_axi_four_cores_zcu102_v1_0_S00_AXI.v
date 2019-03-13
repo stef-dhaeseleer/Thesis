@@ -242,15 +242,19 @@
         assign slv_reg_wren = axi_wready && S_AXI_WVALID && axi_awready && S_AXI_AWVALID;
     
         // ***************
-    
+
+        // Registers needed for the user added logic
+        
+        // Command and data validity registers
         reg r_cmd_data_valid;
         reg r_data_upper_valid;
         reg r_data_lower_valid;
-    
+        
+        // Registers with the upper and lower part of the data
         reg [31:0] r_data_upper;
         reg [31:0] r_data_lower;
     
-        reg DES_DONE_REG;   // Registers needed for synchronization
+        reg DES_DONE_REG;   // Registers needed for synchronization (for all 4 cores)
         reg CMD_DATA_READ_REG;
         reg DES_DONE_TMP_0;
         reg DES_DONE_REG_0;
@@ -269,11 +273,13 @@
         reg CMD_DATA_READ_TMP_3;
         reg CMD_DATA_READ_REG_3;
 
+        // Registers to set which core is active
         reg ACTIVE_CORE_0_REG;
         reg ACTIVE_CORE_1_REG;
         reg ACTIVE_CORE_2_REG;
         reg ACTIVE_CORE_3_REG;
 
+        // Register containing the resulting DES counter
         reg [63:0] DES_COUNTER_REG;
     
         // ***************
@@ -303,8 +309,8 @@
             r_data_upper_valid <= 1'b0; // Set to zero when not written to, this way it only stays high one cycle
             r_data_lower_valid <= 1'b0; // Set to zero when not written to, this way it only stays high one cycle
     
-            slv_reg4 <= DES_COUNTER_REG[63:32];  // Set to the upper part of the counter
-            slv_reg5 <= DES_COUNTER_REG[31:0];   // Set to the lower part of the counter
+            slv_reg4 <= DES_COUNTER_REG[63:32];  // Set to the upper part of the counter for the PS to read
+            slv_reg5 <= DES_COUNTER_REG[31:0];   // Set to the lower part of the counter for the PS to read
     
             if (slv_reg_wren)
               begin
@@ -317,7 +323,9 @@
                         // Slave register 0
                         slv_reg0[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
     
-                        // **************
+                        // ************** 
+                        // Set cmd_data_valid to one as a new valid CMD has been written
+                        // Set CMD_READ register to zero to avoid issues
                         r_cmd_data_valid <= 1'b1;
                         slv_reg3 <= 1'b0;
                         // **************
@@ -421,10 +429,10 @@
     
               else begin
                     if (CMD_DATA_READ_REG == 1'b1) begin    // Indicates that the wrapper has read the command
-                        r_cmd_data_valid <= 1'b0;
-                        r_data_upper_valid <= 1'b0;
-                          r_data_lower_valid <= 1'b0;
-                        slv_reg3 <= 1'b1;
+                        r_cmd_data_valid <= 1'b0;           // Set to zero to communicate that we know the wrapper read the command
+                        r_data_upper_valid <= 1'b0;         
+                        r_data_lower_valid <= 1'b0;
+                        slv_reg3 <= 1'b1;                   // CMD_READ to one for PS to read
                     end
     
                     if (CMD_DATA_VALID == 1'b1) begin
@@ -432,15 +440,15 @@
                     end
     
                     if (r_data_upper_valid == 1'b1) begin
-                       r_data_upper <= slv_reg1;   // Buffer the region data from the slave reg into another reg
+                       r_data_upper <= slv_reg1;   // Buffer the data upper from the slave reg into another reg
                     end
     
                     if (r_data_lower_valid == 1'b1) begin
-                        r_data_lower <= slv_reg2;   // Buffer the region data from the slave reg into another reg
+                        r_data_lower <= slv_reg2;   // Buffer the data lower from the slave reg into another reg
                     end
     
                     if (DES_DONE_REG == 1'b1) begin
-                        slv_reg6 <= 1;  // This is the done signal, set to one here
+                        slv_reg6 <= 1;  // This is the done signal, set to one here when DES is done
                     end
               end
     
@@ -581,8 +589,9 @@
             end
         end    
     
-        // Add user logic here
-    
+        // Add user logic here ###################################################################################
+
+        // Assign the output wires
         assign CMD_DATA = slv_reg0;
         assign CMD_DATA_VALID = r_cmd_data_valid;
         assign DATA_UPPER = r_data_upper;
@@ -601,14 +610,17 @@
                 DES_DONE_REG_0 <= 0;
                 CMD_DATA_READ_TMP_0 <= 0;
                 CMD_DATA_READ_REG_0 <= 0;
+
                 DES_DONE_TMP_1 <= 0;
                 DES_DONE_REG_1 <= 0;
                 CMD_DATA_READ_TMP_1 <= 0;
                 CMD_DATA_READ_REG_1 <= 0;
+
                 DES_DONE_TMP_2 <= 0;
                 DES_DONE_REG_2 <= 0;
                 CMD_DATA_READ_TMP_2 <= 0;
                 CMD_DATA_READ_REG_2 <= 0;
+
                 DES_DONE_TMP_3 <= 0;
                 DES_DONE_REG_3 <= 0;
                 CMD_DATA_READ_TMP_3 <= 0;
@@ -619,14 +631,17 @@
                 DES_DONE_REG_0 <= DES_DONE_TMP_0;
                 CMD_DATA_READ_TMP_0 <= CMD_DATA_READ_0;
                 CMD_DATA_READ_REG_0 <= CMD_DATA_READ_TMP_0;
+
                 DES_DONE_TMP_1 <= DES_DONE_1;
                 DES_DONE_REG_1 <= DES_DONE_TMP_1;
                 CMD_DATA_READ_TMP_1 <= CMD_DATA_READ_1;
                 CMD_DATA_READ_REG_1 <= CMD_DATA_READ_TMP_1;
+
                 DES_DONE_TMP_2 <= DES_DONE_2;
                 DES_DONE_REG_2 <= DES_DONE_TMP_2;
                 CMD_DATA_READ_TMP_2 <= CMD_DATA_READ_2;
                 CMD_DATA_READ_REG_2 <= CMD_DATA_READ_TMP_2;
+
                 DES_DONE_TMP_3 <= DES_DONE_3;
                 DES_DONE_REG_3 <= DES_DONE_TMP_3;
                 CMD_DATA_READ_TMP_3 <= CMD_DATA_READ_3;
@@ -635,35 +650,35 @@
         end
 
         // Core select output logic
-        always @(posedge S_AXI_ACLK) begin     // Synchronization of incomming values from different clock domain
+        always @(posedge S_AXI_ACLK) begin     // Set output according to which core is active
 
             ACTIVE_CORE_0_REG <= 1'b0;
             ACTIVE_CORE_1_REG <= 1'b0;
             ACTIVE_CORE_2_REG <= 1'b0;
             ACTIVE_CORE_3_REG <= 1'b0;
     
-            if ( slv_reg7 == 32'h0 ) begin // Reset the regs to zero
+            if ( slv_reg7 == 32'h0 ) begin // Set core 0
                 ACTIVE_CORE_0_REG <= 1'b1;
                 DES_COUNTER_REG <= DES_COUNTER_0;
                 DES_DONE_REG <= DES_DONE_REG_0;
                 CMD_DATA_READ_REG <= CMD_DATA_READ_REG_0;
             end
 
-            if ( slv_reg7 == 32'h1 ) begin // Reset the regs to zero
+            if ( slv_reg7 == 32'h1 ) begin // Set core 1
                 ACTIVE_CORE_1_REG <= 1'b1;
                 DES_COUNTER_REG <= DES_COUNTER_1;
                 DES_DONE_REG <= DES_DONE_REG_1;
                 CMD_DATA_READ_REG <= CMD_DATA_READ_REG_1;
             end
 
-            if ( slv_reg7 == 32'h2 ) begin // Reset the regs to zero
+            if ( slv_reg7 == 32'h2 ) begin // Set core 2
                 ACTIVE_CORE_2_REG <= 1'b1;
                 DES_COUNTER_REG <= DES_COUNTER_2;
                 DES_DONE_REG <= DES_DONE_REG_2;
                 CMD_DATA_READ_REG <= CMD_DATA_READ_REG_2;
             end
 
-            if ( slv_reg7 == 32'h3 ) begin // Reset the regs to zero
+            if ( slv_reg7 == 32'h3 ) begin // set core 3
                 ACTIVE_CORE_3_REG <= 1'b1;
                 DES_COUNTER_REG <= DES_COUNTER_3;
                 DES_DONE_REG <= DES_DONE_REG_3;

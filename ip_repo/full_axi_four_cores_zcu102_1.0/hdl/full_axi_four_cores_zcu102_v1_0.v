@@ -16,7 +16,7 @@
         (
             // Users to add ports here
     
-            input wire des_clk,
+            input wire des_clk,     // The clock for the DES HW
     
             // User ports ends
             // Do not modify the ports beyond this line
@@ -47,6 +47,8 @@
         );
     
         // ********************
+
+        // Wires  needed to connect both blocks together
     
         wire [63:0] des_counter_0;
         wire [63:0] des_counter_1;
@@ -124,6 +126,9 @@
     
     // Add user logic here
 
+    // Instantiation of the 4 DES cores connected to this AXI interface
+
+    // Core 0
     des_block_wrapper des_block_wrapper_0(
         .clk (des_clk),
         .rst_n (s00_axi_aresetn),
@@ -137,6 +142,7 @@
         .counter (des_counter_0)
         );
 
+    // Core 1
     des_block_wrapper des_block_wrapper_1(
         .clk (des_clk),
         .rst_n (s00_axi_aresetn),
@@ -150,6 +156,7 @@
         .counter (des_counter_1)
         );
 
+    // Core 2
     des_block_wrapper des_block_wrapper_2(
         .clk (des_clk),
         .rst_n (s00_axi_aresetn),
@@ -163,6 +170,7 @@
         .counter (des_counter_2)
         );
 
+    // Core 3
     des_block_wrapper des_block_wrapper_3(
         .clk (des_clk),
         .rst_n (s00_axi_aresetn),
