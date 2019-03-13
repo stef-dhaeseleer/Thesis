@@ -12,7 +12,7 @@ module des_roundfunction_pipelined(
     input restart_block,    // restart this block, set o_valid to zero
     input [1:32] L_in,      // the left part for the roundfunction
     input [1:32] R_in,      // the right part for the roundfunction
-    input [1:48] Kn,        // the incomming key for this roundfunction instance
+    input [1:48] Kn,        // the incomming round_key for this roundfunction instance
     output reg o_valid,     // signals that the output is valid for the next block to use
     output [1:32] L_out,    // the outgoing left part of the roundfunction
     output [1:32] R_out     // the outgoing right part of the roundfunction
@@ -23,6 +23,7 @@ module des_roundfunction_pipelined(
     wire [1:32] s_out;  // Wire for the output of the S box module
     wire [1:32] p_out;  // Wire for the output of the permutation module
 
+    // registers needed for the pipeline stage
     reg [1:32] S_out_reg;
     reg [1:32] R_in_reg;
     reg [1:32] L_in_reg;
@@ -53,7 +54,7 @@ module des_roundfunction_pipelined(
     always @(posedge clk) begin // Signals to set: o_valid
 
         if (restart_block == 1'b1) begin
-            o_valid <= 1'b0;
+            o_valid <= 1'b0;    // not valid on reset
         end
         
         else if (enable == 1'b1) begin
@@ -64,7 +65,7 @@ module des_roundfunction_pipelined(
             end
 
             else if (i_valid == 1'b1) begin
-                o_valid <= 1'b1;
+                o_valid <= 1'b1;    // Only valid if enabled and input is valid
             end
         end
     end
@@ -73,7 +74,7 @@ module des_roundfunction_pipelined(
     always @(posedge clk) begin
         if (enable == 1'b1) begin
             if (i_valid == 1'b1) begin
-                S_out_reg <= s_out;
+                S_out_reg <= s_out; // load the first pipeline stage
                 R_in_reg <= R_in;
                 L_in_reg <= L_in;
             end

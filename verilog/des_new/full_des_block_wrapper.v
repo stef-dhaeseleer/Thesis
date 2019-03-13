@@ -17,33 +17,35 @@ module des_block_wrapper(
     // Nets and regs
     reg [STATE_BITS-1:0] state, next_state;        // State variables
 
-    reg load_seed;
-    reg load_poly;   
-    reg load_input_mask;
-    reg load_output_mask;
-    reg load_counter_limit;
-    reg load_roundkey;   
-    reg cmd_read_reg;
-    reg start_des;
-    reg load_counter;
-    reg restart_block;
-    reg reg_done;
+    reg load_seed;              // Read the seed value from data
+    reg load_poly;              // Read the polynomial value from data   
+    reg load_input_mask;        // Read the input mask value from data
+    reg load_output_mask;       // Read the output mask value from data
+    reg load_counter_limit;     // Read the counter limit value from data
+    reg load_roundkey;          // Read a round key value from data and shift the roundkeys
+
+    reg cmd_read_reg;           // CMD value has been read and operation started 
+    reg start_des;              // Start DES operation
+    reg load_counter;           // Load the result counter
+    reg restart_block;          // Restart DES
+    reg reg_done;               // Signal done to PS
 
     reg cmd_valid_reg;
     reg cmd_valid_tmp;
 
-    reg [63:0] seed_reg;
-    reg [63:0] poly_reg;
-    reg [63:0] input_mask_reg;
-    reg [63:0] output_mask_reg;
-    reg [63:0] counter_limit_reg;
+    reg [63:0] seed_reg;            // Stores the seed
+    reg [63:0] poly_reg;            // Stores the polynomial
+    reg [63:0] input_mask_reg;      // Stores the input mask
+    reg [63:0] output_mask_reg;     // Stores the output mask
+    reg [63:0] counter_limit_reg;   // Stores the counter limit
 
-    reg [63:0] counter_reg;
+    reg [63:0] counter_reg;         // Stores the resulting counter
     
     wire des_finished;
 
     wire [63:0] des_counter;
 
+    // Roundkey registers used to store the round keys
     reg [1:48] round_key1;
     reg [1:48] round_key2; 
     reg [1:48] round_key3; 
@@ -61,6 +63,7 @@ module des_block_wrapper(
     reg [1:48] round_key15;    
     reg [1:48] round_key16;
 
+    // Wire for the concatenated round keys
     wire [767:0] round_keys;
 
     // Parameters
@@ -76,19 +79,19 @@ module des_block_wrapper(
     localparam CMD_START                = 6'h7;
     localparam CMD_RESTART              = 6'h8;
 
-    localparam [STATE_BITS-1:0]    init                = 6'h0;     // Possible states
-    localparam [STATE_BITS-1:0]    set_seed            = 6'h1;
-    localparam [STATE_BITS-1:0]    set_poly            = 6'h2;
-    localparam [STATE_BITS-1:0]    start               = 6'h3;
-    localparam [STATE_BITS-1:0]    waiting             = 6'h4;
-    localparam [STATE_BITS-1:0]    finishing           = 6'h5;
-    localparam [STATE_BITS-1:0]    restart             = 6'h6;
-    localparam [STATE_BITS-1:0]    start_init          = 6'h7;
-    localparam [STATE_BITS-1:0]    set_input_mask      = 6'h8;
-    localparam [STATE_BITS-1:0]    set_output_mask     = 6'h9;
-    localparam [STATE_BITS-1:0]    set_counter_limit   = 6'hA;
-    localparam [STATE_BITS-1:0]    set_roundkey_init   = 6'hB;
-    localparam [STATE_BITS-1:0]    set_roundkey_done   = 6'hC;
+    localparam [STATE_BITS-1:0]    init                = 6'h0;      // Possible states
+    localparam [STATE_BITS-1:0]    set_seed            = 6'h1;      // Load the seed
+    localparam [STATE_BITS-1:0]    set_poly            = 6'h2;      // Load the polynomial
+    localparam [STATE_BITS-1:0]    start               = 6'h3;      // start operation
+    localparam [STATE_BITS-1:0]    waiting             = 6'h4;      // waiting for DES to finish operation
+    localparam [STATE_BITS-1:0]    finishing           = 6'h5;      // wait for restart
+    localparam [STATE_BITS-1:0]    restart             = 6'h6;      // restart the HW
+    localparam [STATE_BITS-1:0]    start_init          = 6'h7;      // initial state for start, set cmd_read
+    localparam [STATE_BITS-1:0]    set_input_mask      = 6'h8;      // Load the input mask
+    localparam [STATE_BITS-1:0]    set_output_mask     = 6'h9;      // Load the output mask
+    localparam [STATE_BITS-1:0]    set_counter_limit   = 6'hA;      // Load the counter limit
+    localparam [STATE_BITS-1:0]    set_roundkey_init   = 6'hB;      // initial state for round key load
+    localparam [STATE_BITS-1:0]    set_roundkey_done   = 6'hC;      // done loading round key set cmd_read
     
     // Functions
 
@@ -107,7 +110,7 @@ module des_block_wrapper(
         case (state)
         init: begin
             if (cmd_valid_reg==1'b1) begin
-                //Decode the command received on Port1
+                //Decode the command received and go to the corresponding state
                 case (cmd)
                     CMD_READ_SEED:
                         next_state <= set_seed;
@@ -172,7 +175,7 @@ module des_block_wrapper(
                 next_state <= init;
             end
         end
-        start_init: begin
+        start_init: begin   // Wait untill the cmd_valid register goes to zero again before starting the operation
             next_state <= start_init;
             if (cmd_valid_reg == 1'b0) begin
                 next_state <= start;
@@ -181,7 +184,7 @@ module des_block_wrapper(
         start: begin    // Sets the start signal for the des block
             next_state <= waiting;
         end
-        waiting: begin
+        waiting: begin  // Wait for DES to finish and listen for a potential restart
             next_state <= waiting;
 
             if (des_finished == 1'b1) begin
@@ -194,7 +197,7 @@ module des_block_wrapper(
                 end
             end
         end
-        finishing: begin
+        finishing: begin    // Process the resulsts and wait for a reset
             next_state <= finishing;
 
             if (cmd_valid_reg==1'b1) begin
@@ -203,7 +206,7 @@ module des_block_wrapper(
                 end
             end 
         end
-        restart: begin
+        restart: begin  // Restart the HW
             next_state <= restart;
             if (cmd_valid_reg == 1'b0) begin
                 next_state <= init;
@@ -264,11 +267,11 @@ module des_block_wrapper(
         start_init: begin
             cmd_read_reg <= 1'b1;
         end
-        start: begin
+        start: begin    // Start for only one cycle, then go to waiting
             start_des <= 1'b1;
         end
         waiting: begin
-
+            // Just wait for DES to finish
         end
         finishing: begin
             reg_done <= 1'b1;
@@ -284,6 +287,7 @@ module des_block_wrapper(
 
     //---------------------------DATAPATH----------------------------------------------------------   
 
+    // The DES working block
     des_block des_block (
         .clk            (clk               ),
         .rst_n          (rst_n             ),
@@ -301,6 +305,8 @@ module des_block_wrapper(
     assign cmd_read = cmd_read_reg;
     assign counter = counter_reg;
     assign done = reg_done;
+
+    // Make the concatenation of all roundkeys
     assign round_keys = {round_key1, round_key2, round_key3, round_key4, round_key5, round_key6, round_key7, round_key8, round_key9, round_key10, round_key11, round_key12, round_key13, round_key14, round_key15, round_key16};
 
     always @(posedge clk) begin     // Load the seed into the register
@@ -378,6 +384,7 @@ module des_block_wrapper(
     end
     
     // Synchronization logic for cmd_valid
+    
     always @(posedge clk) begin     // Synchronization of incomming values from different clock domain
         
         if (rst_n == 1'b0) begin   // Reset

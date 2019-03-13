@@ -12,7 +12,7 @@ module des_roundfunction_pipelined_2(
     input restart_block,    // restart this block, set o_valid to zero
     input [1:32] L_in,      // the left part for the roundfunction
     input [1:32] R_in,      // the right part for the roundfunction
-    input [1:48] Kn,        // the incomming key for this roundfunction instance
+    input [1:48] Kn,        // the incomming round_key for this roundfunction instance
     output reg o_valid,     // signals that the output is valid for the next block to use
     output [1:32] L_out,    // the outgoing left part of the roundfunction
     output [1:32] R_out     // the outgoing right part of the roundfunction
@@ -25,6 +25,7 @@ module des_roundfunction_pipelined_2(
 
     reg intern_valid;   // Internal valid signal between the 2 internal pipeline stages
 
+    // Registers needed for the two pipeline stages
     reg [1:48] S_in_reg;
     reg [1:32] S_out_reg;
     reg [1:32] R_1_reg;
@@ -39,17 +40,17 @@ module des_roundfunction_pipelined_2(
     //---------------------------DATAPATH----------------------------------------------------------   
 
     // Modules
-    // The expansion module
+    // The expansion module E
     e_expansion E( 
             .data_i    (R_in ),
             .data_o    (e_out));
 
     // The S box module
     s_boxes S(
-            .data_i    (S_in_reg),    // EXOR operation as an input
+            .data_i    (S_in_reg),
             .data_o    (s_out   ));
 
-    // The permutation module
+    // The permutation module P
     p_permutation P(
             .data_i    (S_out_reg),
             .data_o    (p_out    ));
@@ -58,7 +59,7 @@ module des_roundfunction_pipelined_2(
     always @(posedge clk) begin // Signals to set: o_valid
 
         if (restart_block == 1'b1) begin
-            o_valid <= 1'b0;
+            o_valid <= 1'b0;    // Not valid upon restart
         end
         
         else if (enable == 1'b1) begin
@@ -69,7 +70,7 @@ module des_roundfunction_pipelined_2(
             end
 
             else if (intern_valid == 1'b1) begin
-                o_valid <= 1'b1;
+                o_valid <= 1'b1;    // Only set to one is enabled and intern_valid
             end
         end
     end
@@ -78,7 +79,7 @@ module des_roundfunction_pipelined_2(
     always @(posedge clk) begin // Signals to set: intern_valid
 
         if (restart_block == 1'b1) begin
-            intern_valid <= 1'b0;
+            intern_valid <= 1'b0;   // Not valid upon reset
         end
         
         else if (enable == 1'b1) begin
@@ -89,7 +90,7 @@ module des_roundfunction_pipelined_2(
             end
 
             else if (i_valid == 1'b1) begin
-                intern_valid <= 1'b1;
+                intern_valid <= 1'b1;   // Only set to one is enabled and i_valid
             end
         end
     end
@@ -97,13 +98,13 @@ module des_roundfunction_pipelined_2(
     // Logic for loading the pipeline registers
     always @(posedge clk) begin
         if (enable == 1'b1) begin
-            if (i_valid == 1'b1) begin
-                S_in_reg <= e_out ^ Kn;
+            if (i_valid == 1'b1) begin  // Load the first stage
+                S_in_reg <= e_out ^ Kn; // XOR operation performed before loading to the register
                 R_1_reg <= R_in;
                 L_1_reg <= L_in;
             end
 
-            if (intern_valid == 1'b1) begin
+            if (intern_valid == 1'b1) begin     // Load the second stage
                 S_out_reg <= s_out;
                 R_2_reg <= R_1_reg;
                 L_2_reg <= L_1_reg;

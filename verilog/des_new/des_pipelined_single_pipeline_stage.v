@@ -18,7 +18,7 @@ module des_encryption_pipelined(
     );
 
     // Nets and regs
-    reg enable;
+    reg enable; // internal enable signal
     reg output_valid_stage_0_reg;
     
     reg output_valid_stage_0;   // This one has to be a reg at this level in the hierarchy
@@ -39,6 +39,7 @@ module des_encryption_pipelined(
     wire output_valid_stage_15;    
     wire output_valid_stage_16;
 
+    // Wires for connecting the roundfunctions together 
     wire [1:32] L_out;
     wire [1:32] R_out;
     wire [1:32] L_temp1;
@@ -72,6 +73,7 @@ module des_encryption_pipelined(
     wire [1:32] L_temp15;
     wire [1:32] R_temp15;        
 
+    // Wires for inputting the correct round keys to the roundfunctions
     wire [1:48] current_round_key1;
     wire [1:48] current_round_key2; 
     wire [1:48] current_round_key3; 
@@ -106,7 +108,7 @@ module des_encryption_pipelined(
 
      always @(posedge clk) begin // State register
         if (rst_n == 1'b0) begin   // Synchronous reset
-            state <= init;
+            state <= init;  // init on reset
         end
         else if (restart_block == 1'b1) begin
             state <= init;
@@ -121,19 +123,19 @@ module des_encryption_pipelined(
         init: begin
             next_state <= init;
             if (start == 1'b1) begin
-                next_state <= running;
+                next_state <= running;  // Go to running on start
             end
         end
-        running: begin
+        running: begin  // Keep running or go to paused
             next_state <= running;
             if (pause == 1'b1) begin
                 next_state <= paused;
             end
         end
-        paused: begin
+        paused: begin   // Stay paused intill pause goes down, then back to running
             next_state <= paused;
-            if (pause == 1'b0) begin    // Will stay here as long as start is one (to allow to read the valid results)
-                next_state <= running;   // Go back to init when start goes to zero
+            if (pause == 1'b0) begin    // Will stay here as long as pause is one (to allow to read the valid results)
+                next_state <= running;   // Go back to running when pause goes to zero
             end
         end
         default: begin
@@ -142,8 +144,8 @@ module des_encryption_pipelined(
         endcase
     end
 
-    //always @(posedge clk) begin   // Output logic, signals to set: valid
     always @(*) begin   // Output logic, signals to set: valid
+
         output_valid_stage_0 <= 1'b0;
         output_valid <= 1'b0;
         enable <= 1'b0;
@@ -152,7 +154,7 @@ module des_encryption_pipelined(
         init: begin
 
         end
-        running: begin
+        running: begin  // Always enabled while running, input and output set accordingly
             enable <= 1'b1;
 
             if (input_valid == 1'b1) begin
@@ -163,7 +165,7 @@ module des_encryption_pipelined(
                 output_valid <= 1'b1;
             end
         end
-        paused: begin
+        paused: begin   // Not enable while paused
             enable <= 1'b0;
         end
         endcase
@@ -172,7 +174,7 @@ module des_encryption_pipelined(
     //---------------------------DATAPATH---------------------------------------------------------------
 
     // Modules
-    // The roundfunction
+    // The 16 roundfunctions
     des_roundfunction_pipelined round_func1(
             .clk        (clk ),
             .rst_n      (rst_n),
@@ -382,12 +384,12 @@ module des_encryption_pipelined(
             .L_out      (L_out),
             .R_out      (R_out));       
 
-    // The IP permutation module
+    // The IP permutation module to apply to the input message
     ip_permutation ip(
             .data_i    (message),
             .data_o    (permuted_message));
 
-    // The inverse IP permutation module
+    // The inverse IP permutation module to get the resulting output ciphertext
     ip_inverse_permutation ip_inv(
             .data_i    ({R_out, L_out}),
             .data_o    (result_wire));
@@ -409,6 +411,7 @@ module des_encryption_pipelined(
     
     assign result = result_reg;
     
+    // Assigning the roundkeys from the input
     assign current_round_key1 = round_keys[1:48];
     assign current_round_key2 = round_keys[49:96];
     assign current_round_key3 = round_keys[97:144];
