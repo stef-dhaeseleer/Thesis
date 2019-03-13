@@ -1,5 +1,10 @@
 `timescale 1ns / 1ps
 
+// Implementation of the IP input permutation of the DES blockcipher.
+// Bits are ordered from 1 (MSB) to 32 (LSB) for compliance with the DES standard and ease of implementation.
+
+// The data is assigned to the output, producing simple wiring.
+
 module ip_permutation(
     input wire [1:64] data_i,           // input data for the permutation
     output wire [1:64] data_o           // output data for the permutation

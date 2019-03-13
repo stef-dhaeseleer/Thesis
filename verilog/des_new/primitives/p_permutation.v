@@ -1,5 +1,10 @@
 `timescale 1ns / 1ps
 
+// Implementation of the P permutation block of the DES blockcipher.
+// Bits are ordered from 1 (MSB) to 32 (LSB) for compliance with the DES standard and ease of implementation.
+
+// The output is assigned from the input, implementating the permutation as simple wiring. 
+
 module p_permutation(
     input wire [1:32] data_i,           // input data for the permutation
     output wire [1:32] data_o           // output data for the permutation

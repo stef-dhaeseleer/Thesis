@@ -1,5 +1,10 @@
 `timescale 1ns / 1ps
 
+// Implementation of the E expansion block for the DES block cipher.
+// Bits are ordered from 1 (MSB) to 32 (LSB) for compliance with the DES standard and ease of implementation.
+
+// The module just assigns the output from the input, this is just wiring.
+
 module e_expansion(
     input wire [1:32] data_i,           // input data for the permutation
     output wire [1:48] data_o           // output data for the permutation

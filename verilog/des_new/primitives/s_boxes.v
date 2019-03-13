@@ -1,5 +1,12 @@
 `timescale 1ns / 1ps
 
+// Implementation of the 8 S boxes of the DES blockcipher.
+// Bits are ordered from 1 (MSB) to 32 (LSB) for compliance with the DES standard and ease of implementation.
+
+// The implementation is kept very general to allow the compiler to optimize it.
+// Every S box is connected to it's part of the input, a case statement than implements the needed lookup
+// to generate the output. This case statement is ordered per row (first + last bit gives the row number).
+
 module s_boxes(
     input wire [1:48] data_i,           // input data for the S boxes
     output reg [1:32] data_o            // output data for the S boxes
