@@ -92,9 +92,18 @@ def wait_for_cmd_read(port):
 
     ok = 0
 
+    counter = 0
+
     while(ok == 0): # command not read as long as this remains zero.
         cmd = read_cmd(get_reg_address(port, 3))
         ok = issue_linux_cmd(cmd)
+        counter += 1
+
+        if (counter = 500):
+            print ("Operation failed, wait CMD_READ timeout!")
+            return
+
+        time.sleep(0.01)
 
 # This function writes and executes the clear command.
 # This forces the CMD_READ register to become zero and avoids any faulty operations due to synchronization issues.
@@ -108,10 +117,14 @@ def clear_command(port):
 
     ok = 1  # Init to 1
 
+    time.sleep(0.01)
+
     # Loop untill this becomes zero and we are thus sure we can write a new command to the AXI
     while(ok == 1):
         cmd = read_cmd(get_reg_address(port, 3))
         ok = issue_linux_cmd(cmd)
+
+    time.sleep(0.01)
 
 # This function writes a command to a given port.
 # The command is passed as 'command'.
@@ -264,7 +277,7 @@ def set_keys(keys, port, core_nb):
 
     # Loop over all key values
     for key in keys:
-        # Split all the variables to be writtin into their upper and lower 32 bits.
+        # Split all the variables to be written into their upper and lower 32 bits.
         # This is needed to write them to the DATA_UPPER and DATA_LOWER interface.
         key_low = key & 0xFFFFFFFF
         key_high = key >> 32

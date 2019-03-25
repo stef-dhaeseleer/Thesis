@@ -8,7 +8,8 @@ Turn on the FPGA (it will now begin booting)
 For Linux device: use the 'make uart' command (found in the make file) to connect.
 
 username: root
-password: noot
+password: root
+(alternative PWD option: noot)
 
 USING THE PLATFORM WHEN CONNECTED
 
