@@ -268,12 +268,15 @@ def start_des(block_nb, seed):
 
     # Skip 16 keys and one empty line.
     # Do this for all preceding block numbers (skip their respective round keys).
-    for i in range(0, block_nb*17):
-        key_file.readline()
+    #for i in range(0, block_nb*17):
+    #    key_file.readline()
 
     # Read 16 keys for the current block.
     for i in range(0, 16):
         keys[i] = int(key_file.readline(), 16)
+    
+    key_file.close()
+    param_file.close()
 
     # First set the parameters and keys for the block 
     # Then start the block given the block_nb and the seed to operate on 
@@ -340,6 +343,11 @@ def test_hw_functionality():
     # interface.test_block(ports[0])
     
     restart_des(0)
+
+# Just a function for less typing, faster testing...
+def test():
+    init_platform()
+    start_all(1)
 
 # This function processes the results.
 # If the DES cores are done with their operations, the counter results are read.
