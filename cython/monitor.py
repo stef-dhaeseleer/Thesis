@@ -1,6 +1,7 @@
 import interface    # Contains all the lower level control functions for communication with the HW.
 import time
 import os.path
+import math
 
 # TODO:
 # Make a sample for correct operation.
