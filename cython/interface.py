@@ -93,13 +93,15 @@ def wait_for_cmd_read(port):
     ok = 0
 
     counter = 0
+    
+    time.sleep(0.01)
 
     while(ok == 0): # command not read as long as this remains zero.
         cmd = read_cmd(get_reg_address(port, 3))
         ok = issue_linux_cmd(cmd)
         counter += 1
 
-        if (counter = 500):
+        if (counter == 200):
             print ("Operation failed, wait CMD_READ timeout!")
             return
 
@@ -112,17 +114,26 @@ def clear_command(port):
     # This function is a dummy command to make sure that the command read is set back to zero
     # before we write a new command to the AXI
 
-    cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_CLEAR)))
-    issue_linux_cmd(cmd)
+#    cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_CLEAR)))
+#    issue_linux_cmd(cmd)
 
-    ok = 1  # Init to 1
+#    ok = 1  # Init to 1
+    
+#    counter = 0
 
-    time.sleep(0.01)
+#    time.sleep(0.01)
 
     # Loop untill this becomes zero and we are thus sure we can write a new command to the AXI
-    while(ok == 1):
-        cmd = read_cmd(get_reg_address(port, 3))
-        ok = issue_linux_cmd(cmd)
+#    while(ok == 1):
+#        cmd = read_cmd(get_reg_address(port, 3))
+#        ok = issue_linux_cmd(cmd)
+#        counter += 1
+#        
+#        if (counter == 200):
+#            print ("CMD clear failed, timeout!")
+#            return
+#            
+#        time.sleep(0.01)
 
     time.sleep(0.01)
 
