@@ -44,7 +44,7 @@ CMD_READ_ROUNDKEY        = 6    # Reads the 48 bit round key from the two data r
 CMD_START                = 7    # Starts the operation of the HW
 CMD_RESTART              = 8    # Restarts the HW (only do this after the results have been processed or they will be lost)
 
-CMD_CLEAR                = 9    # This command does not exist in HW, it is only used here for a full reset of the CMD register
+#CMD_CLEAR                = 9    # This command does not exist in HW, it is only used here for a full reset of the CMD register
 
 # This function takes a string containing the Linux terminal command to be executed.
 # This string is than executed by this function and the result is returned if not empty.
@@ -78,7 +78,7 @@ def read_cmd(address):
     return "devmem " + address + " W"
 
 # This function returns the address of a register for a given interface.
-# The base addrees of the interface is inputted as 'port'.
+# The base address of the interface is inputted as 'port'.
 # The wanted register number is inputted as 'reg_nb'.
 # The output is a string representing the wanted address, this can directly be used with the "..._cmd" functions.
 def get_reg_address(port, reg_nb):
@@ -123,7 +123,7 @@ def clear_command(port):
 
 #    time.sleep(0.01)
 
-    # Loop untill this becomes zero and we are thus sure we can write a new command to the AXI
+    # Loop until this becomes zero and we are thus sure we can write a new command to the AXI
 #    while(ok == 1):
 #        cmd = read_cmd(get_reg_address(port, 3))
 #        ok = issue_linux_cmd(cmd)
@@ -158,7 +158,7 @@ def set_cmd(command, port):
 # nb_encryptions: The number of encryptions value to write to the port (int).
 def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port, core_nb):
 
-    # Split all the variables to be writtin into their upper and lower 32 bits.
+    # Split all the variables to be written into their upper and lower 32 bits.
     # This is needed to write them to the DATA_UPPER and DATA_LOWER interface.
     seed_low = seed & 0xFFFFFFFF
     seed_high = seed >> 32
@@ -184,7 +184,7 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port, 
     # For all the parameters.
     # First write the upper and the lower data register.
     # Then write the command for the HW to read this data.
-    # Then wait untill the HW has read the command before moving on to the next one.
+    # Then wait until the HW has read the command before moving on to the next one.
 
     ####### SEED #######
     cmd = write_cmd(get_reg_address(port, 1), str(hex(seed_high)))
@@ -200,7 +200,7 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port, 
     cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_READ_SEED)))
     issue_linux_cmd(cmd)
 
-    # Wait untill the HW has read the command
+    # Wait until the HW has read the command
     wait_for_cmd_read(port)
 
     ####### POLYNOMIAL #######
@@ -217,7 +217,7 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port, 
     cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_READ_POLY)))
     issue_linux_cmd(cmd)
 
-    # Wait untill the HW has read the command
+    # Wait until the HW has read the command
     wait_for_cmd_read(port)
 
     ####### INPUT MASK #######
@@ -234,7 +234,7 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port, 
     cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_READ_INPUT_MASK)))
     issue_linux_cmd(cmd)
 
-    # Wait untill the HW has read the command
+    # Wait until the HW has read the command
     wait_for_cmd_read(port)
 
     ####### OUTPUT MASK #######
@@ -251,7 +251,7 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port, 
     cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_READ_OUTPUT_MASK)))
     issue_linux_cmd(cmd)
 
-    # Wait untill the HW has read the command
+    # Wait until the HW has read the command
     wait_for_cmd_read(port)
 
     ####### NB ENCRYPTIONS #######
@@ -268,7 +268,7 @@ def set_params(seed, polynomial, input_mask, output_mask, nb_encryptions, port, 
     cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_READ_COUNTER_LIMIT)))
     issue_linux_cmd(cmd)
 
-    # Wait untill the HW has read the command
+    # Wait until the HW has read the command
     wait_for_cmd_read(port)
 
 # This functions sets all 16 roundkeys needed for operation.
@@ -307,7 +307,7 @@ def set_keys(keys, port, core_nb):
         cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_READ_ROUNDKEY)))
         issue_linux_cmd(cmd)
 
-        # Wait untill the HW has read the command
+        # Wait until the HW has read the command
         wait_for_cmd_read(port)
 
 # Start the given block on the given port.
@@ -325,7 +325,7 @@ def start_block(port, core_nb):
     cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_START)))
     issue_linux_cmd(cmd)   
 
-    # Wait untill the HW has read the command
+    # Wait until the HW has read the command
     wait_for_cmd_read(port)
 
 # Restart the given block on the given port.
@@ -338,7 +338,7 @@ def restart_block(port, core_nb):
 
     restart_hw(port)
 
-# Testint currently not implemented.
+# Testing currently not implemented.
 # Testing HW functionality has been removed to save space.
 def test_block(port, core_nb):
 
@@ -393,7 +393,7 @@ def restart_hw(port):
     cmd = write_cmd(get_reg_address(port, 0), str(hex(CMD_RESTART)))
     issue_linux_cmd(cmd)
 
-    # Wait untill the HW has read the command
+    # Wait until the HW has read the command
     wait_for_cmd_read(port)
 
 

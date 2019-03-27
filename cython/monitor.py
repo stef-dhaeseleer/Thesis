@@ -9,7 +9,7 @@ import math
 # Define all the port addresses for passing to the c code
 # These are the addresses the CPU writes to to pass data to the DES cores.
 # In the current design, 4 DES cores are connected to each of these ports.
-# From the user point of view, these are just orderd as numbered 'blocks' representing the different cores.
+# From the user point of view, these are just ordered as numbered 'blocks' representing the different cores.
 # Each set of 4 blocks forms thus one port.
 
 # ZYNQ PORT MAP
@@ -23,7 +23,8 @@ import math
 ports = [0x00A0000000, 0x00A0010000, 0x00A0020000, 0x00A0030000, 0x00A0040000, 0x00A0050000, 0x00A0060000, 0x00A0070000, 0x00A0080000, 0x00A0090000, 0x00A00A0000, 0x00A00B0000, 0x00A00C0000, 0x00A00D0000, 0x00A00E0000, 0x00A00F0000, 0x00A0100000, 0x00A0110000, 0x00A0120000, 0x00A0130000, 0x00A0140000, 0x00A0150000, 0x00A0160000, 0x00A0170000, 0x00A0180000, 0x00A0190000, 0x00A01A0000, 0x00A01B0000, 0x00A01C0000, 0x00A01D0000, 0x00A01E0000, 0x00A01F0000, 0x00A0200000, 0x00A0210000, 0x00A0220000, 0x00A0230000, 0x00A0240000, 0x00A0250000, 0x00A0260000, 0x00A0270000, 0x00A0280000, 0x00A0290000, 0x00A02A0000, 0x00A02B0000, 0x00A02C0000, 0x00A02D0000, 0x00A02E0000, 0x00A02F00000]
 
 nb_cores_per_port = 4                       # The number of DES cores connected to one port
-nb_blocks = len(ports)*nb_cores_per_port    # The total number of DES cores on the board
+#nb_blocks = len(ports)*nb_cores_per_port    # The total number of DES cores on the board
+nb_blocks = 128
 
 # Reference: https://users.ece.cmu.edu/~koopman/lfsr/index.html
 # These are the polynomials used for each core.
@@ -38,12 +39,13 @@ polynomials = [int('800000000000000d', 16), int('800000000000000e', 16), int('80
 # All the files needed
 res_file_path = "/home/root/reports/results.txt"        # The results (counters) are stored here
 status_file_path = "/home/root/reports/status.txt"      # The status of the blocks is stored here
+seeds_file_path = "/home/root/reports/seeds.txt"        # The seeds of the blocks is stored here
 param_file_path = "/home/root/reports/param.txt"        # The parameters (masks, nb of encryptions) are stored here
 key_file_path = "/home/root/reports/key.txt"            # The subkeys for each core
 
 # This list is written to the status file and read from there
-# This information is used by the CPU to know wheter a block is currently running or idle.
-# It also alows to recover the block status when the control PC has been disconnected and Python needs to be restarted
+# This information is used by the CPU to know whether a block is currently running or idle.
+# It also allows to recover the block status when the control PC has been disconnected and Python needs to be restarted
 #       Value in list set to '1' when a block is activated
 #       Value in list set to '0' when a block is restarted
 blocks_status = [0] * nb_blocks
@@ -61,21 +63,30 @@ last_seed = 0x00000000
 def read_status():
 
     blocks_status = []
+    seeds = []
 
     with open(status_file_path, "r") as f:
         for line in f:
             blocks_status.append(int(line.strip()))
 
-    return blocks_status
+    with open(seeds_file_path, "r") as f:
+        for line in f:
+            seeds.append(int(line.strip()))
+
+    return blocks_status, seeds
 
 # This functions writes the current block status from the blocks_status list into the status file 
-# It also alows to recover the block status when the control PC has been disconnected and Python needs to be restarted
+# It also allows to recover the block status when the control PC has been disconnected and Python needs to be restarted
 # as the last known status has been written to this file.
-def write_status(blocks_status):
+def write_status(blocks_status, seeds):
 
     with open(status_file_path, "w") as f:
         for status in blocks_status:
             f.write(str(status) +"\n")
+
+    with open(seeds_file_path, "w") as f:
+        for seed in seeds:
+            f.write(str(seed) +"\n")
 
 # This function initializes the platform.
 # It creates the result and status file.
@@ -83,15 +94,17 @@ def write_status(blocks_status):
 def init_platform():
 
     print
-    print("Initializing the plaform...")
+    print("Initializing the platform...")
     
     f_res = open(res_file_path, 'w+')
     f_res.write("POLYNOMIAL : SEED : COUNTER RESULT" +"\n")
     
     f = open(status_file_path, 'w+')
+    f_seed = open(seeds_file_path, 'w+')
     
     for nb in range(0, nb_blocks):
         f.write(str(0) +"\n")
+        f_seed.write(str(0) +"\n")
 
     if (os.path.isfile(param_file_path) == 0):
         print ("No parameters file found, will create the file now and ask for input!")
@@ -115,7 +128,7 @@ def set_parameters():
 
     # Prompt user for input
     input_mask = input('Input mask (hex): ')
-    output_mask = input('Ouput mask (hex): ')
+    output_mask = input('Output mask (hex): ')
     nb_encryptions = input('Number of encryptions needed per core (hex): ')
 
     file = open(param_file_path, 'w')
@@ -193,7 +206,7 @@ def get_hw_status():
     status = 0
 
     # First read the latest status from the status file
-    blocks_status = read_status()
+    (blocks_status, seeds) = read_status()
 
     # Report for every block if it is: IDLE, WORKING, DONE
     for i in range(0, nb_blocks):
@@ -211,9 +224,9 @@ def get_hw_status():
             seed = str(seeds[i])
 
             if (status == 0):
-                print("BLOCK " + str(i) + ": WORKING on seed 0x" + seed)
+                print("BLOCK " + str(i) + ": WORKING on seed " + seed)
             else:
-                print("BLOCK " + str(i) + ": DONE on seed 0x" + seed)
+                print("BLOCK " + str(i) + ": DONE on seed " + seed)
 
 # Starts the block with the given number on the given seed.
 # The initialization with the parameters is done automatically if all parameters have been set, else the sequence is aborted.
@@ -225,7 +238,7 @@ def get_hw_status():
 # After the initialization, the block is started and the block status is updated.
 def start_des(block_nb, seed):
 
-    blocks_status = read_status()
+    (blocks_status, seeds) = read_status()
     
     # First check if block is not currently active!
     # Else abort
@@ -290,7 +303,7 @@ def start_des(block_nb, seed):
     last_seed = seed
 
     # Write the new status to the status file
-    write_status(blocks_status)
+    write_status(blocks_status, seeds)
 
     print ("Core started!")
 
@@ -329,9 +342,10 @@ def restart_des(block_nb):
     interface.restart_block(port, core_nb)
 
     # Update the last_seed and blocks_status
-    blocks_status = read_status()
+    (blocks_status, seeds) = read_status()
     blocks_status[block_nb] = 0
-    write_status(blocks_status)
+    seeds[block_nb] = 0
+    write_status(blocks_status, seeds)
 
 # Function that verifies if the HW functions correctly with sanity checks.
 # Currently this function is not used anymore (testing removed from HW design to save space). 
@@ -340,7 +354,7 @@ def test_hw_functionality():
     # TODO: make a new test for the HW (1)
 
     # Perform standard test on HW by testing the first block
-    # All information for functionality verfication will be printed to the terminal
+    # All information for functionality verification will be printed to the terminal
     # interface.test_block(ports[0])
     
     restart_des(0)
@@ -355,7 +369,7 @@ def test():
 # These results are then written into the result file to process the later.
 def get_results_des(block_nb):
 
-    blocks_status = read_status()
+    (blocks_status, seeds) = read_status()
 
     port = get_port(block_nb)
     core_nb = block_nb%nb_cores_per_port
@@ -456,10 +470,11 @@ def reset_system():
     
     # Block status to all zeros
     blocks_status = [0] * nb_blocks
+    seeds = [0] * nb_blocks
 
-    write_status(blocks_status)
+    write_status(blocks_status, seeds)
 
-# This function prints stats on how long the operations on the board will taks for the current settings.
+# This function prints stats on how long the operations on the board will take for the current settings.
 def performance_stats():
     
     clock_freq = 100    # Clock frequency in MHz
