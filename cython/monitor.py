@@ -290,7 +290,7 @@ def start_des(block_nb, seed):
         keys[i] = int(key_file.readline(), 16)
     
     key_file.close()
-    param_file.close()
+    file.close()
 
     # First set the parameters and keys for the block 
     # Then start the block given the block_nb and the seed to operate on 

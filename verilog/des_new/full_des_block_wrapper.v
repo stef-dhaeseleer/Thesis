@@ -169,19 +169,19 @@ module des_block_wrapper(
         set_roundkey_init: begin   // Sets the signal to load the round key into a register and shift the keys around, do this only one cycle
             next_state <= set_roundkey_done;
         end
-        set_roundkey_done: begin   // Output cmd_read here and wait untill acked
+        set_roundkey_done: begin   // Output cmd_read here and wait until acked
             next_state <= set_roundkey_done;
             if (cmd_valid_reg == 1'b0) begin
                 next_state <= init;
             end
         end
-        start_init: begin   // Wait untill the cmd_valid register goes to zero again before starting the operation
+        start_init: begin   // Wait until the cmd_valid register goes to zero again before starting the operation
             next_state <= start_init;
             if (cmd_valid_reg == 1'b0) begin
                 next_state <= start;
             end
         end
-        start: begin    // Sets the start signal for the des block
+        start: begin    // Sets the start signal for the DES block
             next_state <= waiting;
         end
         waiting: begin  // Wait for DES to finish and listen for a potential restart
@@ -197,7 +197,7 @@ module des_block_wrapper(
                 end
             end
         end
-        finishing: begin    // Process the resulsts and wait for a reset
+        finishing: begin    // Process the results and wait for a reset
             next_state <= finishing;
 
             if (cmd_valid_reg==1'b1) begin
@@ -385,7 +385,7 @@ module des_block_wrapper(
     
     // Synchronization logic for cmd_valid
     
-    always @(posedge clk) begin     // Synchronization of incomming values from different clock domain
+    always @(posedge clk) begin     // Synchronization of incoming values from different clock domain
         
         if (rst_n == 1'b0) begin   // Reset
             cmd_valid_tmp <= 0;
