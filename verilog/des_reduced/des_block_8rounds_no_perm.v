@@ -193,10 +193,10 @@ module des_block(
 
     always @(posedge clk) begin     // Counter
         if (rst_n == 1'b0) begin
-            counter_reg <= {64-N{1'b0}};
+            counter_reg <= {64{1'b0}};
         end
         else if (restart_block == 1'b1) begin
-            counter_reg <= {64-N{1'b0}};
+            counter_reg <= {64{1'b0}};
         end
         else if (mask_result == 1'b1 & counter_enable == 1'b1) begin    // Only count new values when enabled
             counter_reg <= counter_reg + 1;

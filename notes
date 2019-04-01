@@ -50,6 +50,8 @@ ln -s ../../../verilog/des_new/full_des_block_single_pipeline_stage.v full_des_b
 ln -s ../../../verilog/des_new/des_pipelined_single_pipeline_stage.v des_pipelined_single_pipeline_stage.v 
 ln -s ../../../verilog/des_new/des_roundfunction_pipelined.v des_roundfunction_pipelined.v
 
+ln -s ../../../verilog/des_reduced/des_block_8rounds_no_perm.v des_block_8rounds_no_perm.v
+ln -s ../../../verilog/des_reduced/des_pipelined_8rounds_no_perm.v des_pipelined_8rounds_no_perm.v 
 
 
 
