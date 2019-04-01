@@ -19,6 +19,8 @@
     <Option Name="BoardPart" Val="xilinx.com:zcu102:part0:3.0"/>
     <Option Name="ActiveSimSet" Val="sim_1"/>
     <Option Name="DefaultLib" Val="xil_defaultlib"/>
+    <Option Name="IPRepoPath" Val="$PPRDIR/../ip_repo/reduced_round_four_cores_axi_1.0"/>
+    <Option Name="IPRepoPath" Val="$PPRDIR/../ip_repo/8rounds_4cores_axi_1.0"/>
     <Option Name="IPRepoPath" Val="$PPRDIR/../ip_repo/test_1.0"/>
     <Option Name="IPRepoPath" Val="$PPRDIR/../ip_repo/full_axi_four_cores_zcu102_1.0"/>
     <Option Name="IPRepoPath" Val="$PPRDIR/../ip_repo/full_axi_zcu102_1.0"/>
