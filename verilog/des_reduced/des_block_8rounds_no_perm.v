@@ -22,10 +22,10 @@ module des_block(
     );
 
     // Nets and regs
-    reg [STATE_BITS-1:0] state, next_state;            // State variables
+    reg [3:0] state, next_state;            // State variables
 
-    reg [17:0] mask_i_bit_buffer;           // Used to buffer the mask bits, needed due to the pipeline delay
-    reg [63:0] counter_reg;                 // Counter for the cryptanalytic mask
+    reg [9:0] mask_i_bit_buffer;           // Used to buffer the mask bits, needed due to the pipeline delay
+    reg [63:0] counter_reg;
 
     reg enable;
     reg counter_enable;
@@ -44,12 +44,10 @@ module des_block(
     wire mask_result;
 
     // Parameters
-    localparam STATE_BITS = 4;
-
-    localparam [STATE_BITS-1:0]    init        = 3'h0;    // Possible states
-    localparam [STATE_BITS-1:0]    working     = 3'h1;    
-    localparam [STATE_BITS-1:0]    finishing   = 3'h2;
-    localparam [STATE_BITS-1:0]    finished    = 3'h3;
+    localparam [3:0]    init        = 3'h0;    // Possible states
+    localparam [3:0]    working     = 3'h1;    
+    localparam [3:0]    finishing   = 3'h2;
+    localparam [3:0]    finished    = 3'h3;
 
     // Functions
 
@@ -69,25 +67,27 @@ module des_block(
 
     always @(*) begin   // Next state logic
         case (state)
-        init: begin     // Init until start, then working
+        init: begin
             next_state <= init;
             if (start == 1'b1) begin
                 next_state <= working;
             end
         end
-        working: begin  // Keep working until all encryptions done, then go to finishing to empty the pipeline
+        working: begin
             next_state <= working;
+
             if (counter_done == 1'b1) begin
                 next_state <= finishing;
             end
+
         end
-        finishing: begin    // First let the pipeline go empty then finished
+        finishing: begin    // First let the pipeline go empty then stop
             next_state <= finishing;
             if (ciphertext_valid == 1'b0) begin
                 next_state <= finished;
             end
         end
-        finished: begin     // Stay finished, can only go back to init with restart_block
+        finished: begin
             next_state <= finished;
         end
         default: begin
@@ -96,7 +96,7 @@ module des_block(
         endcase
     end
 
-    always @(*) begin   // Output logic, signals to set: done, enable, des_start, pause_des, start_message
+    always @(*) begin   // Output logic, signals to set: valid
         done <= 1'b0;
         enable <= 1'b0;
         start_des <= 1'b0;
@@ -104,7 +104,7 @@ module des_block(
         start_message <= 1'b0;
 
         case (state)
-        init: begin     // Pause on init, only start operation and unpause when start is enabled
+        init: begin
             pause_des <= 1'b1;
 
             if (start == 1'b1) begin
@@ -113,21 +113,20 @@ module des_block(
                 pause_des <= 1'b0;
             end
         end    
-        working: begin  // Keep enabled while working
+        working: begin
             enable <= 1'b1;
         end
         finishing: begin
-            // let the pipeline empty
+
         end
         finished: begin
-            done <= 1'b1;   // Done when finished
+            done <= 1'b1;
         end
         endcase
     end
 
     //---------------------------DATAPATH----------------------------------------------------------   
 
-    // The DES block
     des_encryption_pipelined des(
         .clk            (clk),                      
         .rst_n          (rst_n),
@@ -154,13 +153,11 @@ module des_block(
         .valid          (message_valid),        // signals when the output of this module contains valid messages every cycle
         .done           (counter_done ));
 
-    // The input mask
     mask_xor input_mask(  // Used to generate bit from mask operation in the message register
         .message        (message),
         .mask           (mask_i),
         .result         (mask_i_bit));
 
-    // The output mask
     mask_xor output_mask(  // Used to generate bit from mask operation in the ciphertext register
         .message        (ciphertext),
         .mask           (mask_o),
@@ -169,23 +166,22 @@ module des_block(
     always @(posedge clk) begin     // Logic for buffering mask_i_bit into mask_i_bit_buffer
         
         if (rst_n == 1'b0) begin
-            mask_i_bit_buffer <= 18'h0; // Reset to all zeros
+            mask_i_bit_buffer <= 10'h0;
         end
 
         else if (restart_block == 1'b1) begin
-            mask_i_bit_buffer <= 18'h0; // Reset to all zeros
+            mask_i_bit_buffer <= 10'h0;
         end
 
         if (message_valid == 1'b1) begin
-            mask_i_bit_buffer <= {mask_i_bit, mask_i_bit_buffer[17:1]}; // Shift the buffer and add the newest bit
+            mask_i_bit_buffer <= {mask_i_bit, mask_i_bit_buffer[9:1]};
         end
 
         else if (ciphertext_valid == 1'b1) begin
-            mask_i_bit_buffer <= {1'b0, mask_i_bit_buffer[17:1]};   // keep shifting for the last operations in the pipeline, fill register with zeros
+            mask_i_bit_buffer <= {1'b0, mask_i_bit_buffer[9:1]};   // keep shifting for the last operations in the pipeline, fill register with zeros
         end
     end
     
-    // Counter enable logic (needed to empty the pipeline later)
     always @(posedge clk) begin
             if (ciphertext_valid == 1'b1) begin
                 counter_enable <= 1'b1;   // This value can be used to activate the counter
@@ -195,20 +191,19 @@ module des_block(
             end
         end
 
-    // Counter logic
-    always @(posedge clk) begin
+    always @(posedge clk) begin     // Counter
         if (rst_n == 1'b0) begin
-            counter_reg <= 64'b0; // Reset to all zeros
+            counter_reg <= {64-N{1'b0}};
         end
         else if (restart_block == 1'b1) begin
-            counter_reg <= 64'b0; // Reset to all zeros
+            counter_reg <= {64-N{1'b0}};
         end
-        else if (mask_result == 1'b1 & counter_enable == 1'b1) begin    // Only count new values when enabled and mask_result one
-            counter_reg <= counter_reg + 1; // count up
+        else if (mask_result == 1'b1 & counter_enable == 1'b1) begin    // Only count new values when enabled
+            counter_reg <= counter_reg + 1;
         end
     end
 
     assign counter = counter_reg[63:0];
-    assign mask_result = mask_o_bit ^ mask_i_bit_buffer[0]; // used to control the cryptanalytic counter
+    assign mask_result = mask_o_bit ^ mask_i_bit_buffer[0];
      
 endmodule

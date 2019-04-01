@@ -22,7 +22,7 @@ root
 |
 |-- reports
 	|
-	| key, param, status, results files
+	| key, param, status, seeds, results files
 
 To set the parameters, edit (or create) the 'param.txt' file according to the template.
 
