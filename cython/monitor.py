@@ -477,7 +477,7 @@ def reset_system():
 # This function prints stats on how long the operations on the board will take for the current settings.
 def performance_stats():
     
-    clock_freq = 100    # Clock frequency in MHz
+    clock_freq = 250    # Clock frequency in MHz
     seconds_per_day = 24*60*60
 
     # First check if the parameter file exists
