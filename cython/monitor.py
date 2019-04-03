@@ -282,8 +282,8 @@ def start_des(block_nb, seed):
 
     # Skip 16 keys and one empty line.
     # Do this for all preceding block numbers (skip their respective round keys).
-    #for i in range(0, block_nb*17):
-    #    key_file.readline()
+    for i in range(0, block_nb*17):
+        key_file.readline()
 
     # Read 16 keys for the current block.
     for i in range(0, 16):

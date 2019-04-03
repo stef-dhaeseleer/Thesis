@@ -167,9 +167,9 @@ def gen_key_file_from_hex():
 def gen_32_key_file_random_full_platform():
 
     file_key = open("testfiles/new_key_vals.txt", "aw")
-    file = open("testfiles/key.txt", "w")
+    file_sd = open("testfiles/key.txt", "w")
 
-    for i in range(0, 32):
+    for i in range(0, 128):
 
         master_key = "{0:b}".format(random.getrandbits(128))
         round_keys = generate_keys(master_key)
@@ -178,18 +178,17 @@ def gen_32_key_file_random_full_platform():
 
         key = round_keys[0] + round_keys[1] + round_keys[2] + round_keys[3] + round_keys[4] + round_keys[5] + round_keys[6] + round_keys[7] + round_keys[8] + round_keys[9] + round_keys[10] + round_keys[11] + round_keys[12] + round_keys[13] + round_keys[14] + round_keys[15]
 
+        for j in range(0, 16):   
+            file_sd.write(hex(int(round_keys[j], 2)) + "\n")
+            
         file_key.write(key + "\n")
-
-        for j in range(0, 16):
-            file.write(hex(int(round_keys[i], 2) + "\n")
-
-        file.write("\n")
+        file_sd.write("\n")
     
     file_key.write("\n")
-    file.write("\n")
+    file_sd.write("\n")
 
     file_key.close()
-    file.close()
+    file_sd.close()
 
     print
 
