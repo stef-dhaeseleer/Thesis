@@ -494,11 +494,11 @@ def performance_stats():
 
     # Stats per core
     nb_encryptions_core = int(file.readline(), 16)
-    two_exp_nb_encryptions_core = math.log(nb_encryptions, 2)
+    two_exp_nb_encryptions_core = math.log(nb_encryptions_core, 2)
 
     # Stats for all cores on the board together
-    nb_encryptions_total = int(file.readline(), 16) * nb_blocks
-    two_exp_nb_encryptions_total = math.log(nb_encryptions, 2)
+    nb_encryptions_total = nb_encryptions_core * nb_blocks
+    two_exp_nb_encryptions_total = math.log(nb_encryptions_total, 2)
 
     # Total encryptions done on the board in one day.
     encrypt_per_day = nb_blocks * clock_freq * 10**6 * seconds_per_day
