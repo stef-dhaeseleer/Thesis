@@ -128,16 +128,16 @@
         .DES_COUNTER_1(des_counter_1),
         .DES_COUNTER_2(des_counter_2),
         .DES_COUNTER_3(des_counter_3),
-        .DES_COUNTER_3(des_counter_4),
-        .DES_COUNTER_3(des_counter_5),
+        .DES_COUNTER_4(des_counter_4),
+        .DES_COUNTER_5(des_counter_5),
         .DATA_UPPER(des_data_upper),
         .DATA_LOWER(des_data_lower),
         .ACTIVE_CORE_0(active_core_0),
         .ACTIVE_CORE_1(active_core_1),
         .ACTIVE_CORE_2(active_core_2),
         .ACTIVE_CORE_3(active_core_3),
-        .ACTIVE_CORE_3(active_core_4),
-        .ACTIVE_CORE_3(active_core_5)
+        .ACTIVE_CORE_4(active_core_4),
+        .ACTIVE_CORE_5(active_core_5)
     );
     
     // Add user logic here
