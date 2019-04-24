@@ -1,0 +1,1 @@
+../../../verilog/des_reduced/des_pipelined_8rounds_no_perm.v
