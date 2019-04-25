@@ -5,6 +5,7 @@
 # https://medium.com/@urwithajit9/how-to-teach-des-using-python-the-easy-way-part-3-des-encryption-4394a935effc
 
 import random
+import sys
 
 PC1_values = [57,49,41,33,25,17,9,1,58,50,42,34,26,18,10,2,59,51,43,35,27,19,11,3,60,52,44,36,63,55,47,39,31,23,15,7,62,54,46,38,30,22,14,6,61,53,45,37,29,21,13,5,28,20,12,4]
 PC2_values = [14,17,11,24,1,5,3,28,15,6,21,10,23,19,12,4,26,8,16,7,27,20,13,2, 41,52,31,37,47,55,30,40,51,45,33,48,44,49,39,56,34,53,46,42,50,36,29,32]
@@ -164,12 +165,12 @@ def gen_key_file_from_hex():
 
     print  
 
-def gen_32_key_file_random_full_platform():
+def gen_192_key_file_random_full_platform():
 
-    file_key = open("testfiles/new_key_vals.txt", "aw")
-    file_sd = open("testfiles/key.txt", "w")
+    file_key = open("testfiles/reduced_round/new_key_vals.txt", "aw")
+    file_sd = open("testfiles/reduced_round/key.txt", "w")
 
-    for i in range(0, 128):
+    for i in range(0, 192):
 
         master_key = "{0:b}".format(random.getrandbits(128))
         round_keys = generate_keys(master_key)
@@ -179,7 +180,9 @@ def gen_32_key_file_random_full_platform():
         key = round_keys[0] + round_keys[1] + round_keys[2] + round_keys[3] + round_keys[4] + round_keys[5] + round_keys[6] + round_keys[7] + round_keys[8] + round_keys[9] + round_keys[10] + round_keys[11] + round_keys[12] + round_keys[13] + round_keys[14] + round_keys[15]
 
         for j in range(0, 16):   
-            file_sd.write(hex(int(round_keys[j], 2)) + "\n")
+            #file_sd.write(hex(int(round_keys[j], 2)) + "\n")
+            
+            file_sd.write('{:012x}'.format(int(round_keys[j], 2)) + "\n")
             
         file_key.write(key + "\n")
         file_sd.write("\n")
@@ -193,16 +196,67 @@ def gen_32_key_file_random_full_platform():
     print
 
     print ("File generated!")
+    print ("Location: python/testfiles/reduced_round/key.txt")
     print ("Run following command to check for duplicate keys: ")
     print ("sort testfiles/new_key_vals.txt | uniq -d")
 
     print
+    
+def gen_zero_correlation_key_file_full_platform():
+
+    file_sd = open("testfiles/zero_corr/key.txt", "w")
+    file_key = open("testfiles/zero_corr/key_used.txt", "r")
+    
+    round_keys = [0] * 16
+    
+    for k in range(0, 16):
+        round_keys[k] = file_key.readline()
+        
+
+    for i in range(0, 128):
+
+        for j in range(0, 16):   
+            file_sd.write(round_keys[j])
+            
+        file_sd.write("\n")
+    
+    file_sd.write("\n")
+
+    file_key.close()
+    file_sd.close()
+
+    print
+
+    print ("File generated!")
+    print ("Location: python/testfiles/zero_corr/key.txt")
+
+    print
          
 
-def main():
+def main(argv):
     
-    gen_32_key_file_random_full_platform()
+    # Reduced round key generation
+    #gen_192_key_file_random_full_platform()
+    
+    # Zero correlation key generation
+    #gen_zero_correlation_key_file_full_platform()
+    
+    if argv[0] == 'zero_corr':
+        print('Zero correlation key generation...')
+        print('')
+        gen_zero_correlation_key_file_full_platform()
+        
+    elif argv[0] == 'reduced_round':
+        print('Reduced round random key generation...')
+        print('')
+        gen_192_key_file_random_full_platform()
+    
+    else :
+        print('Not a valid option, valid options are: ')
+        print('zero_corr')
+        print('reduced_round')
+        print('')
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])
 

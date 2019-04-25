@@ -18,7 +18,8 @@ key.txt
 	This files starts without new lines at the top.
 	All values are in hexadecimal.
 	A new round key can be found on every line.
-	The roundkeys used are the same for every core in the design.
+	Roundkeys need to be given for every core in the design (one blank line between the keys per core).
+	In the example below the first two cores recieve the same roundkey
 
 e.g.
 
@@ -39,7 +40,24 @@ f51a3886fd84
 9a7e56dbca83
 254e1721ab6e
 
+6c7748564719
+6731b4b49c96
+9e84f14d06f7
+df423a1fe8c9
+ae938c22d555
+1a1a4f8ba5a6
+297878ec4f81
+846dec5a425f
+1685d6e08d76
+7e48270dae9e
+aba12c7d54d1
+8806bf0bc06f
+f51a3886fd84
+86bae0a807f5
+9a7e56dbca83
+254e1721ab6e
 
+...
 
 
 

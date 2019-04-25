@@ -16,7 +16,7 @@ USING THE PLATFORM WHEN CONNECTED
 Start location directory tree:
 
 root
-|-- cython
+|-- python
 |	|
 |	| python files
 |
