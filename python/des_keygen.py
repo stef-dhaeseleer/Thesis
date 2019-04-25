@@ -198,7 +198,7 @@ def gen_192_key_file_random_full_platform():
     print ("File generated!")
     print ("Location: python/testfiles/reduced_round/key.txt")
     print ("Run following command to check for duplicate keys: ")
-    print ("sort testfiles/new_key_vals.txt | uniq -d")
+    print ("sort testfiles/reduced_round/new_key_vals.txt | uniq -d")
 
     print
     

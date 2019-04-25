@@ -66,7 +66,7 @@ def all_verify():
 
     file_res = open("counter_results/bias_results.txt", "a")
 
-    N = 13                     # Number of region bits
+    N = 12                     # Number of region bits
     exp = 2**(64-N)            # Nb of encryptions = 2**(64-N)
 #    bias_expected = 2**(-13.5)      # expected bias for 8 round test
 
