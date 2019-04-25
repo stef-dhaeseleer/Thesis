@@ -482,8 +482,8 @@ def process_results():
     file_stat.write("\n")
     file_stat.write("Samples : " + str(total_lines) + "\n")
     file_stat.write("Encryptions per sample (log2) : " + str(math.log(exp, 2)) + "\n")
-    file_stat.write("Input mask used : " + str(input_mask) + "\n")
-    file_stat.write("Output mask used : " + str(output_mask) + "\n")
+    file_stat.write("Input mask used : " + str(hex(input_mask)) + "\n")
+    file_stat.write("Output mask used : " + str(hex(output_mask)) + "\n")
 
     print 
     print ("################################################################################")
