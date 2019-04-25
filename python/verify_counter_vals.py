@@ -2,7 +2,7 @@ import math
 
 def one_verify():
 
-    N = 32                      # Number of region bits
+    N = 44                      # Number of region bits
 
     count = 0x000000007ffd6b26  # Counter value
     exp = 2**(64-N)             # Nb of encryptions = 2**(64-N)
@@ -60,7 +60,7 @@ def all_verify():
     file_res = open("counter_results/bias_results.txt", "w")
     file_stat = open("counter_results/bias_stats.txt", "w")
 
-    exp = 2**(30)                    # Nb of encryptions per core
+    exp = 2**(24)                    # Nb of encryptions per core
 
     total_count = 0
     total_bias = 0

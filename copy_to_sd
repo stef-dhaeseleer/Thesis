@@ -2,7 +2,7 @@
 # Copies needed files to the SD card
 
 cd
-cd peta_build/avnet-digilent-zedboard-2017.1
+cd peta_build_zcu102/xilinx-zcu102-2018.3
 
 # Needed for petalinux build
 export LC_ALL=en_US.UTF-8
@@ -11,7 +11,7 @@ export LANGUAGE=en_US.UTF-8
 
 # Build the files
 petalinux-build
-petalinux-package --boot --force --fsbl images/linux/zynq_fsbl.elf --fpga ./../design_1_wrapper.bit --u-boot
+petalinux-package --boot --force --fsbl images/linux/zynqmp_fsbl.elf --fpga ./../design_1_wrapper.bit --u-boot
 
 # Unzip the rootfs
 rm -f images/linux/rootfs.cpio
@@ -30,8 +30,6 @@ pax -r -c -f rootfs.cpio
 cd home/root
 
 # Copy code to the filesystem
-mkdir cython
+mkdir python
 mkdir reports
-cd cython
-cp /users/start2015/r0583050/Thesis/cython/interface.py .
-cp /users/start2015/r0583050/Thesis/cython/monitor.py .
+cd python
