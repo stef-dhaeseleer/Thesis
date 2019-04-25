@@ -422,11 +422,11 @@ def process_results():
         return
 
     # Now that we know the file is present, open it.
-    file = open(param_file_path, 'r')
+    file_param = open(param_file_path, 'r')
 
-    input_mask = int(file.readline(), 16)
-    output_mask = int(file.readline(), 16)
-    nb_encryptions = int(file.readline(), 16)
+    input_mask = int(file_param.readline(), 16)
+    output_mask = int(file_param.readline(), 16)
+    nb_encryptions = int(file_param.readline(), 16)
 
     exp = nb_encryptions    # Nb of encryptions per core
 
@@ -498,6 +498,11 @@ def process_results():
 
     print ("Samples : " + str(total_lines))
     print
+
+    file.close()
+    file_res.close()
+    file_stat.close()
+    file_param.close()
 
 # This function prints the contents of the results file to the terminal.
 # This way the user can quickly check the latest results if needed.
