@@ -1,0 +1,13 @@
+RESULTS FROM EXPERIMENT 
+
+Bias (total count): 3.64768008576e-08
+log2              : -24.7084455534
+
+Mean bias   : 1.23693122684e-05
+Mean log 2  : -16.3028751855
+
+STD         : 8.72004249675e-06
+STD  log 2  : -16.8072334034
+
+Samples : 192
+Encryptions per sample (log2) : 30.0

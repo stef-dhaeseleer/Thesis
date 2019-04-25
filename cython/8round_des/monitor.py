@@ -406,6 +406,98 @@ def get_results_all():
         print("Getting results of core " + str(nb+1) + "/" + str(nb_blocks) + "...")
         get_results_des(nb)
         #time.sleep(0.1)
+    
+    # Now process them
+    process_results()
+
+def process_results():
+
+    file = open("../reports/results.txt", "r")  
+    file_res = open("../reports/bias_results.txt", "w")
+    file_stat = open("../reports/bias_stats.txt", "w")
+
+    # Abort if no parameter file is present.
+    if (os.path.isfile(param_file_path) == 0):
+        print ("No parameters file found, you can create one with set_parameters()!")
+        return
+
+    # Now that we know the file is present, open it.
+    file = open(param_file_path, 'r')
+
+    input_mask = int(file.readline(), 16)
+    output_mask = int(file.readline(), 16)
+    nb_encryptions = int(file.readline(), 16)
+
+    exp = nb_encryptions    # Nb of encryptions per core
+
+    total_count = 0
+    total_bias = 0
+    total_lines = 0
+    
+    bias_list = []
+    
+    file.readline()   # skip the header line
+
+    for line in file:
+        poly = line.split()[0]
+        count = line.split()[4]
+        count = int(count, 16)
+        bias = abs((count/float(exp)) - 0.5)
+
+        total_count += count
+        total_bias += bias
+        total_lines += 1
+        
+        bias_list.append(bias)
+
+        file_res.write("Polynomial      : " + poly + "\n")
+        file_res.write("Calculated bias : " + str(bias) + "\n")
+        file_res.write("\n")
+
+    # Now process the complete result as well
+    bias = abs((total_count/float(exp*total_lines)) - 0.5)
+    
+    mean = 0
+    std = 0
+    
+    mean = total_bias/total_lines
+
+    for i in range(0, total_lines):
+        std += (bias_list[i] - mean)**2
+
+    std = std/total_lines
+    std = math.sqrt(std)
+    
+    file_stat.write("RESULTS FROM EXPERIMENT " + "\n")
+    file_stat.write("\n")
+    
+    file_stat.write("Bias (total count): " + str(bias) + "\n")
+    file_stat.write("log2              : " + str(math.log(bias, 2)) + "\n")
+    file_stat.write("\n")
+    file_stat.write("Mean bias   : " + str(mean) + "\n")
+    file_stat.write("Mean log 2  : " + str(math.log(mean, 2)) + "\n")
+    file_stat.write("\n")
+    file_stat.write("STD         : " + str(std) + "\n")
+    file_stat.write("STD  log 2  : " + str(math.log(std, 2)) + "\n")
+    file_stat.write("\n")
+    file_stat.write("Samples : " + str(total_lines) + "\n")
+    file_stat.write("Encryptions per sample (log2) : " + str(math.log(exp, 2)) + "\n")
+    file_stat.write("Input mask used : " + str(input_mask) + "\n")
+    file_stat.write("Output mask used : " + str(output_mask) + "\n")
+
+    print 
+    print ("################################################################################")
+    print ("FINAL RESULT OVER ALL COUNTERS")
+
+    print ("Bias (total count) : " + str(bias))
+    print ("log2               : " + str(math.log(bias, 2)))
+    print ("Mean bias   : " + str(mean))
+    print ("Mean log 2  : " + str(math.log(mean, 2)))
+    print ("STD         : " + str(std))
+    print ("STD  log 2  : " + str(math.log(std, 2)))
+
+    print ("Samples : " + str(total_lines))
+    print
 
 # This function prints the contents of the results file to the terminal.
 # This way the user can quickly check the latest results if needed.
