@@ -41,7 +41,7 @@ def DES_encrypt(message, key, file, file_2):
 	cipher = apply_initial_p(INVERSE_PERMUTATION_TABLE, R+L) # Input the parts in reverse order for this last operation
 
 	return cipher
-
+	
 def DES_encrypt(message, key, file):
 
 	cipher = ""
@@ -103,6 +103,37 @@ def DES_encrypt(message, key):
 	cipher = apply_initial_p(INVERSE_PERMUTATION_TABLE, R+L) # Input the parts in reverse order for this last operation
 
 	return cipher	
+
+def DES_encrypt_reduced(message, key):
+
+	cipher = ""
+
+	# Convert hex digits to binary
+	plaintext_bits = hexTobinary(message)
+	key_bits = hexTobinary(key)
+
+	# KS
+	roundkeys = generate_keys(key_bits)
+
+	# split
+	L,R = spliHalf(plaintext_bits)
+
+    # Roundfunctions
+	for round in range(8):
+
+		newR = XOR(L,functionF(R, roundkeys[round]))
+		newL = R
+
+		R = newR	# Switch the parts to initialize the next round
+		L = newL
+		
+		print(round+1)
+		print(hex(int(R, 2)))
+		print(hex(int(L, 2)))
+
+	cipher = R+L # Input the parts in reverse order for this last operation
+
+	return cipher
 
 def generate_test_files_NIST():
 
@@ -276,6 +307,14 @@ def generate_test_data_hw():
 
 	print ()
 	print ("Finished making test files!")
+	
+
+def reduce_xor(op):
+
+    if len(op) > 2:
+        return int(op[0], 2) ^ reduce_xor(op[1:])
+    else:
+        return int(op[0], 2) ^ int(op[1], 2)
 
 
 def main():
@@ -283,7 +322,21 @@ def main():
 	#generate_test_files_NIST()
 	#generate_test_data_pipeline()
 	#generate_tests_pipeline()
-	generate_test_data_hw()
+	#generate_test_data_hw()
+	
+	# All zero key
+	# 0101010101010101
+	
+	master_key = "0101010101010101"
+	
+	mask_i = int('2104008000000000', 16)
+	mask_o = int('0000000021040080', 16)
+	
+	message = '0149151654114612'
+	ciphertext = DES_encrypt_reduced(message, master_key)
+	
+	print('C: ' + hex(int(ciphertext, 2)))
+	print('C: ' + ciphertext)
 
 if __name__ == '__main__':
     main()
