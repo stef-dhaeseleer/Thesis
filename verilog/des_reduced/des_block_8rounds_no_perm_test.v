@@ -140,18 +140,18 @@ module des_block(
         .result         (ciphertext));
 
     // The message generator
-    lfsr_internal lfsr(  // Used to generate the messages for the encryption
-        .clk            (clk          ),
-        .rst_n          (rst_n        ),
-        .start          (start_message),        // Start the message generation when this module receives a start signal
-        .pause          (pause_des    ),
-        .reset_counter  (restart_block),
-        .seed           (seed         ),        // Stored in a reg inside this block
-        .polynomial     (polynomial   ),        // Stored in a reg inside this block
-        .counter_limit  (counter_limit),
-        .lfsr           (message      ),
-        .valid          (message_valid),        // signals when the output of this module contains valid messages every cycle
-        .done           (counter_done ));
+    //lfsr_internal lfsr(  // Used to generate the messages for the encryption
+    //    .clk            (clk          ),
+    //    .rst_n          (rst_n        ),
+    //    .start          (start_message),        // Start the message generation when this module receives a start signal
+    //    .pause          (pause_des    ),
+    //    .reset_counter  (restart_block),
+    //    .seed           (seed         ),        // Stored in a reg inside this block
+    //    .polynomial     (polynomial   ),        // Stored in a reg inside this block
+    //    .counter_limit  (counter_limit),
+    //    .lfsr           (message      ),
+    //    .valid          (message_valid),        // signals when the output of this module contains valid messages every cycle
+    //    .done           (counter_done ));
 
     message_counter_partial pt_partial_counter(  // Used to generate the messages for the encryption
         .clk            (clk          ),

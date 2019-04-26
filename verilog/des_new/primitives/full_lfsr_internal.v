@@ -113,7 +113,7 @@ module lfsr_internal(
     always @(*) begin   // output logic, signals to set: load_seed_poly, load_lfsr, valid, done
 
         load_seed_poly <= 1'b0; // Load the seed and polynomial into their registers
-        load_lfsr <= 1'b0;      // update the taps for the LFSR
+        load_lfsr <= 1'b0;      // update the taps for the LFSR and the counter
         valid <= 1'b0;          // output is valid
         done <= 1'b0;           // operations are done
 

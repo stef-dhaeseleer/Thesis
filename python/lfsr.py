@@ -19,7 +19,7 @@ def lfsr(seed, taps, file):
         #for j in seed:
         #    seed_string += str(j)
 
-	seed_string = ''.join([str(j) for j in seed])
+	    seed_string = ''.join([str(j) for j in seed])
 
         file.write(seed_string + "\n")
         

@@ -29,7 +29,7 @@ module message_counter_partial(
     localparam [2:0]    finished    = 3'h4;
 
     // NOTE: parameter for region length, value overridden from toplevel wrapper (1)
-    parameter N = 16;   // The amount of bits in the region select
+    parameter N = 32;   // The amount of bits in the region select
 
     // Functions
 
@@ -52,15 +52,17 @@ module message_counter_partial(
                 next_state <= first;
             end
         end
-        first: begin
+        first: begin    // Only stay here one cycle, then go to working
             next_state <= working;
         end
-        working: begin
+        working: begin  // Keep working is the normal operation
             next_state <= working;
             if (pause == 1'b1) begin
+                // go to paused state if pause signal goes high
                 next_state <= paused;
             end
             else if (reset_counter == 1'b1) begin
+                // go to init upon reset
                 next_state <= init;
             end
 		    // NOTE: change this and next for full message generation (1)
@@ -72,13 +74,15 @@ module message_counter_partial(
         paused: begin
             next_state <= paused;
             if (pause == 1'b0) begin
+                // go back to working if the pause signal goes low again
                 next_state <= working;
             end
             else if (reset_counter == 1'b1) begin
+                // go to init on reset
                 next_state <= init;
             end
         end
-        finished: begin
+        finished: begin     // Stay finished until the reset signal goes high
             next_state <= finished;
             if (reset_counter == 1'b1) begin
                 next_state <= init;
@@ -91,6 +95,7 @@ module message_counter_partial(
     end
 
     always @(*) begin   // output logic, signals to set: load_seed, load_counter, valid, done
+
         load_seed <= 1'b0;
         load_counter <= 1'b0;
         valid <= 1'b0;
@@ -115,7 +120,7 @@ module message_counter_partial(
             end
         end
         paused: begin
-
+            // Do nothing
         end
         finished: begin
             done <= 1'b1;
