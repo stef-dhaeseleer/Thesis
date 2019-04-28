@@ -334,9 +334,25 @@ def main():
 	
 	message = '0149151654114612'
 	ciphertext = DES_encrypt_reduced(message, master_key)
+
+	message_bits = hexTobinary(message)
+	cipher_bits = hexTobinary(hex(int(ciphertext, 2)))
+
+	# Does this work?
+	counter += int(message_bits[len(message_bits) - 1], 2) ^ int(cipher_bits[len(cipher_bits) - 1], 2)
 	
-	print('C: ' + hex(int(ciphertext, 2)))
-	print('C: ' + ciphertext)
+	print('C_hex: ' + hex(int(ciphertext, 2)))
+	print('C_bin: ' + ciphertext)
+	print('Counter: ' + counter)
+
+	# Other stuff to try:
+	# - The test vectors from NIST on the full implementation
+	# - Smaller masks and extend to verify the working
+	# - 8 encryptions
+	# - See if the HW does the same
+	# - See if we can solve less than 8 encryption case 
+	# (active signal goes up when message becomes valid and only goes down when cipher text goes up, take this for shifting as well)
+	# - Write a test for the LFSR and try to verify the working of this
 
 if __name__ == '__main__':
     main()
