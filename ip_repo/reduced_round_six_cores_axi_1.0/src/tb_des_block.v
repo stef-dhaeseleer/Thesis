@@ -61,10 +61,10 @@ module tb_des_block();
 
         seed            <= 64'h1;
         polynomial      <= 64'h800000000000000d;
-        mask_i          <= 64'h2104008000000000;
-        mask_o          <= 64'h0000000021040080;
-        //mask_i          <= 64'h1;
-        //mask_o          <= 64'h1;
+        //mask_i          <= 64'h2104008000000000;
+        //mask_o          <= 64'h0000000021040080;
+        mask_i          <= 64'h1;
+        mask_o          <= 64'h1;
         counter_limit   <= 64'h1000;
         round_keys       <= 768'h0;
 

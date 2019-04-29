@@ -1,0 +1,96 @@
+Polynomial      : 00000000
+Calculated bias : 7.82194547355e-06
+
+Polynomial      : 00000001
+Calculated bias : 3.93898226321e-05
+
+Polynomial      : 00000002
+Calculated bias : 3.41539271176e-06
+
+Polynomial      : 00000003
+Calculated bias : 0.000238553388044
+
+Polynomial      : 00000004
+Calculated bias : 4.17015980929e-05
+
+Polynomial      : 00000005
+Calculated bias : 1.68778933585e-06
+
+Polynomial      : 00000006
+Calculated bias : 4.50247898698e-05
+
+Polynomial      : 00000007
+Calculated bias : 0.000206492841244
+
+Polynomial      : 00000008
+Calculated bias : 4.07309271395e-05
+
+Polynomial      : 00000009
+Calculated bias : 5.76286111027e-05
+
+Polynomial      : 0000000a
+Calculated bias : 0.000246715033427
+
+Polynomial      : 0000000b
+Calculated bias : 2.75007914752e-05
+
+Polynomial      : 0000000c
+Calculated bias : 2.03179661185e-05
+
+Polynomial      : 0000000d
+Calculated bias : 0.000198549823835
+
+Polynomial      : 0000000e
+Calculated bias : 4.18343115598e-05
+
+Polynomial      : 0000000f
+Calculated bias : 4.06161416322e-05
+
+Polynomial      : 00000010
+Calculated bias : 0.000204550568014
+
+Polynomial      : 00000011
+Calculated bias : 0.000183905707672
+
+Polynomial      : 00000012
+Calculated bias : 0.000201062299311
+
+Polynomial      : 00000013
+Calculated bias : 0.000205760588869
+
+Polynomial      : 00000014
+Calculated bias : 0.000182463554665
+
+Polynomial      : 00000015
+Calculated bias : 1.52124557644e-05
+
+Polynomial      : 00000016
+Calculated bias : 2.12909653783e-05
+
+Polynomial      : 00000017
+Calculated bias : 3.98396514356e-06
+
+Polynomial      : 00000018
+Calculated bias : 2.04755924642e-05
+
+Polynomial      : 00000019
+Calculated bias : 0.000218741130084
+
+Polynomial      : 0000001a
+Calculated bias : 0.000233095139265
+
+Polynomial      : 0000001b
+Calculated bias : 0.000204621581361
+
+Polynomial      : 0000001c
+Calculated bias : 2.94893980026e-05
+
+Polynomial      : 0000001d
+Calculated bias : 0.000246937153861
+
+Polynomial      : 0000001e
+Calculated bias : 7.46385194361e-06
+
+Polynomial      : 0000001f
+Calculated bias : 4.58813738078e-05
+

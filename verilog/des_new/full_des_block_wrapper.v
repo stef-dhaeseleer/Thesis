@@ -296,7 +296,7 @@ module des_block_wrapper(
         .seed           (seed_reg          ),
         .polynomial     (poly_reg          ),
         .mask_i         (input_mask_reg    ),
-        .mask_o         (input_mask_reg    ),
+        .mask_o         (output_mask_reg    ),
         .counter_limit  (counter_limit_reg ),
         .round_keys     (round_keys        ),
         .counter        (des_counter       ),
@@ -310,43 +310,87 @@ module des_block_wrapper(
     assign round_keys = {round_key1, round_key2, round_key3, round_key4, round_key5, round_key6, round_key7, round_key8, round_key9, round_key10, round_key11, round_key12, round_key13, round_key14, round_key15, round_key16};
 
     always @(posedge clk) begin     // Load the seed into the register
-        if (load_seed == 1'b1) begin
+        if (rst_n == 1'b0) begin   // Synchronous reset
+            seed_reg <= 64'h1;
+        end
+                            
+        else if (load_seed == 1'b1) begin
             seed_reg <= {data_upper, data_lower};
         end
     end
 
     always @(posedge clk) begin     // Load the polynomial into the register
-        if (load_poly == 1'b1) begin
+        if (rst_n == 1'b0) begin   // Synchronous reset
+            poly_reg <= 64'h800000000000000d;
+        end
+                        
+        else if (load_poly == 1'b1) begin
             poly_reg <= {data_upper, data_lower};
         end
     end
 
     always @(posedge clk) begin     // Load the input mask into the register
-        if (load_input_mask == 1'b1) begin
+        if (rst_n == 1'b0) begin   // Synchronous reset
+            input_mask_reg <= 64'h2104008000000000;
+        end
+                    
+        else if (load_input_mask == 1'b1) begin
             input_mask_reg <= {data_upper, data_lower};
         end
     end
 
     always @(posedge clk) begin     // Load the output mask into the register
-        if (load_output_mask == 1'b1) begin
+        if (rst_n == 1'b0) begin   // Synchronous reset
+            output_mask_reg <= 64'h0000000021040080;
+        end
+                
+        else if (load_output_mask == 1'b1) begin
             output_mask_reg <= {data_upper, data_lower};
         end
     end
 
     always @(posedge clk) begin     // Load the counter limit into the register
-        if (load_counter_limit == 1'b1) begin
+        if (rst_n == 1'b0) begin   // Synchronous reset
+            counter_limit_reg <= 64'h1000;
+        end
+            
+        else if (load_counter_limit == 1'b1) begin
             counter_limit_reg <= {data_upper, data_lower};
         end
     end
 
     always @(posedge clk) begin     // Load the counter into the register
-        if (load_counter == 1'b1) begin
+        if (rst_n == 1'b0) begin   // Synchronous reset
+            counter_reg <= 64'h0;
+        end
+        
+        else if (load_counter == 1'b1) begin
             counter_reg <= des_counter;
         end
     end
 
     always @(posedge clk) begin     // Load the counter limit into the register
-        if (load_roundkey == 1'b1) begin
+    
+        if (rst_n == 1'b0) begin   // Synchronous reset
+               round_key1 <= 48'h0;
+               round_key2 <= 48'h0;
+               round_key3 <= 48'h0;
+               round_key4 <= 48'h0;
+               round_key5 <= 48'h0;
+               round_key6 <= 48'h0;
+               round_key7 <= 48'h0;
+               round_key8 <= 48'h0;
+               round_key9 <= 48'h0;
+               round_key10 <= 48'h0;
+               round_key11 <= 48'h0;
+               round_key12 <= 48'h0;
+               round_key13 <= 48'h0;
+               round_key14 <= 48'h0;
+               round_key15 <= 48'h0;
+               round_key16 <= 48'h0;
+        end
+           
+        else if (load_roundkey == 1'b1) begin
             //round_key1 <= {data_upper[15:0], data_lower}; // This loads key16 first
             //round_key2 <= round_key1;
             //round_key3 <= round_key2;
