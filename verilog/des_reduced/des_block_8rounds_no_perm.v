@@ -153,16 +153,16 @@ module des_block(
         .valid          (message_valid),        // signals when the output of this module contains valid messages every cycle
         .done           (counter_done ));
 
-    message_counter_partial pt_partial_counter(  // Used to generate the messages for the encryption
-        .clk            (clk          ),
-        .rst_n          (rst_n        ),
-        .start          (start_message),        // Start the message generation when this module receives a start signal
-        .pause          (pause_des    ),
-        .reset_counter  (restart_block),
-        .region_select  (seed[31:0]   ),        // Stored in a reg inside this block
-        .counter        (message      ),
-        .valid          (message_valid),        // signals when the output of this module contains valid messages every cycle
-        .done           (counter_done ));
+    //message_counter_partial pt_partial_counter(  // Used to generate the messages for the encryption
+    //    .clk            (clk          ),
+    //    .rst_n          (rst_n        ),
+    //    .start          (start_message),        // Start the message generation when this module receives a start signal
+    //    .pause          (pause_des    ),
+    //    .reset_counter  (restart_block),
+    //    .region_select  (seed[31:0]   ),        // Stored in a reg inside this block
+    //    .counter        (message      ),
+    //    .valid          (message_valid),        // signals when the output of this module contains valid messages every cycle
+    //    .done           (counter_done ));
 
     mask_xor input_mask(  // Used to generate bit from mask operation in the message register
         .message        (message),

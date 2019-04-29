@@ -160,6 +160,7 @@ module des_block(
         .pause          (pause_des    ),
         .reset_counter  (restart_block),
         .region_select  (seed[31:0]   ),        // Stored in a reg inside this block
+        .counter_limit  (counter_limit),
         .counter        (message      ),
         .valid          (message_valid),        // signals when the output of this module contains valid messages every cycle
         .done           (counter_done ));

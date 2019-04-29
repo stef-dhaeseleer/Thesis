@@ -114,8 +114,8 @@ def DES_encrypt_reduced(message, key):
 
 	# KS
 	roundkeys = generate_keys(key_bits)
-
-	# split
+    
+    # split
 	L,R = spliHalf(plaintext_bits)
 
     # Roundfunctions
@@ -127,9 +127,9 @@ def DES_encrypt_reduced(message, key):
 		R = newR	# Switch the parts to initialize the next round
 		L = newL
 		
-		print(round+1)
-		print(hex(int(R, 2)))
-		print(hex(int(L, 2)))
+		#print(round+1)
+		#print(hex(int(R, 2)))
+		#print(hex(int(L, 2)))
 
 	cipher = R+L # Input the parts in reverse order for this last operation
 
@@ -316,7 +316,66 @@ def reduce_xor(op):
     else:
         return int(op[0], 2) ^ int(op[1], 2)
 
+def test():
 
+    # All zero key
+	# 0101010101010101
+	
+    master_key = "0101010101010101"
+    
+    mask_i = "{:064b}".format(int('2104008000000000', 16))
+    mask_o = "{:064b}".format(int('0000000021040080', 16))
+    counter = 0
+    lim = int('1000', 16)
+    
+    key_bits = hexTobinary(master_key)
+    roundkeys = generate_keys(key_bits)
+	    
+    key_string = ''
+    
+    for i in range(0, 16):
+        key_string = key_string + roundkeys[i]
+	    
+    print('Key string: ')
+    print(key_string)
+	    
+    for k in range(0, lim+1):
+
+        message = "{:08x}".format(k) + '00000001'
+
+        ciphertext = DES_encrypt_reduced(message, master_key)
+	    
+        #bit_i = int(message, 16) & 1
+        #bit_o = int(ciphertext, 2) & 1
+	    
+        bit_i = 0
+        bit_o = 0
+	        
+        input_bits = "{:064b}".format(int(message, 16))
+        output_bits = "{:064b}".format(int(ciphertext, 2))
+	        
+        for i in range(0, 64):
+            if mask_i[i] == '1':
+                bit_i = bit_i ^ int(input_bits[i], 2)
+         
+            if mask_o[i] == '1':
+                bit_o = bit_o ^ int(output_bits[i], 2)
+	        
+        res_bit = bit_i ^ bit_o
+        counter += res_bit
+	    
+    print('res counter     : ' + str(hex(counter)))
+	    
+    # Other stuff to try:
+    # - The test vectors from NIST on the full implementation
+    # - Smaller masks and extend to verify the working
+    # - 8 encryptions
+    # - See if the HW does the same
+    # - See if we can solve less than 8 encryption case 
+    # (active signal goes up when message becomes valid and only goes down when cipher text goes up, take this for shifting as well)
+    # - Write a test for the LFSR and try to verify the working of this
+	        
+	    
 def main():
 
 	#generate_test_files_NIST()
@@ -324,35 +383,28 @@ def main():
 	#generate_tests_pipeline()
 	#generate_test_data_hw()
 	
-	# All zero key
-	# 0101010101010101
-	
-	master_key = "0101010101010101"
-	
-	mask_i = int('2104008000000000', 16)
-	mask_o = int('0000000021040080', 16)
-	
-	message = '0149151654114612'
-	ciphertext = DES_encrypt_reduced(message, master_key)
+	test()
 
-	message_bits = hexTobinary(message)
-	cipher_bits = hexTobinary(hex(int(ciphertext, 2)))
+    # Test to see if the implementation I use for DES is correct
 
-	# Does this work?
-	counter += int(message_bits[len(message_bits) - 1], 2) ^ int(cipher_bits[len(cipher_bits) - 1], 2)
-	
-	print('C_hex: ' + hex(int(ciphertext, 2)))
-	print('C_bin: ' + ciphertext)
-	print('Counter: ' + counter)
+#    print ("Started testing...")
+#    file_input = open("testfiles/des_test_vectors.txt", "r")
 
-	# Other stuff to try:
-	# - The test vectors from NIST on the full implementation
-	# - Smaller masks and extend to verify the working
-	# - 8 encryptions
-	# - See if the HW does the same
-	# - See if we can solve less than 8 encryption case 
-	# (active signal goes up when message becomes valid and only goes down when cipher text goes up, take this for shifting as well)
-	# - Write a test for the LFSR and try to verify the working of this
+#    for line in file_input:
+
+#        args = line.split()
+#        master_key = args[0]
+#        message = args[1]
+#        expected = args[2]
+
+#        ciphertext = DES_encrypt(message, master_key)
+
+#        if (hexTobinary(expected) != ciphertext):
+#            print ("RESULT WRONG !!!")
+
+#    file_input.close
+
+#    print ("Finished!")
 
 if __name__ == '__main__':
     main()

@@ -60,7 +60,7 @@ def all_verify():
     file_res = open("counter_results/bias_results.txt", "w")
     file_stat = open("counter_results/bias_stats.txt", "w")
 
-    exp = 2**(24)                    # Nb of encryptions per core
+    exp = 2**(32)                    # Nb of encryptions per core
 
     total_count = 0
     total_bias = 0

@@ -11,6 +11,15 @@ PC1_values = [57,49,41,33,25,17,9,1,58,50,42,34,26,18,10,2,59,51,43,35,27,19,11,
 PC2_values = [14,17,11,24,1,5,3,28,15,6,21,10,23,19,12,4,26,8,16,7,27,20,13,2, 41,52,31,37,47,55,30,40,51,45,33,48,44,49,39,56,34,53,46,42,50,36,29,32]
 round_shifts = [1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1]
 
+def hexTobinary(hexdigits):
+
+	binarydigits = ""
+
+	for hexdigit in hexdigits:
+		binarydigits += bin(int(hexdigit,16))[2:].zfill(4)
+
+	return binarydigits
+
 def PC1(pc1_values, master_key):
 
 	full_key = ""
@@ -94,15 +103,16 @@ def gen_32_key_file():
     for i in range(0, 32):
         file.write("set a $name$count \n")
 
-        master_key = "{0:b}".format(random.getrandbits(128))
-        round_keys = generate_keys(master_key)
+        master_key = "{0:016x}".format(random.getrandbits(64))
+        key_bits = hexTobinary(master_key)
+        round_keys = generate_keys(key_bits)
 
         print (master_key)
 
         key = round_keys[0] + round_keys[1] + round_keys[2] + round_keys[3] + round_keys[4] + round_keys[5] + round_keys[6] + round_keys[7] + round_keys[8] + round_keys[9] + round_keys[10] + round_keys[11] + round_keys[12] + round_keys[13] + round_keys[14] + round_keys[15]
      
         file.write("set_property -dict [list CONFIG.key_select {\"" + key + "\"}] [get_bd_cells $a] \n") 
-        file.write("set_property -dict [list CONFIG.region {32}] [get_bd_cells  $a] \n")
+        file.write("set_property -dict [list CONFIG.region {30}] [get_bd_cells  $a] \n")
         file.write("incr count \n")
         file.write("\n")
 
@@ -240,6 +250,8 @@ def main(argv):
     
     # Zero correlation key generation
     #gen_zero_correlation_key_file_full_platform()
+    
+    gen_32_key_file()
     
     if argv[0] == 'zero_corr':
         print('Zero correlation key generation...')

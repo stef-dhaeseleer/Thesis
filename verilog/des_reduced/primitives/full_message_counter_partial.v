@@ -7,6 +7,7 @@ module message_counter_partial(
     input pause,
     input reset_counter,
     input [N-1:0]  region_select,    // used to set the upper bits for region select (N-1)
+    input [N-1:0]  counter_limit,
     output [63:0] counter,          // output register containing the current counter values
     output reg valid,               // signals that a valid result is on the output lines
     output reg done                 // signals that all counter values in the current region have been generated
@@ -17,6 +18,7 @@ module message_counter_partial(
     
     reg [63-N:0] counter_reg;
     reg [N-1:0] region_reg;
+    reg [N-1:0] counter_limit_reg;
 
     reg load_seed;
     reg load_counter;
@@ -66,7 +68,7 @@ module message_counter_partial(
                 next_state <= init;
             end
 		    // NOTE: change this and next for full message generation (1)
-            else if (counter_reg == {64-N{1'b1}}) begin
+            else if (counter_reg == counter_limit_reg) begin
             //else if (counter_reg == 64'h200) begin
                 next_state <= finished;
             end
@@ -111,7 +113,7 @@ module message_counter_partial(
         end
         working: begin
             valid <= 1'b1;
-            if (counter_reg == {64-N{1'b1}}) begin
+            if (counter_reg == counter_limit_reg) begin
             //if (counter_reg == 64'h200) begin
                 load_counter <= 1'b0;
             end
@@ -144,7 +146,8 @@ module message_counter_partial(
 
     always @(posedge clk) begin
         if (load_seed == 1'b1) begin
-            region_reg <= region_select;
+            region_reg <= region_select;                            
+            counter_limit_reg <= counter_limit;
         end
     end
     
