@@ -3,6 +3,8 @@ TODO: add information on how to 'prepare the SD card', how to generate the key f
 
 PREPARING THE SD CARDS
 
+%%%% complete example root folders for both reduced and full DES can be found in the files %%%%
+
 Give the structure of the files (see other file).
 
 Give information on Python scripts to make the key files.
@@ -27,6 +29,9 @@ For reduced round DES Matsui experiment:
 	to reset the keys used in the search for duplicate keys.
 
 	The needed key file (randomly generated keys) can be found in "testfiles/reduced_round/key.txt"
+	
+NOTE:   the key changing functionality for the reduced round DES experiments is also included in bash
+        scripts. Run 'new_key' to generate the new key file and have it copied to the appropriate place.
 
 
 Give information on the 2 partitions of the SD card and what should be put on which one.
@@ -69,7 +74,7 @@ password: root
 
 USING THE PLATFORM WHEN CONNECTED
 
-Start location directory tree:
+Start location directory tree (/home):
 
 root
 |-- python
@@ -78,7 +83,11 @@ root
 |
 |-- reports
 	|
-	| key.txt, param.txt, status.txt, seeds.txt, results.txt, TODO
+	|   key.txt, param.txt, status.txt, seeds.txt, results.txt, TODO
+	|
+	| old_res
+	|
+	|   Storage place for old results
 
 To set the parameters, edit (or create) the 'param.txt' file according to the template.
 
@@ -139,8 +148,48 @@ After this, the cycle can be repeated if needed (new seeds, new masks, new keys.
 
 THE RESULTS
 
-Explain what files are generated when the results are processed
+NOTE:   copying the result files to the 'old_res' folder can be done with a bash script. 
+        Run 'mv_res x' to move them with '_x' attached behind their name.
+        e.g. after firs experiment run 'mv_res 1', after second 'mv_res 2' ...
 
-Explain the structure of the result files and what to do with them.
+
+Three result files are always generated:
+
+results.txt
+    This file contains the raw counter results for all cores.
+    The structure is as follows:
+    POLYNOMIAL : SEED : COUNTER RESULT
+    
+    This header is printed on the first line, followed by the data for every core (in ascending order).
+    Every core results begin on a new file.
+    
+bias_results.txt
+    This file contains the processed bias result for every core.
+    The structure is as follows:
+    
+    Polynomial      : xxxx
+    Calculated bias : xxxx
+    
+    For every core (in ascending order) this is printed in the file.
+    With a new line between each core.
+
+bias_stats.txt
+    This file contains the overall mean and standard deviation of the bias over all 192 samples.
+    The structure is as follows:
+    
+    RESULTS FROM EXPERIMENT 
+
+    Mean bias   : 7.49578381753e-05
+    Mean log 2  : -13.7035611289
+
+    STD         : 7.24604263276e-06
+    STD  log 2  : -17.0743752753
+
+    Samples : 192
+    Encryptions per sample (log2) : 32.0
+    Input mask used : 0x2104008000000000
+    Output mask used : 0x21040080
+
+    
 
 
