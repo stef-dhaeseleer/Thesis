@@ -1,3 +1,59 @@
+TODO: add information on how to 'prepare the SD card', how to generate the key files, how to process the results on board.
+
+
+PREPARING THE SD CARDS
+
+Give the structure of the files (see other file).
+
+Give information on Python scripts to make the key files.
+The des_keygen.py can be used to generate the key.txt file needed for the S card.
+
+For zero correlation experiment:
+
+	Put a file containing the 16 round keys (each on a new line, round 1 to 16 respectively) 
+	to be used in "testfiles/zero_corr/key_used.txt"
+
+	Run 'python des_keygen.py zero_corr' in the terminal
+
+	The needed key file can be found in "testfiles/zero_corr/key.txt"
+
+
+For reduced round DES Matsui experiment:
+
+	run 'python des_keygen.py reduced_round' in the terminal
+
+	Follow the instruction that are printed on screen to verify that no duplicate keys have
+	been randomly generated. Delete the "testfiles/reduced_round/new_key_vals.txt" file in order
+	to reset the keys used in the search for duplicate keys.
+
+	The needed key file (randomly generated keys) can be found in "testfiles/reduced_round/key.txt"
+
+
+Give information on the 2 partitions of the SD card and what should be put on which one.
+
+The SD cards contains 2 partitions.
+
+A smaller partition (less than one GB): containing the BOOT.bin file and image.ub
+	
+	These files define the hardware used during the experiments. Two versions are provided.
+	A version with 192 reduced round DES cores and a version with 128 full DES cores.
+
+A bigger partition (more than 10 GB): containing the file system accessible during operation.
+
+	The root in use during operation can be found at TODO.
+	This is where the necessary files should be added before operation.
+
+	The python folder files are dependent on whether the reduced round or full DES version is used.
+
+	Example parameter files for the different types of experiments are also provided.
+
+A list of the files that should be added to operate the platform:
+
+reports folder: key.txt, param.txt
+
+python folder: monitor.py, interface.py
+
+
 HOW TO CONNECT TO DEVICE
 
 After preparing the SD card and putting it in the FPGA, connect the FPGA via USB to
@@ -6,10 +62,10 @@ to the UART port.
 Open a terminal window on the PC.
 Turn on the FPGA (it will now begin booting)
 For Linux device: use the 'make uart' command (found in the make file) to connect.
+(TODO: add an explanation on how to connect via screen in general)
 
 username: root
 password: root
-(alternative PWD option: noot)
 
 USING THE PLATFORM WHEN CONNECTED
 
@@ -18,16 +74,16 @@ Start location directory tree:
 root
 |-- python
 |	|
-|	| python files
+|	| monitor.py, interface.py
 |
 |-- reports
 	|
-	| key, param, status, seeds, results files
+	| key.txt, param.txt, status.txt, seeds.txt, results.txt, TODO
 
 To set the parameters, edit (or create) the 'param.txt' file according to the template.
 
-First cd to the cython directory
-	cd cython
+First cd to the python directory
+	cd python
 
 Then open Python and import the monitor file
 	python
@@ -54,8 +110,8 @@ Normal workflow looks like this:
 	
 
 Explanation:
-init_platform(): Initialises the platform (creates the status and results file).
-		 If the params file is present, it will list the current parameters.
+init_platform(): Initializes the platform (creates the status and results file).
+		 If the param.txt file is present, it will list the current parameters.
 		 Else the user will be prompted to input the parameters.
 
 performance_stats(): Prints the performance stats for the current setup. This way we 
@@ -70,13 +126,21 @@ start_all(1): Starts all blocks with base seed 1 (seed increments for following 
 get_hw_status(): Prints the status of the blocks to check if all are DONE. 
 
 get_results_all(): Collects the counter results from all blocks that are done and writes
-		   them into the results file.
+		   them into the results file. The results are processed and the overall mean and
+		   standard deviation of the bias over all samples are printed for the user to read
 
 print_results(): Prints the results file to the terminal so the user can see the results.
 
 After this, the cycle can be repeated if needed (new seeds, new masks, new keys...).
 
 
++ Add the explanation of the other functions here as well (TODO)
 
+
+THE RESULTS
+
+Explain what files are generated when the results are processed
+
+Explain the structure of the result files and what to do with them.
 
 

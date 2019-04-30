@@ -489,8 +489,8 @@ def process_results():
     print ("################################################################################")
     print ("FINAL RESULT OVER ALL COUNTERS")
 
-    print ("Bias (total count) : " + str(bias))
-    print ("log2               : " + str(math.log(bias, 2)))
+    #print ("Bias (total count) : " + str(bias))
+    #print ("log2               : " + str(math.log(bias, 2)))
     print ("Mean bias   : " + str(mean))
     print ("Mean log 2  : " + str(math.log(mean, 2)))
     print ("STD         : " + str(std))

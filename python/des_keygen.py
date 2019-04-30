@@ -182,10 +182,9 @@ def gen_192_key_file_random_full_platform():
 
     for i in range(0, 192):
 
-        master_key = "{0:b}".format(random.getrandbits(128))
-        round_keys = generate_keys(master_key)
-
-        print (master_key)
+        master_key = "{0:016x}".format(random.getrandbits(64))
+        key_bits = hexTobinary(master_key)
+        round_keys = generate_keys(key_bits)
 
         key = round_keys[0] + round_keys[1] + round_keys[2] + round_keys[3] + round_keys[4] + round_keys[5] + round_keys[6] + round_keys[7] + round_keys[8] + round_keys[9] + round_keys[10] + round_keys[11] + round_keys[12] + round_keys[13] + round_keys[14] + round_keys[15]
 

@@ -323,7 +323,8 @@
     
             end 
           else begin
-    
+            
+            // TODO: remove this set to zero? But should not be an issue, else we should have bigger issues...
             r_data_upper_valid <= 1'b0; // Set to zero when not written to, this way it only stays high one cycle
             r_data_lower_valid <= 1'b0; // Set to zero when not written to, this way it only stays high one cycle
     
