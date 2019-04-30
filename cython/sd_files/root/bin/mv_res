@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cd
+
+cd reports
+
+cp results.txt old_res/results_$1.txt
+cp bias_results.txt old_res/bias_results_$1.txt
+cp bias_stats.txt old_res/bias_stats_$1.txt

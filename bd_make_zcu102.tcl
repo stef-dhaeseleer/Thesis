@@ -1,5 +1,5 @@
-set name "full_axi_six_cores_zcu102_" 
-set type "full_axi_six_cores_zcu102"
+set name "full_axi_four_cores_zcu102_" 
+set type "full_axi_four_cores_zcu102"
 set init 0
 
 startgroup
@@ -15,7 +15,7 @@ apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config {Master "/zynq_ultra_p
 apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config {Clk "/zynq_ultra_ps_e_0/pl_clk1 (214 MHz)" }  [get_bd_pins $a/des_clk]
 endgroup
 
-apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config {Slave "/full_axi_six_cores_zcu102_0/S00_AXI" intc_ip "/ps8_0_axi_periph" Clk_xbar "Auto" Clk_master "Auto" Clk_slave "Auto" }  [get_bd_intf_pins zynq_ultra_ps_e_0/M_AXI_HPM0_FPD]
+apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config {Slave "/full_axi_four_cores_zcu102_0/S00_AXI" intc_ip "/ps8_0_axi_periph" Clk_xbar "Auto" Clk_master "Auto" Clk_slave "Auto" }  [get_bd_intf_pins zynq_ultra_ps_e_0/M_AXI_HPM0_FPD]
 set_property -dict [list CONFIG.NUM_SI {1} CONFIG.NUM_MI {32}] [get_bd_cells ps8_0_axi_periph]
 delete_bd_objs [get_bd_intf_nets zynq_ultra_ps_e_0_M_AXI_HPM1_FPD]
  
