@@ -1,0 +1,10 @@
+#!/bin/bash
+
+cd
+
+cd key
+
+python des_keygen.py reduced_round
+
+rm ../reports/key.txt
+cp reduced_round/key.txt ../reports/key.txt
