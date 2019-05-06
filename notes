@@ -55,5 +55,8 @@ ln -s ../../../verilog/des_reduced/des_pipelined_8rounds_no_perm.v des_pipelined
 
 
 
+ln -s ../../../verilog/des_new/des_pipelined_single_pipeline_stage_no_perm.v des_pipelined_single_pipeline_stage_no_perm.v
+
+
 
 
