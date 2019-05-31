@@ -1,0 +1,384 @@
+Polynomial      : 9223372036854775821
+Calculated bias : 1.49472271005e-07
+
+Polynomial      : 9223372036854775822
+Calculated bias : 4.2634383135e-08
+
+Polynomial      : 9223372036854775878
+Calculated bias : 1.32610693981e-07
+
+Polynomial      : 9223372036854775930
+Calculated bias : 4.55611939287e-08
+
+Polynomial      : 9223372036854775993
+Calculated bias : 1.10095299988e-07
+
+Polynomial      : 9223372036854775994
+Calculated bias : 6.64208528178e-08
+
+Polynomial      : 9223372036854776016
+Calculated bias : 5.05742718815e-08
+
+Polynomial      : 9223372036854776025
+Calculated bias : 1.98584018563e-07
+
+Polynomial      : 9223372036854776038
+Calculated bias : 9.59672092904e-08
+
+Polynomial      : 9223372036854776047
+Calculated bias : 1.45293029163e-07
+
+Polynomial      : 9223372036854776094
+Calculated bias : 5.7371892126e-08
+
+Polynomial      : 9223372036854776104
+Calculated bias : 3.93411596633e-08
+
+Polynomial      : 9223372036854776129
+Calculated bias : 4.52354242952e-08
+
+Polynomial      : 9223372036854776132
+Calculated bias : 1.32970512823e-07
+
+Polynomial      : 9223372036854776144
+Calculated bias : 1.90009075141e-07
+
+Polynomial      : 9223372036854776147
+Calculated bias : 1.22705387184e-07
+
+Polynomial      : 9223372036854776165
+Calculated bias : 1.37401968914e-07
+
+Polynomial      : 9223372036854776169
+Calculated bias : 3.44078898706e-08
+
+Polynomial      : 9223372036854776213
+Calculated bias : 2.49347635872e-08
+
+Polynomial      : 9223372036854776227
+Calculated bias : 2.27882992476e-08
+
+Polynomial      : 9223372036854776274
+Calculated bias : 7.45022816773e-08
+
+Polynomial      : 9223372036854776285
+Calculated bias : 1.38753080137e-07
+
+Polynomial      : 9223372036854776292
+Calculated bias : 2.13053965581e-07
+
+Polynomial      : 9223372036854776295
+Calculated bias : 1.05646392967e-07
+
+Polynomial      : 9223372036854776313
+Calculated bias : 5.99214331487e-08
+
+Polynomial      : 9223372036854776319
+Calculated bias : 6.6352072281e-08
+
+Polynomial      : 9223372036854776326
+Calculated bias : 1.08324400117e-07
+
+Polynomial      : 9223372036854776338
+Calculated bias : 1.35248569677e-07
+
+Polynomial      : 9223372036854776455
+Calculated bias : 5.82397774451e-08
+
+Polynomial      : 9223372036854776473
+Calculated bias : 1.11142071546e-07
+
+Polynomial      : 9223372036854776645
+Calculated bias : 5.56599388801e-09
+
+Polynomial      : 9223372036854776663
+Calculated bias : 7.83211362432e-08
+
+Polynomial      : 9223372036854776673
+Calculated bias : 2.54505266639e-07
+
+Polynomial      : 9223372036854776698
+Calculated bias : 1.50177527303e-07
+
+Polynomial      : 9223372036854776764
+Calculated bias : 1.7711278133e-07
+
+Polynomial      : 9223372036854776767
+Calculated bias : 5.53229142497e-08
+
+Polynomial      : 9223372036854776835
+Calculated bias : 1.49940206029e-07
+
+Polynomial      : 9223372036854776880
+Calculated bias : 1.00021907201e-07
+
+Polynomial      : 9223372036854776910
+Calculated bias : 7.3532191891e-08
+
+Polynomial      : 9223372036854776946
+Calculated bias : 6.08950472269e-08
+
+Polynomial      : 9223372036854776967
+Calculated bias : 1.62751916832e-07
+
+Polynomial      : 9223372036854776988
+Calculated bias : 5.66103608435e-09
+
+Polynomial      : 9223372036854777033
+Calculated bias : 8.35685227685e-08
+
+Polynomial      : 9223372036854777095
+Calculated bias : 3.58796796718e-08
+
+Polynomial      : 9223372036854777096
+Calculated bias : 1.4912353663e-07
+
+Polynomial      : 9223372036854777155
+Calculated bias : 1.14737531476e-07
+
+Polynomial      : 9223372036854777195
+Calculated bias : 1.58559430474e-07
+
+Polynomial      : 9223372036854777212
+Calculated bias : 7.52638129597e-08
+
+Polynomial      : 9223372036854777302
+Calculated bias : 2.43485942519e-08
+
+Polynomial      : 9223372036854777346
+Calculated bias : 9.09233222046e-08
+
+Polynomial      : 9223372036854777358
+Calculated bias : 3.7249151319e-08
+
+Polynomial      : 9223372036854777413
+Calculated bias : 2.93772814075e-07
+
+Polynomial      : 9223372036854777432
+Calculated bias : 1.37532538247e-07
+
+Polynomial      : 9223372036854777466
+Calculated bias : 1.75488253262e-07
+
+Polynomial      : 9223372036854777573
+Calculated bias : 1.4721814523e-07
+
+Polynomial      : 9223372036854777603
+Calculated bias : 1.54115582518e-08
+
+Polynomial      : 9223372036854777617
+Calculated bias : 6.98130975252e-08
+
+Polynomial      : 9223372036854777713
+Calculated bias : 4.79633968098e-08
+
+Polynomial      : 9223372036854777732
+Calculated bias : 1.38579707709e-08
+
+Polynomial      : 9223372036854777780
+Calculated bias : 5.85203565606e-08
+
+Polynomial      : 9223372036854777801
+Calculated bias : 5.57911334909e-08
+
+Polynomial      : 9223372036854777845
+Calculated bias : 8.3426641595e-08
+
+Polynomial      : 9223372036854777886
+Calculated bias : 1.00133490832e-07
+
+Polynomial      : 9223372036854777919
+Calculated bias : 9.7301722235e-08
+
+Polynomial      : 9223372036854777921
+Calculated bias : 1.96997291368e-07
+
+Polynomial      : 9223372036854777942
+Calculated bias : 1.34109598093e-07
+
+Polynomial      : 9223372036854777961
+Calculated bias : 2.45647697739e-08
+
+Polynomial      : 9223372036854778012
+Calculated bias : 2.44051534537e-08
+
+Polynomial      : 9223372036854778039
+Calculated bias : 3.93856680603e-09
+
+Polynomial      : 9223372036854778068
+Calculated bias : 7.11121970198e-08
+
+Polynomial      : 9223372036854778091
+Calculated bias : 3.3745749306e-07
+
+Polynomial      : 9223372036854778102
+Calculated bias : 2.16627825012e-07
+
+Polynomial      : 9223372036854778176
+Calculated bias : 3.49767219632e-08
+
+Polynomial      : 9223372036854778194
+Calculated bias : 4.30103455074e-08
+
+Polynomial      : 9223372036854778199
+Calculated bias : 1.4840111362e-09
+
+Polynomial      : 9223372036854778219
+Calculated bias : 1.09982011054e-07
+
+Polynomial      : 9223372036854778221
+Calculated bias : 1.62281992289e-07
+
+Polynomial      : 9223372036854778230
+Calculated bias : 2.8728743473e-07
+
+Polynomial      : 9223372036854778502
+Calculated bias : 3.58188003702e-08
+
+Polynomial      : 9223372036854778511
+Calculated bias : 1.02846286154e-07
+
+Polynomial      : 9223372036854778636
+Calculated bias : 8.38851974549e-08
+
+Polynomial      : 9223372036854778658
+Calculated bias : 2.25578276059e-07
+
+Polynomial      : 9223372036854778660
+Calculated bias : 5.95610458731e-08
+
+Polynomial      : 9223372036854778667
+Calculated bias : 2.5427084438e-08
+
+Polynomial      : 9223372036854778669
+Calculated bias : 1.58884631674e-07
+
+Polynomial      : 9223372036854778678
+Calculated bias : 7.94469201537e-08
+
+Polynomial      : 9223372036854778692
+Calculated bias : 1.06600396066e-07
+
+Polynomial      : 9223372036854778743
+Calculated bias : 6.54189875604e-08
+
+Polynomial      : 9223372036854778756
+Calculated bias : 1.23350218928e-10
+
+Polynomial      : 9223372036854778787
+Calculated bias : 4.85931650474e-08
+
+Polynomial      : 9223372036854778790
+Calculated bias : 9.64006972026e-08
+
+Polynomial      : 9223372036854778794
+Calculated bias : 6.4283312895e-08
+
+Polynomial      : 9223372036854778799
+Calculated bias : 9.43677491705e-08
+
+Polynomial      : 9223372036854778813
+Calculated bias : 1.02413878267e-07
+
+Polynomial      : 9223372036854778819
+Calculated bias : 5.34323589818e-08
+
+Polynomial      : 9223372036854778867
+Calculated bias : 6.058468216e-08
+
+Polynomial      : 9223372036854779068
+Calculated bias : 1.78768857495e-07
+
+Polynomial      : 9223372036854779098
+Calculated bias : 1.26732970784e-08
+
+Polynomial      : 9223372036854779122
+Calculated bias : 2.97470876376e-07
+
+Polynomial      : 9223372036854779151
+Calculated bias : 9.97980009743e-08
+
+Polynomial      : 9223372036854779160
+Calculated bias : 1.3489182038e-07
+
+Polynomial      : 9223372036854779175
+Calculated bias : 2.1045474341e-07
+
+Polynomial      : 9223372036854779194
+Calculated bias : 8.49803427627e-08
+
+Polynomial      : 9223372036854779211
+Calculated bias : 7.45746433495e-08
+
+Polynomial      : 9223372036854779249
+Calculated bias : 1.35901359499e-07
+
+Polynomial      : 9223372036854779290
+Calculated bias : 3.59824525731e-08
+
+Polynomial      : 9223372036854779306
+Calculated bias : 7.97024881649e-08
+
+Polynomial      : 9223372036854779326
+Calculated bias : 6.89010448696e-08
+
+Polynomial      : 9223372036854779357
+Calculated bias : 2.74898070529e-07
+
+Polynomial      : 9223372036854779364
+Calculated bias : 1.71779618086e-07
+
+Polynomial      : 9223372036854779421
+Calculated bias : 7.48987645238e-08
+
+Polynomial      : 9223372036854779438
+Calculated bias : 2.96864755001e-09
+
+Polynomial      : 9223372036854779440
+Calculated bias : 2.1200082756e-07
+
+Polynomial      : 9223372036854779484
+Calculated bias : 4.57658302366e-08
+
+Polynomial      : 9223372036854779494
+Calculated bias : 2.31817011809e-07
+
+Polynomial      : 9223372036854779522
+Calculated bias : 1.32949367071e-08
+
+Polynomial      : 9223372036854779551
+Calculated bias : 1.75867285179e-07
+
+Polynomial      : 9223372036854779552
+Calculated bias : 1.14660963391e-07
+
+Polynomial      : 9223372036854779575
+Calculated bias : 1.61677576216e-07
+
+Polynomial      : 9223372036854779587
+Calculated bias : 2.44751163336e-07
+
+Polynomial      : 9223372036854779642
+Calculated bias : 1.12316342893e-08
+
+Polynomial      : 9223372036854779827
+Calculated bias : 1.17955664791e-07
+
+Polynomial      : 9223372036854779841
+Calculated bias : 8.51289314596e-08
+
+Polynomial      : 9223372036854779875
+Calculated bias : 1.72735155957e-07
+
+Polynomial      : 9223372036854779931
+Calculated bias : 1.1827370372e-07
+
+Polynomial      : 9223372036854779947
+Calculated bias : 1.00938393643e-07
+
+Polynomial      : 9223372036854779955
+Calculated bias : 4.22676862399e-08
+
+Polynomial      : 9223372036854779958
+Calculated bias : 2.84768930214e-07
+

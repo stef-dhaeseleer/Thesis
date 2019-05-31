@@ -1,0 +1,15 @@
+RESULTS FROM EXPERIMENT 
+
+Bias (total count): 9.16733844392e-09
+log2              : -26.7008499175
+
+Mean bias   : 1.04991712657e-07
+Mean log 2  : -23.1832212085
+
+STD         : 7.28996709225e-08
+STD  log 2  : -23.709512457
+
+Samples : 128
+Encryptions per sample (log2) : 44.0
+Input mask used : 0x2104008000008000
+Output mask used : 0x1100000cb8080
